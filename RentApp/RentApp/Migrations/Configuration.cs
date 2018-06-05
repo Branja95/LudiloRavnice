@@ -29,72 +29,72 @@ namespace RentApp.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
-            if (!context.Roles.Any(r => r.Name == "Admin"))
-            {
-                var store = new RoleStore<IdentityRole>(context);
-                var manager = new RoleManager<IdentityRole>(store);
-                var role = new IdentityRole { Name = "Admin" };
+            //if (!context.Roles.Any(r => r.Name == "Admin"))
+            //{
+            //    var store = new RoleStore<IdentityRole>(context);
+            //    var manager = new RoleManager<IdentityRole>(store);
+            //    var role = new IdentityRole { Name = "Admin" };
 
-                manager.Create(role);
-            }
+            //    manager.Create(role);
+            //}
 
-            if (!context.Roles.Any(r => r.Name == "Manager"))
-            {
-                var store = new RoleStore<IdentityRole>(context);
-                var manager = new RoleManager<IdentityRole>(store);
-                var role = new IdentityRole { Name = "Manager" };
+            //if (!context.Roles.Any(r => r.Name == "Manager"))
+            //{
+            //    var store = new RoleStore<IdentityRole>(context);
+            //    var manager = new RoleManager<IdentityRole>(store);
+            //    var role = new IdentityRole { Name = "Manager" };
 
-                manager.Create(role);
-            }
+            //    manager.Create(role);
+            //}
 
-            if (!context.Roles.Any(r => r.Name == "AppUser"))
-            {
-                var store = new RoleStore<IdentityRole>(context);
-                var manager = new RoleManager<IdentityRole>(store);
-                var role = new IdentityRole { Name = "AppUser" };
+            //if (!context.Roles.Any(r => r.Name == "AppUser"))
+            //{
+            //    var store = new RoleStore<IdentityRole>(context);
+            //    var manager = new RoleManager<IdentityRole>(store);
+            //    var role = new IdentityRole { Name = "AppUser" };
 
-                manager.Create(role);
-            }
+            //    manager.Create(role);
+            //}
 
-            context.AppUsers.AddOrUpdate(
+            //context.AppUsers.AddOrUpdate(
 
-                  u => u.FullName,
+            //      u => u.FullName,
 
-                  new AppUser() { FullName = "Admin Adminovic" }
+            //      new AppUser() { FullName = "Admin Adminovic" }
 
-            );
+            //);
 
-            context.AppUsers.AddOrUpdate(
+            //context.AppUsers.AddOrUpdate(
 
-                p => p.FullName,
+            //    p => p.FullName,
 
-                new AppUser() { FullName = "AppUser AppUserovic" }
+            //    new AppUser() { FullName = "AppUser AppUserovic" }
 
-            );
+            //);
 
-            context.SaveChanges();
+            //context.SaveChanges();
 
-            var userStore = new UserStore<RAIdentityUser>(context);
-            var userManager = new UserManager<RAIdentityUser>(userStore);
+            //var userStore = new UserStore<RAIdentityUser>(context);
+            //var userManager = new UserManager<RAIdentityUser>(userStore);
 
-            if (!context.Users.Any(u => u.UserName == "admin"))
-            {
-                var _appUser = context.AppUsers.FirstOrDefault(a => a.FullName == "Admin Adminovic");
-                var user = new RAIdentityUser() { Id = "admin", UserName = "admin", Email = "admin@yahoo.com", PasswordHash = RAIdentityUser.HashPassword("admin"), AppUserId = _appUser.Id };
-                userManager.Create(user);
-                userManager.AddToRole(user.Id, "Admin");
-            }
+            //if (!context.Users.Any(u => u.UserName == "admin"))
+            //{
+            //    var _appUser = context.AppUsers.FirstOrDefault(a => a.FullName == "Admin Adminovic");
+            //    var user = new RAIdentityUser() { Id = "admin", UserName = "admin", Email = "admin@yahoo.com", PasswordHash = RAIdentityUser.HashPassword("admin"), AppUserId = _appUser.Id };
+            //    userManager.Create(user);
+            //    userManager.AddToRole(user.Id, "Admin");
+            //}
 
-            if (!context.Users.Any(u => u.UserName == "appu"))
+            //if (!context.Users.Any(u => u.UserName == "appu"))
 
-            {
+            //{
 
-                var _appUser = context.AppUsers.FirstOrDefault(a => a.FullName == "AppUser AppUserovic");
-                var user = new RAIdentityUser() { Id = "appu", UserName = "appu", Email = "appu@yahoo.com", PasswordHash = RAIdentityUser.HashPassword("appu"), AppUserId = _appUser.Id };
-                userManager.Create(user);
-                userManager.AddToRole(user.Id, "AppUser");
+            //    var _appUser = context.AppUsers.FirstOrDefault(a => a.FullName == "AppUser AppUserovic");
+            //    var user = new RAIdentityUser() { Id = "appu", UserName = "appu", Email = "appu@yahoo.com", PasswordHash = RAIdentityUser.HashPassword("appu"), AppUserId = _appUser.Id };
+            //    userManager.Create(user);
+            //    userManager.AddToRole(user.Id, "AppUser");
 
-            }
+            //}
         }
     }
 }

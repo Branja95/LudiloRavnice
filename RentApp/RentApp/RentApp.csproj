@@ -275,9 +275,15 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Entities\BranchOffice.cs" />
     <Compile Include="Models\Entities\RAIdentityUser.cs" />
     <Compile Include="Models\Entities\AppUser.cs" />
+    <Compile Include="Models\Entities\Comment.cs" />
+    <Compile Include="Models\Entities\Rating.cs" />
+    <Compile Include="Models\Entities\Reservation.cs" />
     <Compile Include="Models\Entities\Services.cs" />
+    <Compile Include="Models\Entities\Vehicle.cs" />
+    <Compile Include="Models\Entities\VehicleType.cs" />
     <Compile Include="Persistance\RADBContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
@@ -378,7 +384,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>51680</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
