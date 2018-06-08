@@ -279,6 +279,14 @@
     <Compile Include="Migrations\201806031439020_Initial.Designer.cs">
       <DependentUpon>201806031439020_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806080723015_RADataModel_v1.0.cs" />
+    <Compile Include="Migrations\201806080723015_RADataModel_v1.0.Designer.cs">
+      <DependentUpon>201806080723015_RADataModel_v1.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806080804538_RADataModel_v1.1.cs" />
+    <Compile Include="Migrations\201806080804538_RADataModel_v1.1.Designer.cs">
+      <DependentUpon>201806080804538_RADataModel_v1.1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -395,6 +403,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201806031439020_Initial.resx">
       <DependentUpon>201806031439020_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806080723015_RADataModel_v1.0.resx">
+      <DependentUpon>201806080723015_RADataModel_v1.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806080804538_RADataModel_v1.1.resx">
+      <DependentUpon>201806080804538_RADataModel_v1.1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

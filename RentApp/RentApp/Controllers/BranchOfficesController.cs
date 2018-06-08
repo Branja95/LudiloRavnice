@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using RentApp.Models.Entities;
 using RentApp.Persistance;
+using RentApp.Persistance.UnitOfWork;
 
 namespace RentApp.Controllers
 {
@@ -13,7 +14,7 @@ namespace RentApp.Controllers
     {
         private RADBContext db;
 
-        public BranchOfficesController(DbContext context)
+        public BranchOfficesController(IUnitOfWork context)
         {
             db = context as RADBContext;
         }
