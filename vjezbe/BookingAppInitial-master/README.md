@@ -1,2 +1,0 @@
-# BookingAppInitial
-Initial Solution
