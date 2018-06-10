@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RentApp.Persistance.Repository
 {
-    public interface IAppUserRepository
+    public interface IAppUserRepository : IRepository<AppUser, int>
     {
         IEnumerable<AppUser> GetAll(int pageIndex, int pageSize);
     }
