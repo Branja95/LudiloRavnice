@@ -10,6 +10,7 @@ namespace RentApp.Migrations
             DropForeignKey("dbo.AspNetUsers", "AppUserId", "dbo.AppUsers");
             DropIndex("dbo.AspNetUsers", new[] { "AppUserId" });
             AddColumn("dbo.Reservations", "UserId", c => c.String());
+            AddColumn("dbo.Services", "Creator", c => c.String());
             AddColumn("dbo.AspNetUsers", "FirstName", c => c.String());
             AddColumn("dbo.AspNetUsers", "LastName", c => c.String());
             AddColumn("dbo.AspNetUsers", "Image", c => c.String());
@@ -17,7 +18,7 @@ namespace RentApp.Migrations
             AddColumn("dbo.AspNetUsers", "IsLogged", c => c.Boolean(nullable: false));
             AlterColumn("dbo.Comments", "UserId", c => c.String());
             AlterColumn("dbo.Ratings", "UserId", c => c.String());
-            AlterColumn("dbo.Services", "OwnerId", c => c.String());
+            DropColumn("dbo.Services", "OwnerId");
             DropColumn("dbo.AspNetUsers", "AppUserId");
             DropTable("dbo.AppUsers");
         }
@@ -39,7 +40,7 @@ namespace RentApp.Migrations
                 .PrimaryKey(t => t.Id);
             
             AddColumn("dbo.AspNetUsers", "AppUserId", c => c.Int(nullable: false));
-            AlterColumn("dbo.Services", "OwnerId", c => c.Int(nullable: false));
+            AddColumn("dbo.Services", "OwnerId", c => c.Int(nullable: false));
             AlterColumn("dbo.Ratings", "UserId", c => c.Int(nullable: false));
             AlterColumn("dbo.Comments", "UserId", c => c.Int(nullable: false));
             DropColumn("dbo.AspNetUsers", "IsLogged");
@@ -47,6 +48,7 @@ namespace RentApp.Migrations
             DropColumn("dbo.AspNetUsers", "Image");
             DropColumn("dbo.AspNetUsers", "LastName");
             DropColumn("dbo.AspNetUsers", "FirstName");
+            DropColumn("dbo.Services", "Creator");
             DropColumn("dbo.Reservations", "UserId");
             CreateIndex("dbo.AspNetUsers", "AppUserId");
             AddForeignKey("dbo.AspNetUsers", "AppUserId", "dbo.AppUsers", "Id", cascadeDelete: true);

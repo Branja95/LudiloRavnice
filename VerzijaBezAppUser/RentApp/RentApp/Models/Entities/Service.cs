@@ -6,7 +6,7 @@ namespace RentApp.Models.Entities
     {
         public int Id { get; set; }
 
-        public string OwnerId { get; set; }
+        public string Creator { get; set; }
 
         public string Name { get; set; }
 
