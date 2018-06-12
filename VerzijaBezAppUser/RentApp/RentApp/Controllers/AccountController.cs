@@ -335,6 +335,32 @@ namespace RentApp.Controllers
             return Ok();
         }
 
+        // POST api/Account/Login
+        [AllowAnonymous]
+        [Route("Login")]
+        public async Task<IHttpActionResult> Login(LoginBindingModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            RAIdentityUser user = UserManager.FindByEmail(model.Email);
+
+            if (user == null)
+            {
+                return BadRequest("Wrong username");
+            }
+            if (!RAIdentityUser.VerifyHashedPassword(user.PasswordHash, model.Password))
+            {
+                return BadRequest("Wrong password");
+            }
+            else
+            {
+                return Ok("Login success");
+            }
+        }
+
         // POST api/Account/RegisterExternal
         [OverrideAuthentication]
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
