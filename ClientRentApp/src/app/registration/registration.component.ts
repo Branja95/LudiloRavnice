@@ -26,7 +26,7 @@ export class RegistrationComponent implements OnInit {
         alert(data);
       },
       error => {
-        console.log(error);
+        alert(error.error.Message);
       })
   }
 
