@@ -323,7 +323,8 @@ namespace RentApp.Controllers
                 return BadRequest("Username already exists.");
             }
 
-            var user = new RAIdentityUser() { UserName = model.Email, Email = model.Email, EmailConfirmed = true, PasswordHash = RAIdentityUser.HashPassword(model.Password), FirstName = model.FirstName, LastName = model.LastName, Image = "", DateOfBirth = model.DateOfBirth, IsLogged = false };
+            var user = new RAIdentityUser() { UserName = model.Email, Email = model.Email, EmailConfirmed = true, FirstName = model.FirstName, LastName = model.LastName, Image = "", DateOfBirth = model.DateOfBirth, IsLogged = false };
+            user.PasswordHash = RAIdentityUser.HashPassword(model.Password);
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 
@@ -333,32 +334,6 @@ namespace RentApp.Controllers
             }
 
             return Ok();
-        }
-
-        // POST api/Account/Login
-        [AllowAnonymous]
-        [Route("Login")]
-        public async Task<IHttpActionResult> Login(LoginBindingModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            RAIdentityUser user = UserManager.FindByEmail(model.Email);
-
-            if (user == null)
-            {
-                return BadRequest("Wrong username");
-            }
-            if (!RAIdentityUser.VerifyHashedPassword(user.PasswordHash, model.Password))
-            {
-                return BadRequest("Wrong password");
-            }
-            else
-            {
-                return Ok("Login success");
-            }
         }
 
         // POST api/Account/RegisterExternal
