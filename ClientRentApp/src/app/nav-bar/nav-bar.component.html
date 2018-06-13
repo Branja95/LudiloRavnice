@@ -8,8 +8,9 @@
       <li><a [routerLink]="['/Vehicle']">Vehicle</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
-      <li><a [routerLink]="['/Registration']"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-      <li><a [routerLink]="['/Login']"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      <li><a *ngIf="!isLogged()" [routerLink]="['/Registration']"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+      <li><a *ngIf="!isLogged()" [routerLink]="['/Login']"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      <li><a *ngIf="isLogged()" (click)="logoutUser()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
     </ul>
   </div>
 </nav>
