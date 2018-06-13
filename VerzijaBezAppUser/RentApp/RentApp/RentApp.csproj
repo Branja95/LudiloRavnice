@@ -309,6 +309,7 @@
     <Compile Include="Models\Entities\Service.cs" />
     <Compile Include="Models\Entities\Vehicle.cs" />
     <Compile Include="Models\Entities\VehicleType.cs" />
+    <Compile Include="Models\VehicleBindingModel.cs" />
     <Compile Include="Persistance\RADBContext.cs" />
     <Compile Include="Persistance\Repository\BranchOfficeRepository.cs" />
     <Compile Include="Persistance\Repository\CommentRepository.cs" />
@@ -336,9 +337,9 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\RentAppDB2mdf.mdf" />
-    <Content Include="App_Data\RentAppDB2mdf_log.ldf">
-      <DependentUpon>RentAppDB2mdf.mdf</DependentUpon>
+    <Content Include="App_Data\RentAppDB4.mdf" />
+    <Content Include="App_Data\RentAppDB4_log.ldf">
+      <DependentUpon>RentAppDB4.mdf</DependentUpon>
     </Content>
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\bootstrap.css" />

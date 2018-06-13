@@ -8,6 +8,7 @@ using RentApp.Models.Entities;
 using RentApp.Persistance;
 using RentApp.Persistance.UnitOfWork;
 using System.Collections.Generic;
+using static RentApp.Models.VehicleBindingModel;
 
 namespace RentApp.Controllers
 {
@@ -75,17 +76,29 @@ namespace RentApp.Controllers
 
         // POST: api/Vehicles
         [ResponseType(typeof(Vehicle))]
-        public IHttpActionResult PostVehicle(Vehicle vehicle)
+        public IHttpActionResult PostVehicle(CreateVehicleBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            
+            Vehicle vehicle = new Vehicle
+            {
+                VehicleType = GetVehicleType(model.VehicleType),
+                Model = model.Model,
+                Manufactor = model.Manufactor,
+                YearMade = model.YearMade,
+                Description = model.Description,
+                //Images = model.Images,
+                PricePerHour = model.PricePerHour,
+                IsAvailable = IsAvailable(model.Availability)
+            };
 
             unitOfWork.Vehicles.Add(vehicle);
             unitOfWork.Complete();
 
-            return CreatedAtRoute("DefaultApi", new { id = vehicle.Id }, vehicle);
+            return Ok();
         }
 
         // DELETE: api/Vehicles/5
@@ -107,6 +120,28 @@ namespace RentApp.Controllers
         private bool VehicleExists(int id)
         {
             return unitOfWork.Vehicles.Get(id) != null;
+        }
+
+        private bool IsAvailable(string availability)
+        {
+            if(availability.Equals("Available"))
+            {
+                return true;   
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private VehicleType GetVehicleType(string vehicleType)
+        {
+            VehicleType vehicle = new VehicleType
+            {
+                TypeName = vehicleType
+            };
+
+            return vehicle;
         }
     }
 }

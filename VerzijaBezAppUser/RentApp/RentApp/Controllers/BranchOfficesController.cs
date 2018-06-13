@@ -95,7 +95,7 @@ namespace RentApp.Controllers
             unitOfWork.BranchOffices.Add(branchOffice);
             unitOfWork.Complete();
 
-            return CreatedAtRoute("DefaultApi", new { id = branchOffice.Id }, branchOffice);
+            return Ok();
         }
 
         // DELETE: api/BranchOffices/5

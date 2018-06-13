@@ -105,6 +105,24 @@ namespace RentApp.Migrations
             serviceSR.Vehicles.Add(vehicleZ);
             serviceSR.Comments.Add(comment2);
             serviceSR.Ratings.Add(rating2);
+            
+            context.BranchOffices.AddOrUpdate(branchOfficeGR);
+            context.BranchOffices.AddOrUpdate(branchOfficeSB);
+
+            context.VehicleTypes.AddOrUpdate(vehicleTypeH);
+            context.VehicleTypes.AddOrUpdate(vehicleTypeL);
+
+            context.Vehicles.AddOrUpdate(vehicleG);
+            context.Vehicles.AddOrUpdate(vehicleZ);
+
+            context.Comments.AddOrUpdate(comment1);
+            context.Comments.AddOrUpdate(comment2);
+
+            context.Ratings.AddOrUpdate(rating1);
+            context.Ratings.AddOrUpdate(rating2);
+            
+            context.Services.AddOrUpdate(servicePS);
+            context.Services.AddOrUpdate(serviceSR);
 
             context.SaveChanges();
         }
