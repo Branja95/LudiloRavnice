@@ -8,6 +8,8 @@ using RentApp.Models.Entities;
 using RentApp.Persistance;
 using RentApp.Persistance.UnitOfWork;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using static RentApp.Models.BranchOfficeBindingModel;
 
 namespace RentApp.Controllers
 {
@@ -72,15 +74,23 @@ namespace RentApp.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
+        
         // POST: api/BranchOffices
         [ResponseType(typeof(BranchOffice))]
-        public IHttpActionResult PostBranchOffice(BranchOffice branchOffice)
+        public IHttpActionResult PostBranchOffice(CreateBranchOfficeBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            BranchOffice branchOffice = new BranchOffice
+            {
+                Image = model.Image,
+                Address = model.Address,
+                Latitude = model.Latitude,
+                Longitude = model.Longitude
+            };
 
             unitOfWork.BranchOffices.Add(branchOffice);
             unitOfWork.Complete();
