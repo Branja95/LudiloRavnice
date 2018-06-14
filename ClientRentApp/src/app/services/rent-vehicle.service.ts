@@ -11,12 +11,12 @@ import 'rxjs/add/operator/map';
 @Injectable({
   providedIn: 'root'
 })
-export class BranchOfficeService {
+export class RentVehicleService {
 
   constructor(private httpClient: HttpClient) { }
 
-  postMethodCreateBranchOffice(branchOffice): Observable<any> {
-    return this.httpClient.post("http://localhost:51680/api/BranchOffices", branchOffice)
+  postMethodCreateRentVehicleService(rentVehicle): Observable<any> {
+    return this.httpClient.post("http://localhost:51680/api/Services", rentVehicle)
   }
 
 }

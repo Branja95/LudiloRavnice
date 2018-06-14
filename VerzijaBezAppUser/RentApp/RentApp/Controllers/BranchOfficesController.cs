@@ -94,8 +94,8 @@ namespace RentApp.Controllers
 
             unitOfWork.BranchOffices.Add(branchOffice);
             unitOfWork.Complete();
-
-            return Ok();
+            
+            return Ok("BranchOffice successfully created");
         }
 
         // DELETE: api/BranchOffices/5

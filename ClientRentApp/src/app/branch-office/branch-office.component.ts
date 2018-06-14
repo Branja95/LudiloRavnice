@@ -13,6 +13,7 @@ import { BranchOfficeService } from '../services/branch-office.service';
 })
 export class BranchOfficeComponent implements OnInit {
 
+  public url = ''
   constructor(private branchOfficeService: BranchOfficeService) { }
 
   ngOnInit() {
@@ -29,5 +30,5 @@ export class BranchOfficeComponent implements OnInit {
         alert(error.error.Message);
       })
   }
-
+    
 }

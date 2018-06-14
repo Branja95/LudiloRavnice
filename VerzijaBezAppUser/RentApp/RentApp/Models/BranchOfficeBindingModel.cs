@@ -17,14 +17,12 @@ namespace RentApp.Models
             public string Address { get; set; }
 
             [Required]
-            [RegularExpression(@"^\d+\.\d{0,2}$")]
-            [Range(0, 9999999999999999.99)]
+            [RegularExpression(@"^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)")]
             [Display(Name = "Latitude")]
             public double Latitude { get; set; }
 
             [Required]
-            [RegularExpression(@"^\d+\.\d{0,2}$")]
-            [Range(0, 9999999999999999.99)]
+            [RegularExpression(@"^[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$")]
             [Display(Name = "Longitude")]
             public double Longitude { get; set; }
         }

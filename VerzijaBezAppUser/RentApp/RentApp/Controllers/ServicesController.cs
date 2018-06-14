@@ -11,6 +11,7 @@ using System.Web.Http.Description;
 using RentApp.Models.Entities;
 using RentApp.Persistance;
 using RentApp.Persistance.UnitOfWork;
+using static RentApp.Models.ServiceBindingModel;
 
 namespace RentApp.Controllers
 {
@@ -78,17 +79,25 @@ namespace RentApp.Controllers
 
         // POST: api/Services
         [ResponseType(typeof(Service))]
-        public IHttpActionResult PostService(Service service)
+        public IHttpActionResult PostService(CreateRentVehicleServiceBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            Service service = new Service()
+            {
+                Name = model.Name,
+                EmailAddress = model.ContactEmail,
+                Description = model.Description,
+                LogoImage = model.LogoImage
+            };
+
             unitOfWork.Services.Add(service);
             unitOfWork.Complete();
 
-            return CreatedAtRoute("DefaultApi", new { id = service.Id }, service);
+            return Ok("RentVehicle Service succsessfully created");
         }
 
         // DELETE: api/Services/5
