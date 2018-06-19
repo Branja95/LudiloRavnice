@@ -6,10 +6,8 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
@@ -326,11 +324,18 @@ namespace RentApp.Controllers
             var user = new RAIdentityUser() { UserName = model.Email, Email = model.Email, EmailConfirmed = true, FirstName = model.FirstName, LastName = model.LastName, Image = "", DateOfBirth = model.DateOfBirth, IsLogged = false };
             user.PasswordHash = RAIdentityUser.HashPassword(model.Password);
 
-            IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+            IdentityResult addUserResult = await UserManager.CreateAsync(user, model.Password);
 
-            if (!result.Succeeded)
+            if (!addUserResult.Succeeded)
             {
-                return GetErrorResult(result);
+                return GetErrorResult(addUserResult);
+            }
+
+            IdentityResult addRoleResult =  await UserManager.AddToRoleAsync(user.Id, "AppUser");
+
+            if (!addRoleResult.Succeeded)
+            {
+                return GetErrorResult(addRoleResult);
             }
 
             return Ok();
