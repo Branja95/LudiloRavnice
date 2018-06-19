@@ -5,6 +5,7 @@ import { VehicleType } from '../models/vehicle-type.model';
 
 import { VehicleService } from '../services/vehicle.service';
 import { BranchOffice } from '../models/branch-office.model';
+import { Vehicle } from '../models/vehicle.model';
 
 @Component({
   selector: 'app-vehicle',
@@ -13,40 +14,51 @@ import { BranchOffice } from '../models/branch-office.model';
   providers: [VehicleService]
 })
 export class VehicleComponent implements OnInit {
- 
-  public vehicleTypes: string[]
-  public url = ''
+
+  urls: Array<string> = new Array<string>();
+  uploadedFiles: FileList = null;
+  vehicleTypes = Array<string>()
+
   constructor(private vehicleService: VehicleService) { }
 
   ngOnInit() {
-    this.getlanguages()
+    this.getVehicleTypes()
   }
 
-  onSubmit(form: NgForm, branchOffice: BranchOffice) {
-    this.vehicleService.postMethodCreateVehicle(branchOffice)
+  handleFileInput(files: FileList) {
+    this.uploadedFiles = files;
+    
+    let fileList = Array.from(files);
+    
+    if (fileList) {
+      for (let file of fileList) {
+        let reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.urls.push(e.target.result);
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+
+  onSubmit(form: NgForm, vehicle: Vehicle) {
+    
+    this.vehicleService.postMethodCreateVehicle(vehicle, this.uploadedFiles)
     .subscribe(
       data => {
         alert(data);
-      },
-      error => {
+      }, error => {
         alert(error.error.Message);
-      })
+      });;;
+
+    form.resetForm();
+    this.vehicleTypes = new Array<string>();
+    this.urls = new Array<string>();
+    this.getVehicleTypes();
   }
 
-  getlanguages() { 
+  getVehicleTypes() { 
     this.vehicleService.getMethodVehicleTypes().subscribe(res => { this.vehicleTypes = res as string[] });  
-  }
-
-  onSelectFile(event) {
-    if (event.target.files && event.target.files[0]) {
-      var reader = new FileReader();
-
-      reader.readAsDataURL(event.target.files[0]); // read file as data url
-
-      reader.onload = (event) => { // called once readAsDataURL is completed
-         //this.url = event.target.result;
-      }
-    }
   }
 
 }

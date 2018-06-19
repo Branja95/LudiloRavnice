@@ -1,11 +1,9 @@
 export class BranchOffice {
-    image: string;
     address: string;
     latitude: number;
     longitude: number;
 
-    constructor(image: string, address: string, latitude: number, longitude: number) {
-        this.image = image;
+    constructor(address: string, latitude: number, longitude: number) {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;

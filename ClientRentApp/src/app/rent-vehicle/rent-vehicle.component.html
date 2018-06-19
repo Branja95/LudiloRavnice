@@ -11,7 +11,7 @@
 
             <div class="form-group">
               <label for="contactEmail">Contact Email:</label>
-              <input type="text" class="form-control" id="contactEmail" name="contactEmail" ngModel #latitude="ngModel">
+              <input type="text" class="form-control" id="contactEmail" name="contactEmail" ngModel #contactEmail="ngModel">
             </div>
 
             <div class="form-group">
@@ -19,10 +19,10 @@
               <input type="text" class="form-control" id="description" name="description" ngModel #description="ngModel">
             </div>
 
-            <div class="form-group">
-              <label for="logoImage">LogoImage:</label>
-              <img [src]="url" height="200"> <br/>
-              <input type='file'  id="logoImage" name="logoImage" ngModel #logoImage="ngModel">
+            <div>
+              <label for="file">Logo Image:</label>
+              <img [src]="url"  width="300">
+              <input type="file" id="file" (change)="handleFileInput($event)">
             </div>
             <button type="submit" class="btn btn-default">Submit</button>
             

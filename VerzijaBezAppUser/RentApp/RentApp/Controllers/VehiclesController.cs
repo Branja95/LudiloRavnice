@@ -1,19 +1,19 @@
-﻿using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
+﻿using System.Data.Entity.Infrastructure;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using RentApp.Models.Entities;
-using RentApp.Persistance;
 using RentApp.Persistance.UnitOfWork;
 using System.Collections.Generic;
 using static RentApp.Models.VehicleBindingModel;
+using System.Web;
+using System;
 
 namespace RentApp.Controllers
 {
     public class VehiclesController : ApiController
     {
+        private string validationErrorMessage;
         private readonly IUnitOfWork unitOfWork;
 
         public VehiclesController(IUnitOfWork unitOfWork)
@@ -78,27 +78,45 @@ namespace RentApp.Controllers
         [ResponseType(typeof(Vehicle))]
         public IHttpActionResult PostVehicle(CreateVehicleBindingModel model)
         {
+            HttpRequest httpRequest = HttpContext.Current.Request;
+
+            string imageUris = string.Empty;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+            if (httpRequest.Files == null)
+            {
+                return BadRequest("Images cannot be left blank\n");
+            }
+
+            foreach (string file in httpRequest.Files)
+            {
+                HttpPostedFile uploadedImage = httpRequest.Files[file];
+
+                if (ValidateImage(uploadedImage))
+                {
+                    imageUris += SaveImageToServer(uploadedImage) + ";_;";
+                }
+            }
+
             Vehicle vehicle = new Vehicle
             {
-                VehicleType = GetVehicleType(model.VehicleType),
+                Description = model.Description,
                 Model = model.Model,
                 Manufactor = model.Manufactor,
-                YearMade = model.YearMade,
-                Description = model.Description,
-                //Images = model.Images,
                 PricePerHour = model.PricePerHour,
-                IsAvailable = IsAvailable(model.Availability)
+                YearMade = model.YearMade,
+                IsAvailable = model.IsAvailable.Equals("IsAvailable") ? true : false,
+                Images = new List<string>()
             };
 
             unitOfWork.Vehicles.Add(vehicle);
             unitOfWork.Complete();
 
-            return Ok();
+            return Ok("Vehicle successfully created");
+
         }
 
         // DELETE: api/Vehicles/5
@@ -122,18 +140,6 @@ namespace RentApp.Controllers
             return unitOfWork.Vehicles.Get(id) != null;
         }
 
-        private bool IsAvailable(string availability)
-        {
-            if(availability.Equals("Available"))
-            {
-                return true;   
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         private VehicleType GetVehicleType(string vehicleType)
         {
             VehicleType vehicle = new VehicleType
@@ -142,6 +148,45 @@ namespace RentApp.Controllers
             };
 
             return vehicle;
+        }
+
+        private bool ValidateImage(HttpPostedFile image)
+        {
+            bool isImageValid = true;
+
+            int maximumImageSize = 1024 * 1024 * 1;
+
+            IList<string> allowedImageExtensions = new List<string> { ".jpg", ".gif", ".png" };
+
+            validationErrorMessage = string.Empty;
+
+            string extension = image.FileName.Substring(image.FileName.LastIndexOf('.'));
+
+            if (image == null)
+            {
+                validationErrorMessage += "Image cannot be left blank!\n";
+                isImageValid = false;
+            }
+            if (!allowedImageExtensions.Contains(extension.ToLower()))
+            {
+                validationErrorMessage += "Image format is not supported!\n";
+                isImageValid = false;
+            }
+            if (image.ContentLength > maximumImageSize)
+            {
+                validationErrorMessage += "Image size is too big!\n";
+                isImageValid = false;
+            }
+
+            return isImageValid;
+        }
+
+        private string SaveImageToServer(HttpPostedFile image)
+        {
+            string fileLocationOnServer = HttpContext.Current.Server.MapPath("~/App_Data/" + Guid.NewGuid() + image.FileName);
+            image.SaveAs(fileLocationOnServer);
+
+            return fileLocationOnServer;
         }
     }
 }

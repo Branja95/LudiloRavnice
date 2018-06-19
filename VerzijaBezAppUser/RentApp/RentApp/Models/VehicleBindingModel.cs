@@ -22,7 +22,7 @@ namespace RentApp.Models
             [DataType(DataType.Text)]
             [Display(Name = "Manufactor")]
             public string Manufactor { get; set; }
-            
+
             [Required]
             [DataType(DataType.Date)]
             [Display(Name = "YearMade")]
@@ -34,17 +34,14 @@ namespace RentApp.Models
             public string Description { get; set; }
 
             [Required]
+            [RegularExpression(@"[0-9]+(\.[0-9] [0-9]?)?")]
             [Display(Name = "PricePerHour")]
             public double PricePerHour { get; set; }
 
             [Required]
-            [Display(Name = "Images")]
-            public string Images { get; set; }
-
-            [Required]
             [DataType(DataType.Text)]
-            [Display(Name = "Availability")]
-            public string Availability { get; set; }
+            [Display(Name = "IsAvailable")]
+            public string IsAvailable { get; set; }
         }
     }
 }

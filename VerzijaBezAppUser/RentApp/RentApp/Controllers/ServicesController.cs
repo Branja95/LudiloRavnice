@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using RentApp.Models.Entities;
-using RentApp.Persistance;
 using RentApp.Persistance.UnitOfWork;
 using static RentApp.Models.ServiceBindingModel;
 
@@ -17,6 +13,7 @@ namespace RentApp.Controllers
 {
     public class ServicesController : ApiController
     {
+        private string validationErrorMessage;
         private readonly IUnitOfWork unitOfWork;
 
         public ServicesController(IUnitOfWork unitOfWork)
@@ -81,9 +78,16 @@ namespace RentApp.Controllers
         [ResponseType(typeof(Service))]
         public IHttpActionResult PostService(CreateRentVehicleServiceBindingModel model)
         {
+            HttpRequest httpRequest = HttpContext.Current.Request;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (!ValidateImage(httpRequest.Files[0]))
+            {
+                return BadRequest(validationErrorMessage);
             }
 
             Service service = new Service()
@@ -91,7 +95,7 @@ namespace RentApp.Controllers
                 Name = model.Name,
                 EmailAddress = model.ContactEmail,
                 Description = model.Description,
-                LogoImage = model.LogoImage
+                LogoImage = SaveImageToServer(httpRequest.Files[0])
             };
 
             unitOfWork.Services.Add(service);
@@ -119,6 +123,45 @@ namespace RentApp.Controllers
         private bool ServiceExists(int id)
         {
             return unitOfWork.Services.Get(id) != null;
+        }
+
+        private bool ValidateImage(HttpPostedFile image)
+        {
+            bool isImageValid = true;
+
+            int maximumImageSize = 1024 * 1024 * 1;
+
+            IList<string> allowedImageExtensions = new List<string> { ".jpg", ".gif", ".png" };
+
+            validationErrorMessage = string.Empty;
+
+            string extension = image.FileName.Substring(image.FileName.LastIndexOf('.'));
+
+            if (image == null)
+            {
+                validationErrorMessage += "Image cannot be left blank!\n";
+                isImageValid = false;
+            }
+            if (!allowedImageExtensions.Contains(extension.ToLower()))
+            {
+                validationErrorMessage += "Image format is not supported!\n";
+                isImageValid = false;
+            }
+            if (image.ContentLength > maximumImageSize)
+            {
+                validationErrorMessage += "Image size is too big!\n";
+                isImageValid = false;
+            }
+
+            return isImageValid;
+        }
+
+        private string SaveImageToServer(HttpPostedFile image)
+        {
+            string fileLocationOnServer = HttpContext.Current.Server.MapPath("~/App_Data/" + Guid.NewGuid() + image.FileName);
+            image.SaveAs(fileLocationOnServer);
+
+            return fileLocationOnServer;
         }
     }
 }

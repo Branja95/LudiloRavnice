@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MultipartDataMediaFormatter;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -23,6 +24,9 @@ namespace RentApp
             .ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             GlobalConfiguration.Configuration.Formatters
             .Remove(GlobalConfiguration.Configuration.Formatters.XmlFormatter);
+
+
+            GlobalConfiguration.Configuration.Formatters.Add(new FormMultipartEncodedMediaTypeFormatter());
         }
     }
 }

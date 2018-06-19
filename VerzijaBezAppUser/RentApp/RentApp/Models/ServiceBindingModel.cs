@@ -21,10 +21,6 @@ namespace RentApp.Models
             [Display(Name = "Description")]
             public string Description { get; set; }
 
-            [Required]
-            [DataType(DataType.ImageUrl)]
-            [Display(Name = "LogoImage")]
-            public string LogoImage { get; set; }
         }
     }
 }

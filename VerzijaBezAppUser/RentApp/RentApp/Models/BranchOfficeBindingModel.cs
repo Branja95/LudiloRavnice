@@ -6,11 +6,6 @@ namespace RentApp.Models
     {
         public class CreateBranchOfficeBindingModel
         {
-
-            [DataType(DataType.ImageUrl)]
-            [Display(Name = "Image")]
-            public string Image { get; set; }
-
             [Required]
             [DataType(DataType.Text)]
             [Display(Name = "Address")]
@@ -25,6 +20,7 @@ namespace RentApp.Models
             [RegularExpression(@"^[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$")]
             [Display(Name = "Longitude")]
             public double Longitude { get; set; }
+
         }
     }
 }
