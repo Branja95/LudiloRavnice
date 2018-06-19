@@ -64,9 +64,10 @@ namespace RentApp
             container.RegisterType<ISecureDataFormat<AuthenticationTicket>, CustomJwtFormat>(new InjectionConstructor("http://localhost:51680"));
             container.RegisterType<IUserStore<RAIdentityUser>, UserStore<RAIdentityUser>>(
             new InjectionConstructor(typeof(DbContext)));
-            container.RegisterType<NotificationHub>();
 
             container.RegisterType<IUnitOfWork, UnitOfWork>();
+
+            container.RegisterType<NotificationHub>();
         }
     }
 }

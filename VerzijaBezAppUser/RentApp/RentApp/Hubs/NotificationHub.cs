@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace RentApp.Hubs
 {
+
     [HubName("Notifications")]
     //[Authorize(Roles = "Admin")]
     public class NotificationHub : Hub
@@ -35,27 +36,31 @@ namespace RentApp.Hubs
             hubContext.Clients.Group("Admins").newRentVehicleServiceToApprove(count);
         }
 
-        //public override Task OnConnected()
-        //{
+        public override Task OnConnected()
+        {
 
-        //    if (Context.User.IsInRole("Admin"))
-        //    {
-        //        Groups.Add(Context.ConnectionId, "Admins");
-        //    }
+            Groups.Add(Context.ConnectionId, "Admins");
 
-        //    return base.OnConnected();
-        //}
+            //if (Context.User.IsInRole("Admin"))
+            //{
+            //    Groups.Add(Context.ConnectionId, "Admins");
+            //}
 
-        //public override Task OnDisconnected(bool stopCalled)
-        //{
+            return base.OnConnected();
+        }
 
-        //    if (Context.User.IsInRole("Admin"))
-        //    {
-        //        Groups.Remove(Context.ConnectionId, "Admins");
-        //    }
+        public override Task OnDisconnected(bool stopCalled)
+        {
 
-        //    return base.OnDisconnected(stopCalled);
-        //}
+            Groups.Add(Context.ConnectionId, "Admins");
+
+            //if (Context.User.IsInRole("Admin"))
+            //{
+            //    Groups.Remove(Context.ConnectionId, "Admins");
+            //}
+
+            return base.OnDisconnected(stopCalled);
+        }
 
         /// <summary>
         /// Test sat
