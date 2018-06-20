@@ -30,3 +30,14 @@
         </div>
       </div>
 </div>
+
+<div class="container">
+  <div class="row">
+      <div *ngFor='let rentVehicle of services'>
+          <br/><br/><br/>
+          <img src='http://localhost:51680/api/Services?imageId={{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
+          <label>Email Address:</label> {{rentVehicle.EmailAddress}}<br/>
+          <label>Description:</label> {{rentVehicle.Description}}<br/>
+      </div>
+  </div>
+</div>

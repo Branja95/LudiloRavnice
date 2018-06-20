@@ -16,9 +16,12 @@ export class RentVehicleComponent implements OnInit {
   url: string = '';
   file: File = null;
 
+  services = Array<RentVehicle>()
+
   constructor(private rentVehicleService: RentVehicleService) { }
 
   ngOnInit() {
+    this.getServices();
   }
 
   handleFileInput(event) {
@@ -49,5 +52,15 @@ export class RentVehicleComponent implements OnInit {
     form.reset();
     this.url = '';
     this.file = null;
+  }
+
+  getServices() { 
+    this.rentVehicleService.getMethodServices()
+    .subscribe(
+      res => { 
+          this.services = res as Array<RentVehicle>;
+      }, error => {
+        alert(error);
+      });
   }
 }

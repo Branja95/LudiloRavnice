@@ -1,11 +1,13 @@
 export class RentVehicle {
     name: string;
-    contactEmail: string;
+    logoImage: string;
+    emailAddress: string;
     description: string;
 
-    constructor(name: string, contactEmail: string, description: string) {
+    constructor(name: string, logoImage: string, emailAddress: string, description: string) {
         this.name = name;
-        this.contactEmail = contactEmail;
+        this.logoImage = logoImage;
+        this.emailAddress = emailAddress;
         this.description = description;
     }
 }

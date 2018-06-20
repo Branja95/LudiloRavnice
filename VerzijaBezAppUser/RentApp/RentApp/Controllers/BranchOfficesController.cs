@@ -8,6 +8,12 @@ using System.Collections.Generic;
 using static RentApp.Models.BranchOfficeBindingModel;
 using System.Web;
 using System;
+using System.Net.Http;
+using System.IO;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Net.Http.Headers;
+using System.Web.Hosting;
 
 namespace RentApp.Controllers
 {
@@ -38,6 +44,33 @@ namespace RentApp.Controllers
             }
 
             return Ok(branchOffice);
+        }
+
+        // GET: api/BranchOffices
+        [HttpGet]
+        public HttpResponseMessage LoadImage(string imageId)
+        {
+            HttpResponseMessage result;
+
+            String filePath = HostingEnvironment.MapPath("~/App_Data/" + imageId);
+
+            if (File.Exists(filePath))
+            {
+                result = new HttpResponseMessage(HttpStatusCode.OK);
+                FileStream fileStream = new FileStream(filePath, FileMode.Open);
+                Image image = Image.FromStream(fileStream);
+                MemoryStream memoryStream = new MemoryStream();
+                image.Save(memoryStream, ImageFormat.Jpeg);
+                result.Content = new ByteArrayContent(memoryStream.ToArray());
+                result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+                fileStream.Close();
+            }
+            else
+            {
+                result = new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
+            
+            return result;
         }
 
         // PUT: api/BranchOffices/5
@@ -158,10 +191,14 @@ namespace RentApp.Controllers
 
         private string SaveImageToServer(HttpPostedFile image)
         {
-            string fileLocationOnServer = HttpContext.Current.Server.MapPath("~/App_Data/" + Guid.NewGuid() + image.FileName);
+            string imageId = Guid.NewGuid() + image.FileName;
+            string fileLocationOnServer = HttpContext.Current.Server.MapPath("~/App_Data/" + imageId);
             image.SaveAs(fileLocationOnServer);
 
-            return fileLocationOnServer;
+            return imageId;
         }
+
+        
+
     }
 }

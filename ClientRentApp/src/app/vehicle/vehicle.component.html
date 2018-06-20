@@ -58,3 +58,19 @@
     </div>
   </div>
 </div>
+
+<div class="container">
+  <div class="row">
+      <div *ngFor='let vehicle of vehicles'>
+        <br/><br/><br/>
+        <!-- <div *ngFor='let image of vehicles.Images'> -->
+        <!-- <img src='http://localhost:51680/api/Vehicles?imageId={{image}}' height="200" weight="200"/><br/><br/> -->
+        <!--  <label>Vehicle Type:</label> {{vehicle.VehicleType.TypeName}}<br/> -->
+          <label>Manufactor:</label> {{vehicle.Manufactor}}<br/>
+          <label>Model:</label> {{vehicle.Model}}<br/>
+          <label>YearMade:</label> {{vehicle.YearMade}}<br/>
+          <label>PricePerHour:</label> {{vehicle.PricePerHour}}<br/>
+          <label>Description:</label> {{vehicle.Description}}<br/>
+      </div>
+  </div>
+</div>

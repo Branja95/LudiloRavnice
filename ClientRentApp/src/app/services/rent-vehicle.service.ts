@@ -31,4 +31,8 @@ export class RentVehicleService {
     return result;
   }
 
+  getMethodServices(): Observable<any> {
+    return this.httpClient.get("http://localhost:51680/api/Services")
+  }
+
 }

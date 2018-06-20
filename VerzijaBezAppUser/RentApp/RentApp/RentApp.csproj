@@ -351,6 +351,10 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\RentAppDB11.mdf" />
+    <Content Include="App_Data\RentAppDB11_log.ldf">
+      <DependentUpon>RentAppDB11.mdf</DependentUpon>
+    </Content>
     <Content Include="App_Data\RentAppDB4.mdf" />
     <Content Include="App_Data\RentAppDB4_log.ldf">
       <DependentUpon>RentAppDB4.mdf</DependentUpon>

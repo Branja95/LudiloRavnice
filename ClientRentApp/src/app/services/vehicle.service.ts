@@ -42,4 +42,8 @@ export class VehicleService {
 
   }
 
+  getMethodVehicles(): Observable<any> {
+    return this.httpClient.get("http://localhost:51680/api/Vehicles")
+  }
+
 }

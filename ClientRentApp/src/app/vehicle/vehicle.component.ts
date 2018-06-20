@@ -17,12 +17,15 @@ export class VehicleComponent implements OnInit {
 
   urls: Array<string> = new Array<string>();
   uploadedFiles: FileList = null;
-  vehicleTypes = Array<string>()
+  
+  vehicleTypes = Array<VehicleType>()
+  vehicles = Array<Vehicle>()
 
   constructor(private vehicleService: VehicleService) { }
 
   ngOnInit() {
     this.getVehicleTypes()
+    this.getVehicles()
   }
 
   handleFileInput(files: FileList) {
@@ -52,13 +55,22 @@ export class VehicleComponent implements OnInit {
       });;;
 
     form.resetForm();
-    this.vehicleTypes = new Array<string>();
     this.urls = new Array<string>();
     this.getVehicleTypes();
   }
-
+  
   getVehicleTypes() { 
-    this.vehicleService.getMethodVehicleTypes().subscribe(res => { this.vehicleTypes = res as string[] });  
+    this.vehicleService.getMethodVehicleTypes().subscribe(res => { this.vehicleTypes = res as Array<VehicleType> });  
+  }
+
+  getVehicles() { 
+    this.vehicleService.getMethodVehicles()
+    .subscribe(
+      res => { 
+          this.vehicles = res as Array<Vehicle>;
+      }, error => {
+        alert(error);
+      }); 
   }
 
 }

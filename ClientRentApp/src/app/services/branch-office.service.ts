@@ -34,8 +34,13 @@ export class BranchOfficeService {
     return result;
    }
 
-   getMethodBranchOffices(): Observable<BranchOffice[]> {
-    return this.httpClient.get<BranchOffice[]>("http://localhost:51680/api/BranchOffices")
+   getMethodBranchOffices(): Observable<any> {
+    return this.httpClient.get("http://localhost:51680/api/BranchOffices")
   }
+
+  deleteBranchOffice(id): Observable<any> {
+    return this.httpClient.delete("http://localhost:51680/api/BranchOffices/" + id);
+  }
+
 }
 
