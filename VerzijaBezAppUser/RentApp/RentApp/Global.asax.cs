@@ -25,7 +25,6 @@ namespace RentApp
             GlobalConfiguration.Configuration.Formatters
             .Remove(GlobalConfiguration.Configuration.Formatters.XmlFormatter);
 
-
             GlobalConfiguration.Configuration.Formatters.Add(new FormMultipartEncodedMediaTypeFormatter());
         }
     }

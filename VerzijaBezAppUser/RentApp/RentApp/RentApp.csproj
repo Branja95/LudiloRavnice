@@ -310,34 +310,48 @@
     <Compile Include="Migrations\201806110635555_RADataModel_v2.0.Designer.cs">
       <DependentUpon>201806110635555_RADataModel_v2.0.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806201843355_RADataModel_v2.1.cs" />
+    <Compile Include="Migrations\201806201843355_RADataModel_v2.1.Designer.cs">
+      <DependentUpon>201806201843355_RADataModel_v2.1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806202003495_RADataModel_v2.2.cs" />
+    <Compile Include="Migrations\201806202003495_RADataModel_v2.2.Designer.cs">
+      <DependentUpon>201806202003495_RADataModel_v2.2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\BranchOfficeBindingModel.cs" />
+    <Compile Include="Models\Entities\AccountForApprove.cs" />
     <Compile Include="Models\Entities\BranchOffice.cs" />
     <Compile Include="Models\Entities\RAIdentityUser.cs" />
     <Compile Include="Models\Entities\Comment.cs" />
     <Compile Include="Models\Entities\Rating.cs" />
     <Compile Include="Models\Entities\Reservation.cs" />
     <Compile Include="Models\Entities\Service.cs" />
+    <Compile Include="Models\Entities\ServiceForApprove.cs" />
     <Compile Include="Models\Entities\Vehicle.cs" />
     <Compile Include="Models\Entities\VehicleType.cs" />
     <Compile Include="Models\ServiceBindingModel.cs" />
     <Compile Include="Models\VehicleBindingModel.cs" />
     <Compile Include="Persistance\RADBContext.cs" />
+    <Compile Include="Persistance\Repository\AccountForApproveRepository.cs" />
     <Compile Include="Persistance\Repository\BranchOfficeRepository.cs" />
     <Compile Include="Persistance\Repository\CommentRepository.cs" />
+    <Compile Include="Persistance\Repository\IAccountForApproveRepository.cs" />
     <Compile Include="Persistance\Repository\IBranchOfficeRepository.cs" />
     <Compile Include="Persistance\Repository\ICommentRepository.cs" />
     <Compile Include="Persistance\Repository\IRatingRepository.cs" />
     <Compile Include="Persistance\Repository\IRepository.cs" />
     <Compile Include="Persistance\Repository\IReservationRepository.cs" />
+    <Compile Include="Persistance\Repository\IServiceForApproveRepository.cs" />
     <Compile Include="Persistance\Repository\IServiceRepository.cs" />
     <Compile Include="Persistance\Repository\IVehicleRepository.cs" />
     <Compile Include="Persistance\Repository\IVehicleTypeRepository.cs" />
     <Compile Include="Persistance\Repository\RatingRepository.cs" />
     <Compile Include="Persistance\Repository\Repository.cs" />
     <Compile Include="Persistance\Repository\ReservationRepository.cs" />
+    <Compile Include="Persistance\Repository\ServiceForApproveRepository.cs" />
     <Compile Include="Persistance\Repository\ServiceRepository.cs" />
     <Compile Include="Persistance\Repository\VehicleRepository.cs" />
     <Compile Include="Persistance\Repository\VehicleTypeRepository.cs" />
@@ -453,6 +467,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806110635555_RADataModel_v2.0.resx">
       <DependentUpon>201806110635555_RADataModel_v2.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806201843355_RADataModel_v2.1.resx">
+      <DependentUpon>201806201843355_RADataModel_v2.1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806202003495_RADataModel_v2.2.resx">
+      <DependentUpon>201806202003495_RADataModel_v2.2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

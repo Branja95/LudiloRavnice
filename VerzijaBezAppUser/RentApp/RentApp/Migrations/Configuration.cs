@@ -63,14 +63,14 @@ namespace RentApp.Migrations
 
             if (!context.Users.Any(u => u.UserName == "branici@gmail.com"))
             {
-                var user = new RAIdentityUser() { UserName = "branici@gmail.com", Email = "branici@gmail.com", EmailConfirmed = true, PasswordHash = RAIdentityUser.HashPassword("Branja95"), FirstName = "Branko", LastName = "Jelic", Image = "", DateOfBirth = DateTime.Parse("07.09.1995") };
+                var user = new RAIdentityUser() { UserName = "branici@gmail.com", Email = "branici@gmail.com", EmailConfirmed = true, PasswordHash = RAIdentityUser.HashPassword("Branja95"), FirstName = "Branko", LastName = "Jelic", DateOfBirth = DateTime.Parse("07.09.1995") };
                 userManager.Create(user);
                 userManager.AddToRole(user.Id, "Admin");
             }
 
             if (!context.Users.Any(u => u.UserName == "david.djekic@gmail.com"))
             {
-                var user = new RAIdentityUser() { UserName = "david.djekic@gmail.com", Email = "david.djekic@gmail.com", EmailConfirmed = true, PasswordHash = RAIdentityUser.HashPassword("David95"), FirstName = "David", LastName = "Djekic", Image = "", DateOfBirth = DateTime.Parse("02.06.1995") };
+                var user = new RAIdentityUser() { UserName = "david.djekic@gmail.com", Email = "david.djekic@gmail.com", EmailConfirmed = true, PasswordHash = RAIdentityUser.HashPassword("David95"), FirstName = "David", LastName = "Djekic", DateOfBirth = DateTime.Parse("02.06.1995") };
                 userManager.Create(user);
                 userManager.AddToRole(user.Id, "Admin");
 
@@ -78,23 +78,23 @@ namespace RentApp.Migrations
 
             context.SaveChanges();
 
-            Service servicePS = new Service() { Id = 1, Creator = context.Users.SingleOrDefault(u => u.UserName == "david.djekic@gmail.com").Id, Name = "Posavinski Rent a Car", LogoImage = "", EmailAddress = "posavina.rent@gmail.com", Description = "Prvi Posavinski Renta a car!", BranchOfficces = new System.Collections.Generic.List<BranchOffice>(), Vehicles = new System.Collections.Generic.List<Vehicle>(), Comments = new System.Collections.Generic.List<Comment>(), Ratings = new System.Collections.Generic.List<Rating>(), IsApproved = true };
-            Service serviceSR = new Service() { Id = 2, Creator = context.Users.SingleOrDefault(u => u.UserName == "branici@gmail.com").Id, Name = "Sremski Rent a Car", LogoImage = "", EmailAddress = "srem.rent@gmail.com", Description = "Prvi Sremski Renta a car!", BranchOfficces = new System.Collections.Generic.List<BranchOffice>(), Vehicles = new System.Collections.Generic.List<Vehicle>(), Comments = new System.Collections.Generic.List<Comment>(), Ratings = new System.Collections.Generic.List<Rating>(), IsApproved = true };
+            Service servicePS = new Service() { Creator = context.Users.SingleOrDefault(u => u.UserName == "david.djekic@gmail.com").Id, Name = "Posavinski Rent a Car", LogoImage = "", EmailAddress = "posavina.rent@gmail.com", Description = "Prvi Posavinski Renta a car!", BranchOfficces = new System.Collections.Generic.List<BranchOffice>(), Vehicles = new System.Collections.Generic.List<Vehicle>(), Comments = new System.Collections.Generic.List<Comment>(), Ratings = new System.Collections.Generic.List<Rating>(), IsApproved = true };
+            Service serviceSR = new Service() { Creator = context.Users.SingleOrDefault(u => u.UserName == "branici@gmail.com").Id, Name = "Sremski Rent a Car", LogoImage = "", EmailAddress = "srem.rent@gmail.com", Description = "Prvi Sremski Renta a car!", BranchOfficces = new System.Collections.Generic.List<BranchOffice>(), Vehicles = new System.Collections.Generic.List<Vehicle>(), Comments = new System.Collections.Generic.List<Comment>(), Ratings = new System.Collections.Generic.List<Rating>(), IsApproved = true };
 
-            BranchOffice branchOfficeGR = new BranchOffice() { Id = 1, Address = "Partizanska 2", Image = "", Latitude = 0, Longitude = 0 };
-            BranchOffice branchOfficeSB = new BranchOffice() { Id = 2, Address = "Heroja Davida 3", Image = "", Latitude = 0, Longitude = 0 };
+            BranchOffice branchOfficeGR = new BranchOffice() { Address = "Partizanska 2", Image = "", Latitude = 0, Longitude = 0 };
+            BranchOffice branchOfficeSB = new BranchOffice() { Address = "Heroja Davida 3", Image = "", Latitude = 0, Longitude = 0 };
 
-            VehicleType vehicleTypeL = new VehicleType() { Id = 1, TypeName = "Limuzina" };
-            VehicleType vehicleTypeH = new VehicleType() { Id = 2, TypeName = "Hecbek" };
+            VehicleType vehicleTypeL = new VehicleType() { TypeName = "Limuzina" };
+            VehicleType vehicleTypeH = new VehicleType() { TypeName = "Hecbek" };
 
-            Vehicle vehicleG = new Vehicle() { Id = 1, Model = "Golf 2", Manufactor = "WV", VehicleType = vehicleTypeL, YearMade = DateTime.Parse("01.02.1990"), Description = "Vrhunsko auto!", PricePerHour = 1.2, Images = new System.Collections.Generic.List<string>(), IsAvailable = true };
-            Vehicle vehicleZ = new Vehicle() { Id = 2, Model = "750", Manufactor = "Zastava", VehicleType = vehicleTypeH, YearMade = DateTime.Parse("01.02.1975"), Description = "Nacionalna klasa!", PricePerHour = 2.1, Images = new System.Collections.Generic.List<string>(), IsAvailable = true };
+            Vehicle vehicleG = new Vehicle() { Model = "Golf 2", Manufactor = "WV", VehicleType = vehicleTypeL, YearMade = DateTime.Parse("01.02.1990"), Description = "Vrhunsko auto!", PricePerHour = 1.2, Images = "", IsAvailable = true };
+            Vehicle vehicleZ = new Vehicle() { Model = "750", Manufactor = "Zastava", VehicleType = vehicleTypeH, YearMade = DateTime.Parse("01.02.1975"), Description = "Nacionalna klasa!", PricePerHour = 2.1, Images = "", IsAvailable = true };
 
-            Comment comment1 = new Comment() { Id = 1, UserId = context.Users.SingleOrDefault(u => u.UserName == "branici@gmail.com").Id, DateTime = DateTime.Now, Text = "Poz iz Grabova." };
-            Comment comment2 = new Comment() { Id = 2, UserId = context.Users.SingleOrDefault(u => u.UserName == "david.djekic@gmail.com").Id, DateTime = DateTime.Now, Text = "Poz iz Srpskog Broda." };
+            Comment comment1 = new Comment() { UserId = context.Users.SingleOrDefault(u => u.UserName == "branici@gmail.com").Id, DateTime = DateTime.Now, Text = "Poz iz Grabova." };
+            Comment comment2 = new Comment() { UserId = context.Users.SingleOrDefault(u => u.UserName == "david.djekic@gmail.com").Id, DateTime = DateTime.Now, Text = "Poz iz Srpskog Broda." };
 
-            Rating rating1 = new Rating() { Id = 1, UserId = context.Users.SingleOrDefault(u => u.UserName == "branici@gmail.com").Id, Value = 5 };
-            Rating rating2 = new Rating() { Id = 2, UserId = context.Users.SingleOrDefault(u => u.UserName == "david.djekic@gmail.com").Id, Value = 5 };
+            Rating rating1 = new Rating() { UserId = context.Users.SingleOrDefault(u => u.UserName == "branici@gmail.com").Id, Value = 5 };
+            Rating rating2 = new Rating() { UserId = context.Users.SingleOrDefault(u => u.UserName == "david.djekic@gmail.com").Id, Value = 5 };
 
             servicePS.BranchOfficces.Add(branchOfficeSB);
             servicePS.Vehicles.Add(vehicleG);

@@ -6,10 +6,11 @@ using System.Web;
 
 namespace RentApp.Models.Entities
 {
-    public class VehicleType
+    public class ServiceForApprove
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
-        public string TypeName { get; set; }
+
+        public Service Service { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RentApp.Persistance.Repository
 {
-    public interface ICommentRepository : IRepository<Comment, int>
+    public interface ICommentRepository : IRepository<Comment, long>
     {
         IEnumerable<Comment> GetAll(int pageIndex, int pageSize);
     }

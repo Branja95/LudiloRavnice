@@ -6,10 +6,11 @@ using System.Web;
 
 namespace RentApp.Models.Entities
 {
-    public class VehicleType
+    public class AccountForApprove
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
-        public string TypeName { get; set; }
+
+        public RAIdentityUser User { get; set; }
     }
 }

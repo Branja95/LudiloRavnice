@@ -31,13 +31,13 @@ export class BranchOfficeComponent implements OnInit {
     this.file = event.target.files[0];
     
     if (event.target.files && event.target.files[0]) {
-    var reader = new FileReader();
+      var reader = new FileReader();
 
-    reader.readAsDataURL(event.target.files[0]); 
+      reader.readAsDataURL(event.target.files[0]); 
 
-    reader.onload = (event) => { 
-      this.url = reader.result;
-    }
+      reader.onload = (event) => { 
+        this.url = reader.result;
+      }
     }
 
   }

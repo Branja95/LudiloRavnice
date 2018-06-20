@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace RentApp.Persistance.Repository
 {
-    public class CommentRepository : Repository<Comment, int>, ICommentRepository
+    public class CommentRepository : Repository<Comment, long>, ICommentRepository
     {
         public CommentRepository(DbContext context) : base(context)
         {

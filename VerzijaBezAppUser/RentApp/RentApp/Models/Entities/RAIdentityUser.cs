@@ -14,11 +14,11 @@ namespace RentApp.Models.Entities
 
         public string LastName { get; set; }
 
-        public string Image { get; set; }
+        public string DocumentImage { get; set; }
 
         public DateTime? DateOfBirth { get; set; }
 
-        public bool IsLogged { get; set; }
+        public bool IsApproved { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<RAIdentityUser> manager, string authenticationType)
         {

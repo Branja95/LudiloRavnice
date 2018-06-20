@@ -61,10 +61,6 @@ namespace RentApp.Models
         [Display(Name = "Last name")]
         public string LastName { get; set; }
 
-        [DataType(DataType.ImageUrl)]
-        [Display(Name = "Image")]
-        public string Image { get; set; }
-
         [Required]
         [DataType(DataType.Date)]
         [Display(Name = "Date of birth")]

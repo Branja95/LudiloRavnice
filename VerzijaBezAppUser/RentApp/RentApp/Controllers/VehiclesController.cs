@@ -143,7 +143,6 @@ namespace RentApp.Controllers
                 YearMade = model.YearMade,
                 VehicleType = GetVehicleType(model.VehicleType),
                 IsAvailable = model.IsAvailable.Equals("IsAvailable") ? true : false,
-                Images = new List<string>()
             };
 
             unitOfWork.Vehicles.Add(vehicle);

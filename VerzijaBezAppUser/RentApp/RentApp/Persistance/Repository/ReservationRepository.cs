@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace RentApp.Persistance.Repository
 {
-    public class ReservationRepository : Repository<Reservation, int>, IReservationRepository
+    public class ReservationRepository : Repository<Reservation, long>, IReservationRepository
     {
         public ReservationRepository(DbContext context) : base(context)
         {

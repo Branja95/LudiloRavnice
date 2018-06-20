@@ -26,14 +26,14 @@ namespace RentApp.Hubs
             this.unitOfWork = unitOfWork;
         }
 
-        public static void NewUserAccountToApprove(int count)
+        public static void NewUserAccountToApprove(long count)
         {
-            hubContext.Clients.Group("Admins").newUserAccountToApprove();
+            //hubContext.Clients.Group("Admins").newUserAccountToApprove();
         }
 
-        public static void NewRentVehicleServiceToApprove(int count)
+        public static void NewRentVehicleServiceToApprove(long count)
         {
-            hubContext.Clients.Group("Admins").newRentVehicleServiceToApprove(count);
+            //hubContext.Clients.Group("Admins").newRentVehicleServiceToApprove(count);
         }
 
         public override Task OnConnected()

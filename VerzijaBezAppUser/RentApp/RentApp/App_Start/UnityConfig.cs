@@ -58,6 +58,8 @@ namespace RentApp
             container.RegisterType<IServiceRepository, ServiceRepository>();
             container.RegisterType<IVehicleRepository, VehicleRepository>();
             container.RegisterType<IVehicleTypeRepository, VehicleTypeRepository>();
+            container.RegisterType<IAccountForApproveRepository, AccountForApproveRepository>();
+            container.RegisterType<IServiceForApproveRepository, ServiceForApproveRepository>();
 
             container.RegisterType<DbContext, RADBContext>(new PerRequestLifetimeManager());
             container.RegisterType<ApplicationUserManager>();

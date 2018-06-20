@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace RentApp.Persistance.Repository
 {
-    public class BranchOfficeRepository: Repository<BranchOffice, int>, IBranchOfficeRepository
+    public class BranchOfficeRepository : Repository<BranchOffice, long>, IBranchOfficeRepository
     {
         public BranchOfficeRepository(DbContext context) : base(context)
         {

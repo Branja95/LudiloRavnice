@@ -15,6 +15,10 @@ using RentApp.Models;
 using RentApp.Models.Entities;
 using RentApp.Providers;
 using RentApp.Results;
+using RentApp.Persistance.UnitOfWork;
+using RentApp.Hubs;
+using System.Linq;
+using System.Collections;
 
 namespace RentApp.Controllers
 {
@@ -23,16 +27,21 @@ namespace RentApp.Controllers
     public class AccountController : ApiController
     {
         private const string LocalLoginProvider = "Local";
+        private string validationErrorMessage = "";
+
+        private readonly IUnitOfWork unitOfWork;
 
         public AccountController()
         {
         }
 
         public AccountController(ApplicationUserManager userManager,
-            ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
+            ISecureDataFormat<AuthenticationTicket> accessTokenFormat, 
+            IUnitOfWork unitOfWork)
         {
             UserManager = userManager;
             AccessTokenFormat = accessTokenFormat;
+            this.unitOfWork = unitOfWork;
         }
 
         public ApplicationUserManager UserManager { get; private set; }
@@ -321,7 +330,7 @@ namespace RentApp.Controllers
                 return BadRequest("Username already exists.");
             }
 
-            var user = new RAIdentityUser() { UserName = model.Email, Email = model.Email, EmailConfirmed = true, FirstName = model.FirstName, LastName = model.LastName, Image = "", DateOfBirth = model.DateOfBirth, IsLogged = false };
+            var user = new RAIdentityUser() { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, DocumentImage = "", DateOfBirth = model.DateOfBirth, IsApproved = false };
             user.PasswordHash = RAIdentityUser.HashPassword(model.Password);
 
             IdentityResult addUserResult = await UserManager.CreateAsync(user, model.Password);
@@ -338,7 +347,47 @@ namespace RentApp.Controllers
                 return GetErrorResult(addRoleResult);
             }
 
-            return Ok();
+            return Ok("Account successfully created.");
+        }
+
+        [HttpPost]
+        [Route("FinishAccount")]
+        public async Task<IHttpActionResult> FinishAccount()
+        {
+            RAIdentityUser user = UserManager.FindById(User.Identity.GetUserId());
+            
+            if(user.IsApproved)
+            {
+                return BadRequest("User already approve account.");
+            }
+
+            if (unitOfWork.AccountsForApprove.Find(u => u.User.Id == user.Id).Count() > 0)
+            {
+                return BadRequest("User already send request for approve account.");
+            }
+
+            HttpRequest httpRequest = HttpContext.Current.Request;
+
+            if (!ValidateImage(httpRequest.Files[0]))
+            {
+                return BadRequest(validationErrorMessage);
+            }
+
+            user.DocumentImage = SaveImageToServer(httpRequest.Files[0]);
+
+            IdentityResult addUserDocumentImageResult = await UserManager.UpdateAsync(user);
+
+            if (!addUserDocumentImageResult.Succeeded)
+            {
+                return GetErrorResult(addUserDocumentImageResult);
+            }
+
+            unitOfWork.AccountsForApprove.Add(new AccountForApprove() { User = user });
+            unitOfWork.Complete();
+
+            NotificationHub.NewUserAccountToApprove(unitOfWork.AccountsForApprove.Count());
+
+            return Ok("Request for aprrove account successfully created");
         }
 
         // POST api/Account/RegisterExternal
@@ -383,6 +432,46 @@ namespace RentApp.Controllers
             }
 
             base.Dispose(disposing);
+        }
+
+        private bool ValidateImage(HttpPostedFile image)
+        {
+            bool isImageValid = true;
+
+            int maximumImageSize = 1024 * 1024 * 1;
+
+            IList<string> allowedImageExtensions = new List<string> { ".jpg", ".gif", ".png" };
+
+            validationErrorMessage = string.Empty;
+
+            string extension = image.FileName.Substring(image.FileName.LastIndexOf('.'));
+
+            if (image == null)
+            {
+                validationErrorMessage += "Image cannot be left blank!\n";
+                isImageValid = false;
+            }
+            if (!allowedImageExtensions.Contains(extension.ToLower()))
+            {
+                validationErrorMessage += "Image format is not supported!\n";
+                isImageValid = false;
+            }
+            if (image.ContentLength > maximumImageSize)
+            {
+                validationErrorMessage += "Image size is too big!\n";
+                isImageValid = false;
+            }
+
+            return isImageValid;
+        }
+
+        private string SaveImageToServer(HttpPostedFile image)
+        {
+            string imageId = Guid.NewGuid() + image.FileName;
+            string fileLocationOnServer = HttpContext.Current.Server.MapPath("~/App_Data/" + imageId);
+            image.SaveAs(fileLocationOnServer);
+
+            return imageId;
         }
 
         #region Helpers

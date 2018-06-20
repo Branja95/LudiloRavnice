@@ -22,6 +22,10 @@ namespace RentApp.Persistance.UnitOfWork
         public IVehicleRepository Vehicles { get; set; }
         [Dependency]
         public IVehicleTypeRepository VehicleTypes { get; set; }
+        [Dependency]
+        public IAccountForApproveRepository AccountsForApprove { get; set; }
+        [Dependency]
+        public IServiceForApproveRepository ServicesForApprove { get; set; }
 
         public UnitOfWork(DbContext context)
         {

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace RentApp.Persistance.Repository
 {
-    public class VehicleTypeRepository : Repository<VehicleType, int>, IVehicleTypeRepository
+    public class VehicleTypeRepository : Repository<VehicleType, long>, IVehicleTypeRepository
     {
         public VehicleTypeRepository(DbContext context) : base(context)
         {
