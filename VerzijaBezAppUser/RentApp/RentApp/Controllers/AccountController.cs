@@ -19,6 +19,7 @@ using RentApp.Persistance.UnitOfWork;
 using RentApp.Hubs;
 using System.Linq;
 using System.Collections;
+using RentApp.Helpers;
 
 namespace RentApp.Controllers
 {
@@ -350,6 +351,7 @@ namespace RentApp.Controllers
             return Ok("Account successfully created.");
         }
 
+        // POST api/Account/FinishAccount
         [HttpPost]
         [Route("FinishAccount")]
         public async Task<IHttpActionResult> FinishAccount()
@@ -368,12 +370,12 @@ namespace RentApp.Controllers
 
             HttpRequest httpRequest = HttpContext.Current.Request;
 
-            if (!ValidateImage(httpRequest.Files[0]))
+            if (!ImageHelper.ValidateImage(httpRequest.Files[0], out validationErrorMessage))
             {
                 return BadRequest(validationErrorMessage);
             }
 
-            user.DocumentImage = SaveImageToServer(httpRequest.Files[0]);
+            user.DocumentImage = ImageHelper.SaveImageToServer(httpRequest.Files[0]);
 
             IdentityResult addUserDocumentImageResult = await UserManager.UpdateAsync(user);
 
@@ -432,46 +434,6 @@ namespace RentApp.Controllers
             }
 
             base.Dispose(disposing);
-        }
-
-        private bool ValidateImage(HttpPostedFile image)
-        {
-            bool isImageValid = true;
-
-            int maximumImageSize = 1024 * 1024 * 1;
-
-            IList<string> allowedImageExtensions = new List<string> { ".jpg", ".gif", ".png" };
-
-            validationErrorMessage = string.Empty;
-
-            string extension = image.FileName.Substring(image.FileName.LastIndexOf('.'));
-
-            if (image == null)
-            {
-                validationErrorMessage += "Image cannot be left blank!\n";
-                isImageValid = false;
-            }
-            if (!allowedImageExtensions.Contains(extension.ToLower()))
-            {
-                validationErrorMessage += "Image format is not supported!\n";
-                isImageValid = false;
-            }
-            if (image.ContentLength > maximumImageSize)
-            {
-                validationErrorMessage += "Image size is too big!\n";
-                isImageValid = false;
-            }
-
-            return isImageValid;
-        }
-
-        private string SaveImageToServer(HttpPostedFile image)
-        {
-            string imageId = Guid.NewGuid() + image.FileName;
-            string fileLocationOnServer = HttpContext.Current.Server.MapPath("~/App_Data/" + imageId);
-            image.SaveAs(fileLocationOnServer);
-
-            return imageId;
         }
 
         #region Helpers

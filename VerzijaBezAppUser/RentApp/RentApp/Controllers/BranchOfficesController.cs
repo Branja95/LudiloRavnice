@@ -14,6 +14,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Net.Http.Headers;
 using System.Web.Hosting;
+using RentApp.Helpers;
 
 namespace RentApp.Controllers
 {
@@ -50,27 +51,7 @@ namespace RentApp.Controllers
         [HttpGet]
         public HttpResponseMessage LoadImage(string imageId)
         {
-            HttpResponseMessage result;
-
-            String filePath = HostingEnvironment.MapPath("~/App_Data/" + imageId);
-
-            if (File.Exists(filePath))
-            {
-                result = new HttpResponseMessage(HttpStatusCode.OK);
-                FileStream fileStream = new FileStream(filePath, FileMode.Open);
-                Image image = Image.FromStream(fileStream);
-                MemoryStream memoryStream = new MemoryStream();
-                image.Save(memoryStream, ImageFormat.Jpeg);
-                result.Content = new ByteArrayContent(memoryStream.ToArray());
-                result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-                fileStream.Close();
-            }
-            else
-            {
-                result = new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
-            
-            return result;
+            return ImageHelper.LoadImage(imageId);
         }
 
         // PUT: api/BranchOffices/5
@@ -118,7 +99,7 @@ namespace RentApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!ValidateImage(httpRequest.Files[0]))
+            if (!ImageHelper.ValidateImage(httpRequest.Files[0], out validationErrorMessage))
             {
                 return BadRequest(validationErrorMessage);
             }
@@ -128,7 +109,7 @@ namespace RentApp.Controllers
                 Address = model.Address,
                 Latitude = model.Latitude,
                 Longitude = model.Longitude,
-                Image = SaveImageToServer(httpRequest.Files[0])
+                Image = ImageHelper.SaveImageToServer(httpRequest.Files[0])
             };
 
             unitOfWork.BranchOffices.Add(branchOffice);
@@ -157,48 +138,6 @@ namespace RentApp.Controllers
         {
             return unitOfWork.BranchOffices.Get(id) != null;
         }
-
-        private bool ValidateImage(HttpPostedFile image)
-        {
-            bool isImageValid = true;
-
-            int maximumImageSize = 1024 * 1024 * 1;
-
-            IList<string> allowedImageExtensions = new List<string> { ".jpg", ".gif", ".png" };
-
-            validationErrorMessage = string.Empty;
-
-            string extension = image.FileName.Substring(image.FileName.LastIndexOf('.'));
-
-            if (image == null)
-            {
-                validationErrorMessage += "Image cannot be left blank!\n";
-                isImageValid = false;
-            }
-            if (!allowedImageExtensions.Contains(extension.ToLower()))
-            {
-                validationErrorMessage += "Image format is not supported!\n";
-                isImageValid = false;
-            }
-            if (image.ContentLength > maximumImageSize)
-            {
-                validationErrorMessage += "Image size is too big!\n";
-                isImageValid = false;
-            }
-
-            return isImageValid;
-        }
-
-        private string SaveImageToServer(HttpPostedFile image)
-        {
-            string imageId = Guid.NewGuid() + image.FileName;
-            string fileLocationOnServer = HttpContext.Current.Server.MapPath("~/App_Data/" + imageId);
-            image.SaveAs(fileLocationOnServer);
-
-            return imageId;
-        }
-
-        
 
     }
 }
