@@ -7,6 +7,7 @@ using RentApp.Persistance;
 using RentApp.Persistance.Repository;
 using RentApp.Persistance.UnitOfWork;
 using RentApp.Providers;
+using RentApp.Services;
 using System;
 using System.Data.Entity;
 using Unity;
@@ -70,6 +71,7 @@ namespace RentApp
             container.RegisterType<IUnitOfWork, UnitOfWork>();
 
             container.RegisterType<NotificationHub>();
+            container.RegisterType<ISMTPService, SMPTService>();
         }
     }
 }

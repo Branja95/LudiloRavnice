@@ -1,0 +1,31 @@
+<div class="container">
+  <div class="row">
+      <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Username</th>
+              <th scope="col">Document image</th>
+              <th scope="col">First name</th>
+              <th scope="col">Last name</th>
+              <th scope="col">Date of birth</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <th scope="row">{{user.User.UserName}}</th>
+              <td> <img src='http://localhost:51680/api/Account/UserDocumentImage?imageId={{user.User.DocumentImage}}' height="100" weight="100"/></td>
+              <td>{{user.User.FirstName}}</td>
+              <td>{{user.User.LastName}}</td>
+              <td>{{user.User.DateOfBirth}}</td>
+              <td><button type="button" (click)="approveUserAccount(user.Id)" class="btn btn-default">Approve</button></td>
+              <td><button type="button" (click)="rejectUserAccount(user.Id)" class="btn btn-default">Reject</button></td>
+            </tr>
+          </tbody>
+        </table>
+    <!--<div *ngFor="let user of users" class="col col-lg-4 col-lg-push-4">
+      <div class="col">
+          <h1>{{user.UserName}}</h1>
+      </div>
+    </div>-->
+  </div>
+</div>

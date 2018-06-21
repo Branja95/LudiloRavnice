@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RentApp.Models.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace RentApp.Models
@@ -32,6 +33,13 @@ namespace RentApp.Models
         public bool HasRegistered { get; set; }
 
         public string LoginProvider { get; set; }
+    }
+
+    public class UsersForApprovesViewModel
+    {
+        public long Id { get; set; }
+
+        public RAIdentityUser User { get; set; }
     }
 
     public class UserLoginInfoViewModel

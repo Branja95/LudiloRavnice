@@ -13,7 +13,7 @@ namespace RentApp.Hubs
 {
 
     [HubName("Notifications")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class NotificationHub : Hub
     {
         private static IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
@@ -28,39 +28,39 @@ namespace RentApp.Hubs
 
         public static void NewUserAccountToApprove(long count)
         {
-            //hubContext.Clients.Group("Admins").newUserAccountToApprove();
+            hubContext.Clients.All.newUserAccountToApprove(count);
         }
 
         public static void NewRentVehicleServiceToApprove(long count)
         {
-            //hubContext.Clients.Group("Admins").newRentVehicleServiceToApprove(count);
+            hubContext.Clients.Group("Admins").newRentVehicleServiceToApprove(count);
         }
 
-        public override Task OnConnected()
-        {
+        //public override Task OnConnected()
+        //{
 
-            Groups.Add(Context.ConnectionId, "Admins");
+        //    //Groups.Add(Context.ConnectionId, "Admins");
 
-            //if (Context.User.IsInRole("Admin"))
-            //{
-            //    Groups.Add(Context.ConnectionId, "Admins");
-            //}
+        //    if (Context.User.IsInRole("Admin"))
+        //    {
+        //        Groups.Add(Context.ConnectionId, "Admins");
+        //    }
 
-            return base.OnConnected();
-        }
+        //    return base.OnConnected();
+        //}
 
-        public override Task OnDisconnected(bool stopCalled)
-        {
+        //public override Task OnDisconnected(bool stopCalled)
+        //{
 
-            Groups.Add(Context.ConnectionId, "Admins");
+        //    //Groups.Add(Context.ConnectionId, "Admins");
 
-            //if (Context.User.IsInRole("Admin"))
-            //{
-            //    Groups.Remove(Context.ConnectionId, "Admins");
-            //}
+        //    if (Context.User.IsInRole("Admin"))
+        //    {
+        //        Groups.Remove(Context.ConnectionId, "Admins");
+        //    }
 
-            return base.OnDisconnected(stopCalled);
-        }
+        //    return base.OnDisconnected(stopCalled);
+        //}
 
         /// <summary>
         /// Test sat

@@ -11,6 +11,6 @@ namespace RentApp.Models.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
-        public RAIdentityUser User { get; set; }
+        public string UserId { get; set; }
     }
 }

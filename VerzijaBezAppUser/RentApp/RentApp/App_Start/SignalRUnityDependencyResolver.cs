@@ -17,7 +17,17 @@ namespace RentApp.App_Start
 
         public override object GetService(Type serviceType)
         {
-            if (_container.IsRegistered(serviceType)) return _container.Resolve(serviceType);
+            if (_container.IsRegistered(serviceType))
+            {
+                try
+                {
+                    return _container.Resolve(serviceType);
+                }
+                catch(Unity.Exceptions.ResolutionFailedException)
+                {
+                    return base.GetService(serviceType);
+                }
+            }
             else return base.GetService(serviceType);
         }
 

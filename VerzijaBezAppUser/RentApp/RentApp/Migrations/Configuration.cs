@@ -63,14 +63,14 @@ namespace RentApp.Migrations
 
             if (!context.Users.Any(u => u.UserName == "branici@gmail.com"))
             {
-                var user = new RAIdentityUser() { UserName = "branici@gmail.com", Email = "branici@gmail.com", EmailConfirmed = true, PasswordHash = RAIdentityUser.HashPassword("Branja95"), FirstName = "Branko", LastName = "Jelic", DateOfBirth = DateTime.Parse("07.09.1995") };
+                var user = new RAIdentityUser() { UserName = "branici@gmail.com", Email = "branici@gmail.com", EmailConfirmed = true, PasswordHash = RAIdentityUser.HashPassword("Branja95"), FirstName = "Branko", LastName = "Jelic", DateOfBirth = DateTime.Parse("07.09.1995"), IsApproved = true };
                 userManager.Create(user);
                 userManager.AddToRole(user.Id, "Admin");
             }
 
             if (!context.Users.Any(u => u.UserName == "david.djekic@gmail.com"))
             {
-                var user = new RAIdentityUser() { UserName = "david.djekic@gmail.com", Email = "david.djekic@gmail.com", EmailConfirmed = true, PasswordHash = RAIdentityUser.HashPassword("David95"), FirstName = "David", LastName = "Djekic", DateOfBirth = DateTime.Parse("02.06.1995") };
+                var user = new RAIdentityUser() { UserName = "david.djekic@gmail.com", Email = "david.djekic@gmail.com", EmailConfirmed = true, PasswordHash = RAIdentityUser.HashPassword("David95"), FirstName = "David", LastName = "Djekic", DateOfBirth = DateTime.Parse("02.06.1995"), IsApproved = true };
                 userManager.Create(user);
                 userManager.AddToRole(user.Id, "Admin");
 

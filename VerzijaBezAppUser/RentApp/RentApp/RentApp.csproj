@@ -319,6 +319,10 @@
     <Compile Include="Migrations\201806202003495_RADataModel_v2.2.Designer.cs">
       <DependentUpon>201806202003495_RADataModel_v2.2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806211356297_RADataModel_v2.3.cs" />
+    <Compile Include="Migrations\201806211356297_RADataModel_v2.3.Designer.cs">
+      <DependentUpon>201806211356297_RADataModel_v2.3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -363,6 +367,8 @@
     <Compile Include="Providers\CustomJwtFormat.cs" />
     <Compile Include="Providers\CustomOAuthProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
+    <Compile Include="Services\ISMTPService.cs" />
+    <Compile Include="Services\SMPTService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -474,6 +480,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806202003495_RADataModel_v2.2.resx">
       <DependentUpon>201806202003495_RADataModel_v2.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806211356297_RADataModel_v2.3.resx">
+      <DependentUpon>201806211356297_RADataModel_v2.3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

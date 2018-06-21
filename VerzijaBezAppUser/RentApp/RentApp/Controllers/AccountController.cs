@@ -20,6 +20,7 @@ using RentApp.Hubs;
 using System.Linq;
 using System.Collections;
 using RentApp.Helpers;
+using RentApp.Services;
 
 namespace RentApp.Controllers
 {
@@ -31,18 +32,21 @@ namespace RentApp.Controllers
         private string validationErrorMessage = "";
 
         private readonly IUnitOfWork unitOfWork;
+        private readonly ISMTPService SMTPService;
 
         public AccountController()
         {
         }
 
         public AccountController(ApplicationUserManager userManager,
-            ISecureDataFormat<AuthenticationTicket> accessTokenFormat, 
-            IUnitOfWork unitOfWork)
+            ISecureDataFormat<AuthenticationTicket> accessTokenFormat,
+            IUnitOfWork unitOfWork,
+            ISMTPService SMTPService)
         {
             UserManager = userManager;
             AccessTokenFormat = accessTokenFormat;
             this.unitOfWork = unitOfWork;
+            this.SMTPService = SMTPService; 
         }
 
         public ApplicationUserManager UserManager { get; private set; }
@@ -123,7 +127,7 @@ namespace RentApp.Controllers
 
             IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
                 model.NewPassword);
-            
+
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
@@ -256,9 +260,9 @@ namespace RentApp.Controllers
             if (hasRegistered)
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-                
-                 ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    OAuthDefaults.AuthenticationType);
+
+                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
+                   OAuthDefaults.AuthenticationType);
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
@@ -341,7 +345,7 @@ namespace RentApp.Controllers
                 return GetErrorResult(addUserResult);
             }
 
-            IdentityResult addRoleResult =  await UserManager.AddToRoleAsync(user.Id, "AppUser");
+            IdentityResult addRoleResult = await UserManager.AddToRoleAsync(user.Id, "AppUser");
 
             if (!addRoleResult.Succeeded)
             {
@@ -356,14 +360,14 @@ namespace RentApp.Controllers
         [Route("FinishAccount")]
         public async Task<IHttpActionResult> FinishAccount()
         {
-            RAIdentityUser user = UserManager.FindById(User.Identity.GetUserId());
-            
-            if(user.IsApproved)
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            if (user.IsApproved)
             {
                 return BadRequest("User already approve account.");
             }
 
-            if (unitOfWork.AccountsForApprove.Find(u => u.User.Id == user.Id).Count() > 0)
+            if (unitOfWork.AccountsForApprove.Find(u => u.UserId == user.Id).Count() > 0)
             {
                 return BadRequest("User already send request for approve account.");
             }
@@ -384,12 +388,126 @@ namespace RentApp.Controllers
                 return GetErrorResult(addUserDocumentImageResult);
             }
 
-            unitOfWork.AccountsForApprove.Add(new AccountForApprove() { User = user });
+            unitOfWork.AccountsForApprove.Add(new AccountForApprove() { UserId = user.Id });
             unitOfWork.Complete();
 
             NotificationHub.NewUserAccountToApprove(unitOfWork.AccountsForApprove.Count());
 
             return Ok("Request for aprrove account successfully created");
+        }
+
+        // GET api/Account/IsUserApproved
+        [HttpGet]
+        [Route("IsUserApproved")]
+        public async Task<IHttpActionResult> IsUserApproved()
+        {
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            if (user.IsApproved)
+            {
+                return Ok(true);
+            }
+
+            if (unitOfWork.AccountsForApprove.Find(u => u.UserId == user.Id).Count() > 0)
+            {
+                return Ok(true);
+            }
+            return Ok(false);
+        }
+
+        // GET api/Account/AccountsForApproval
+        [HttpGet]
+        [Route("AccountsForApproval")]
+        [Authorize(Roles = "Admin")]
+        public IHttpActionResult AccountsForApproval()
+        {
+            IEnumerable<AccountForApprove> accountsForApproves = unitOfWork.AccountsForApprove.GetAll();
+
+            List<UsersForApprovesViewModel> usersAccountsForApproves = new List<UsersForApprovesViewModel>();
+
+            foreach (AccountForApprove accountForApprove in accountsForApproves)
+            {
+                usersAccountsForApproves.Add(new UsersForApprovesViewModel() { Id = accountForApprove.Id, User = UserManager.FindById(accountForApprove.UserId) });
+            }
+
+            return Ok(usersAccountsForApproves);
+        }
+
+        // GET api/Account/UserDocumentImage?imageId=5
+        [HttpGet]
+        [Route("UserDocumentImage")]
+        [AllowAnonymous]
+        public HttpResponseMessage UserDocumentImage([FromUri] string imageId)
+        {
+           return ImageHelper.LoadImage(imageId);
+        }
+
+        // Post api/Account/AccountsForApproval
+        [HttpPost]
+        [Route("ApproveAccount")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IHttpActionResult> ApproveAccount([FromBody]long id)
+        {
+
+            if(unitOfWork.AccountsForApprove.Find(a => a.Id == id).Count() == 0)
+            {
+                return BadRequest("Bad request. Id don't exists.");
+            }
+
+            AccountForApprove accountForApprove = unitOfWork.AccountsForApprove.Find(a => a.Id == id).First();
+
+            RAIdentityUser user = await UserManager.FindByIdAsync(accountForApprove.UserId);
+
+            user.IsApproved = true;
+
+            SMTPService.SendMail("Account approved", "Your account is approved, now you can rent vehicle.", user.Email);
+
+            IdentityResult updateUserResult = await UserManager.UpdateAsync(user);
+
+            if (!updateUserResult.Succeeded)
+            {
+                return GetErrorResult(updateUserResult);
+            }
+
+            unitOfWork.AccountsForApprove.Remove(accountForApprove);
+            unitOfWork.Complete();
+
+            return Ok("Account Successfully approved.");
+        }
+
+        // Post api/Account/AccountsForApproval
+        [HttpPost]
+        [Route("RejectAccount")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IHttpActionResult> RejectAccount([FromBody]long id)
+        {
+
+            if (unitOfWork.AccountsForApprove.Find(a => a.Id == id).Count() == 0)
+            {
+                return BadRequest("Bad request. Id don't exists.");
+            }
+
+            AccountForApprove accountForApprove = unitOfWork.AccountsForApprove.Find(a => a.Id == id).First();
+
+            RAIdentityUser user = await UserManager.FindByIdAsync(accountForApprove.UserId);
+
+            SMTPService.SendMail("Account rejected", "Your account is rejected, upload new document image.", user.Email);
+
+            ImageHelper.DeleteImage(user.DocumentImage);
+
+            user.DocumentImage = "";
+
+            IdentityResult updateUserResult = await UserManager.UpdateAsync(user);
+
+            if (!updateUserResult.Succeeded)
+            {
+                return GetErrorResult(updateUserResult);
+            }
+
+            unitOfWork.AccountsForApprove.Remove(accountForApprove);
+            unitOfWork.Complete();
+
+            return Ok("Account Successfully rejected.");
         }
 
         // POST api/Account/RegisterExternal
@@ -420,7 +538,7 @@ namespace RentApp.Controllers
             result = await UserManager.AddLoginAsync(user.Id, info.Login);
             if (!result.Succeeded)
             {
-                return GetErrorResult(result); 
+                return GetErrorResult(result);
             }
             return Ok();
         }

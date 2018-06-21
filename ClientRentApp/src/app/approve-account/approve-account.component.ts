@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { Router, ActivatedRoute } from '@angular/router';
+
 import { RegistrationService } from '../services/registration.service';
 
 import { NgForm } from '@angular/forms';
@@ -15,7 +17,7 @@ export class ApproveAccountComponent implements OnInit {
   url: string = '';
   file: File = null;
 
-  constructor(private registrationService: RegistrationService) { }
+  constructor(private registrationService: RegistrationService, private router: Router) { }
 
   ngOnInit() {
   }
@@ -40,7 +42,8 @@ export class ApproveAccountComponent implements OnInit {
       this.registrationService.postMethodApproveAccount(this.file)
       .subscribe(
         data => {
-          alert(data);
+          console.log(data);
+          this.router.navigate(['/RentVehicle']);
         }, error => {
           alert(error.error.Message);
         });;

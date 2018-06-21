@@ -3,6 +3,8 @@ import { NgForm } from '@angular/forms';
 
 import { User } from '../models/user.model';
 
+import { Router, ActivatedRoute } from '@angular/router';
+
 import { RegistrationService } from '../services/registration.service';
 
 @Component({
@@ -13,7 +15,7 @@ import { RegistrationService } from '../services/registration.service';
 })
 export class RegistrationComponent implements OnInit {
 
-  constructor(private registrationService: RegistrationService) { }
+  constructor(private registrationService: RegistrationService, private router: Router) { }
 
   ngOnInit() {
   }
@@ -23,7 +25,8 @@ export class RegistrationComponent implements OnInit {
     this.registrationService.postMethodRegistration(user)
     .subscribe(
       data => {
-        alert(data);
+        console.log(data);
+        this.router.navigate(['/Login']);
       },
       error => {
         alert(error.error.Message);

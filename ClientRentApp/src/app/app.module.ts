@@ -25,6 +25,8 @@ import { AddBranchOfficeComponent } from './add-branch-office/add-branch-office.
 import { AddVehicleComponent } from './add-vehicle/add-vehicle.component';
 import { AddRentVehicleComponent } from './add-rent-vehicle/add-rent-vehicle.component';
 import { EditBranchOfficeComponent } from './edit-branch-office/edit-branch-office.component';
+import { ApproveAccountAdminComponent } from './approve-account-admin/approve-account-admin.component';
+import { UserAccountComponent } from './user-account/user-account.component';
 
 const Routes = [
   {
@@ -32,8 +34,16 @@ const Routes = [
     component: LoginComponent
   },
   {
+    path: "UserAccount",
+    component: UserAccountComponent
+  },
+  {
     path: "ApproveAccount",
     component: ApproveAccountComponent
+  },
+  {
+    path: "ApproveAccountAdmin",
+    component: ApproveAccountAdminComponent
   },
   {
     path: "Registration",
@@ -83,7 +93,9 @@ const Routes = [
     AddBranchOfficeComponent,
     AddVehicleComponent,
     AddRentVehicleComponent,
-    EditBranchOfficeComponent
+    EditBranchOfficeComponent,
+    ApproveAccountAdminComponent,
+    UserAccountComponent
   ],
   imports: [
     BrowserModule,
