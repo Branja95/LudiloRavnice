@@ -104,13 +104,20 @@ namespace RentApp.Controllers
                 return BadRequest(validationErrorMessage);
             }
 
+
+            Service service = unitOfWork.Services.Get(model.ServiceId);
+
             BranchOffice branchOffice = new BranchOffice
-            {
+            {   
                 Address = model.Address,
                 Latitude = model.Latitude,
                 Longitude = model.Longitude,
                 Image = ImageHelper.SaveImageToServer(httpRequest.Files[0])
             };
+
+            service.BranchOfficces.Add(branchOffice);
+
+            unitOfWork.Services.Update(service);
 
             unitOfWork.BranchOffices.Add(branchOffice);
             unitOfWork.Complete();

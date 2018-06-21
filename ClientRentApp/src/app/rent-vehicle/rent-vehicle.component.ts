@@ -13,45 +13,12 @@ import { RentVehicleService } from '../services/rent-vehicle.service';
 })
 export class RentVehicleComponent implements OnInit {
 
-  url: string = '';
-  file: File = null;
-
   services = Array<RentVehicle>()
 
   constructor(private rentVehicleService: RentVehicleService) { }
 
   ngOnInit() {
     this.getServices();
-  }
-
-  handleFileInput(event) {
-    this.file = event.target.files[0];
-    
-    if (event.target.files && event.target.files[0]) {
-    var reader = new FileReader();
-
-    reader.readAsDataURL(event.target.files[0]); 
-
-    reader.onload = (event) => { 
-      this.url = reader.result;
-    }
-
-    }
-  }
-
-  onSubmit(form: NgForm, rentVehicle: RentVehicle) {
-    
-    this.rentVehicleService.postMethodCreateRentVehicleService(rentVehicle, this.file)
-    .subscribe(
-      data => {
-        alert(data);
-      }, error => {
-        alert(error.error.Message);
-      });;
-    
-    form.reset();
-    this.url = '';
-    this.file = null;
   }
 
   getServices() { 

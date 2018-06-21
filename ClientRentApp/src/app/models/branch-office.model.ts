@@ -1,12 +1,12 @@
 export class BranchOffice {
-    id: number;
+    serviceId: string;
     address: string;
     latitude: number;
     longitude: number;
     image: string;
 
-    constructor(id: number, address: string, latitude: number, longitude: number, image: string) {
-        this.id = id;
+    constructor(serviceId: string, address: string, latitude: number, longitude: number, image: string) {
+        this.serviceId = serviceId;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;

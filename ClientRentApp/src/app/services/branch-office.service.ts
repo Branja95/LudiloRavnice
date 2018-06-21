@@ -13,12 +13,16 @@ import { BranchOffice } from '../models/branch-office.model';
 })
 export class BranchOfficeService {
 
+  url: string;
   formData: FormData = new FormData();
   
   constructor(private httpClient: HttpClient) { }
 
   postMethodCreateBranchOffice(branchOffice, uploadedImage: File): Observable<any> {
     
+    console.log(branchOffice.id);
+
+    this.formData.append('serviceId',branchOffice.serviceId);
     this.formData.append('address', branchOffice.address)
     this.formData.append('latitude', branchOffice.latitude);
     this.formData.append('longitude', branchOffice.longitude);
@@ -34,13 +38,21 @@ export class BranchOfficeService {
     return result;
    }
 
-   getMethodBranchOffices(): Observable<any> {
-    return this.httpClient.get("http://localhost:51680/api/BranchOffices")
-  }
+   getBranchOffice(branchOfficeId): Observable<any> {
+    return this.httpClient.get("http://localhost:51680/api/BranchOffices/" + branchOfficeId);
+   }
 
-  deleteBranchOffice(id): Observable<any> {
-    return this.httpClient.delete("http://localhost:51680/api/BranchOffices/" + id);
-  }
+   getBranchOffices(): Observable<any> {
+    return this.httpClient.get("http://localhost:51680/api/BranchOffices");
+   }
+
+   editBranchOffice(branchOfficeId, branchOffice): Observable<any> {
+    return this.httpClient.put("http://localhost:51680/api/BranchOffices/" + branchOfficeId, branchOffice);
+   }
+
+   deleteBranchOffice(id): Observable<any> {
+     return this.httpClient.delete("http://localhost:51680/api/BranchOffices/" + id);
+   }
 
 }
 

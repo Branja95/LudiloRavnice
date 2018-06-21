@@ -1,4 +1,6 @@
 export class Vehicle {
+    serviceId: string;
+    vehicleTypeId: string;
     model: string;
     manufactor: string;
     vehicleType: string;
@@ -6,8 +8,11 @@ export class Vehicle {
     description: string;
     pricePerHour: number;
     isAvailable: string;
+    images: string;
 
-    constructor(model: string, manufactor: string, vehicleType: string, yearMade: string, description: string, pricePerHour: number, isAvailable: string) {
+    constructor(serviceId: string, vehicleTypeId: string, model: string, manufactor: string, vehicleType: string, yearMade: string, description: string, pricePerHour: number, isAvailable: string, images: string) {
+        this.serviceId = serviceId;
+        this.vehicleTypeId = vehicleTypeId;
         this.model = model;
         this.manufactor = manufactor;
         this.vehicleType = vehicleType;
@@ -15,5 +20,6 @@ export class Vehicle {
         this.description = description;
         this.pricePerHour = pricePerHour;
         this.isAvailable = isAvailable;
+        this.images = images;
     }
 }

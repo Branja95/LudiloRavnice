@@ -6,6 +6,9 @@ namespace RentApp.Models
     {
         public class CreateBranchOfficeBindingModel
         {
+            [Display(Name = "ServiceId")]
+            public int ServiceId { get; set; }
+
             [Required]
             [DataType(DataType.Text)]
             [Display(Name = "Address")]

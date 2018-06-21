@@ -19,6 +19,8 @@ export class VehicleService {
   }
 
   postMethodCreateVehicle(vehicle, uploadedImages: FileList): Observable<any> {
+    this.formData.append('serviceId', vehicle.serviceId);
+    this.formData.append('vehicleTypeId', vehicle.vehicleType);
     this.formData.append('model', vehicle.model);
     this.formData.append('manufactor', vehicle.manufactor);
     this.formData.append('vehicleType', vehicle.vehicleType)

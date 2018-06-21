@@ -1,30 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
+import {
+  Router,
+  ActivatedRoute
+} from '@angular/router';
 
 import { BranchOffice } from '../models/branch-office.model';
-
 import { BranchOfficeService } from '../services/branch-office.service';
-import { Observable } from 'rxjs/Observable';
-import { debug } from 'util';
 
 @Component({
-  selector: 'app-branch-office',
-  templateUrl: './branch-office.component.html',
-  styleUrls: ['./branch-office.component.css'],
+  selector: 'app-add-branch-office',
+  templateUrl: './add-branch-office.component.html',
+  styleUrls: ['./add-branch-office.component.css'],
   providers: [BranchOfficeService]
 })
-export class BranchOfficeComponent implements OnInit {
-
+export class AddBranchOfficeComponent implements OnInit {
+  ServiceId: string = "-1";
   url: string = '';
   file: File = null;
-
-  branchOffices = Array<BranchOffice>()
-
-  constructor(private branchOfficeService: BranchOfficeService) { }
+  
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService) {
+    activatedRoute.params.subscribe(params => {this.ServiceId = params["ServiceId"]});
+  }
 
   ngOnInit() {
-    this.getBranchOffices();
   }
 
   handleFileInput(event) {
@@ -44,6 +43,8 @@ export class BranchOfficeComponent implements OnInit {
 
   onSubmit(form: NgForm, branchOffice: BranchOffice) {
 
+    branchOffice.serviceId = this.ServiceId;
+    
     this.branchOfficeService.postMethodCreateBranchOffice(branchOffice, this.file)
     .subscribe(
       data => {
@@ -56,29 +57,4 @@ export class BranchOfficeComponent implements OnInit {
     this.url = '';
     this.file = null;
   }
-
-  onDelete(form: NgForm, id: string){
-    this.branchOfficeService.deleteBranchOffice(id)
-    .subscribe(
-      data => {
-        alert(data);
-      },
-      error => {
-        alert(error);
-      }
-    )
-    
-  }
-
-  getBranchOffices() { 
-    
-    this.branchOfficeService.getBranchOffices()
-    .subscribe(
-      res => { 
-          this.branchOffices = res as Array<BranchOffice>;
-      }, error => {
-        alert(error);
-      });
-  }
-
 }

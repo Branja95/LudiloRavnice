@@ -1,7 +1,9 @@
 export class VehicleType {
-    vehicleTypes: string[];
+    id: string;
+    typeName: string;
 
-    constructor(vehicleTypes: string[]) {
-        this.vehicleTypes = vehicleTypes;
+    constructor(id: string, typeName: string) {
+        this.id = id;
+        this.typeName = typeName;
     }
 }

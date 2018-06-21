@@ -14,6 +14,7 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Net.Http.Headers;
+using RentApp.Helpers;
 
 namespace RentApp.Controllers
 {
@@ -50,27 +51,7 @@ namespace RentApp.Controllers
         [HttpGet]
         public HttpResponseMessage LoadImage(string imageId)
         {
-            HttpResponseMessage result;
-
-            String filePath = HostingEnvironment.MapPath("~/App_Data/" + imageId);
-
-            if (File.Exists(filePath))
-            {
-                result = new HttpResponseMessage(HttpStatusCode.OK);
-                FileStream fileStream = new FileStream(filePath, FileMode.Open);
-                Image image = Image.FromStream(fileStream);
-                MemoryStream memoryStream = new MemoryStream();
-                image.Save(memoryStream, ImageFormat.Jpeg);
-                result.Content = new ByteArrayContent(memoryStream.ToArray());
-                result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-                fileStream.Close();
-            }
-            else
-            {
-                result = new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
-
-            return result;
+            return ImageHelper.LoadImage(imageId);
         }
 
         // PUT: api/Vehicles/5
@@ -124,16 +105,25 @@ namespace RentApp.Controllers
                 return BadRequest("Images cannot be left blank\n");
             }
 
+            int count = 0;
             foreach (string file in httpRequest.Files)
             {
+                count++;
                 HttpPostedFile uploadedImage = httpRequest.Files[file];
 
                 if (ValidateImage(uploadedImage))
                 {
-                    imageUris += SaveImageToServer(uploadedImage) + ";_;";
+                    imageUris += SaveImageToServer(uploadedImage);
+
+                    if(count < httpRequest.Files.Count)
+                    {
+                        imageUris += ";_;";
+                    }
                 }
             }
-
+            
+            VehicleType vehicleType = unitOfWork.VehicleTypes.Get(model.VehicleTypeId);
+           
             Vehicle vehicle = new Vehicle
             {
                 Description = model.Description,
@@ -141,10 +131,15 @@ namespace RentApp.Controllers
                 Manufactor = model.Manufactor,
                 PricePerHour = model.PricePerHour,
                 YearMade = model.YearMade,
-                VehicleType = GetVehicleType(model.VehicleType),
                 IsAvailable = model.IsAvailable.Equals("IsAvailable") ? true : false,
+                Images = imageUris,
+                VehicleType = vehicleType
             };
 
+            Service service = unitOfWork.Services.Get(model.ServiceId);
+            service.Vehicles.Add(vehicle);
+
+            unitOfWork.Services.Update(service);
             unitOfWork.Vehicles.Add(vehicle);
             unitOfWork.Complete();
 

@@ -21,6 +21,10 @@ import { VehicleComponent } from './vehicle/vehicle.component';
 import { RentVehicleComponent } from './rent-vehicle/rent-vehicle.component';
 import { ClockComponent } from './clock/clock.component';
 import { ApproveAccountComponent } from './approve-account/approve-account.component';
+import { AddBranchOfficeComponent } from './add-branch-office/add-branch-office.component';
+import { AddVehicleComponent } from './add-vehicle/add-vehicle.component';
+import { AddRentVehicleComponent } from './add-rent-vehicle/add-rent-vehicle.component';
+import { EditBranchOfficeComponent } from './edit-branch-office/edit-branch-office.component';
 
 const Routes = [
   {
@@ -46,6 +50,22 @@ const Routes = [
   {
     path: "RentVehicle",
     component: RentVehicleComponent
+  },
+  {
+    path: "AddBranchOffice/:ServiceId",
+    component: AddBranchOfficeComponent
+  }, 
+  {
+    path: "EditBranchOffice/:BranchOfficeId",
+    component: EditBranchOfficeComponent
+  },
+  {
+    path: "AddVehicle/:ServiceId",
+    component: AddVehicleComponent
+  }, 
+  {
+    path: "AddService",
+    component: AddRentVehicleComponent
   }
 ]
 
@@ -60,6 +80,10 @@ const Routes = [
     RentVehicleComponent,
     ClockComponent,
     ApproveAccountComponent,
+    AddBranchOfficeComponent,
+    AddVehicleComponent,
+    AddRentVehicleComponent,
+    EditBranchOfficeComponent
   ],
   imports: [
     BrowserModule,

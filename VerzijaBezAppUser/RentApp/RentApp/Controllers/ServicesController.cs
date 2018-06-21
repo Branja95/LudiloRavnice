@@ -73,6 +73,12 @@ namespace RentApp.Controllers
             return Ok(service);
         }
 
+        public Service GetServiceEntity(int id)
+        {
+            return unitOfWork.Services.Get(id);
+            
+        }
+
         // PUT: api/Services/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutService(int id, Service service)

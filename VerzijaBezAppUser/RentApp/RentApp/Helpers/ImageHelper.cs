@@ -57,7 +57,7 @@ namespace RentApp.Helpers
         public static HttpResponseMessage LoadImage(string imageId)
         {
             HttpResponseMessage result;
-
+            
             string filePath = HostingEnvironment.MapPath("~/App_Data/" + imageId);
 
             if (File.Exists(filePath))

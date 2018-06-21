@@ -8,6 +8,12 @@ namespace RentApp.Models
     {
         public class CreateVehicleBindingModel
         {
+            [Display(Name = "ServiceId")]
+            public int ServiceId { get; set; }
+
+            [Display(Name = "VehicleTypeId")]
+            public int VehicleTypeId { get; set; }
+
             [Required]
             [DataType(DataType.Text)]
             [Display(Name = "VehicleType")]

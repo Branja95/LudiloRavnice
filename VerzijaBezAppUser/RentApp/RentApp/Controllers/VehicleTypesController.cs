@@ -38,6 +38,11 @@ namespace RentApp.Controllers
 
             return Ok(vehicleType);
         }
+        
+        public VehicleType GetVehicleTypeEntity(int id)
+        {
+            return unitOfWork.VehicleTypes.Get(id);
+        }
 
         // PUT: api/VehicleTypes/5
         [ResponseType(typeof(void))]
