@@ -56,17 +56,35 @@ namespace RentApp.Controllers
 
         // PUT: api/BranchOffices/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutBranchOffice(int id, BranchOffice branchOffice)
+        public IHttpActionResult PutBranchOffice(int id, EditBranchOfficeBindingModel model)
         {
+
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != branchOffice.Id)
+            if (id != model.Id)
             {
                 return BadRequest();
             }
+
+            HttpRequest httpRequest = HttpContext.Current.Request;
+
+            if (!ImageHelper.ValidateImage(httpRequest.Files[0], out validationErrorMessage))
+            {
+                return BadRequest(validationErrorMessage);
+            }
+
+            BranchOffice branchOffice = new BranchOffice
+            {
+                Id = model.Id,
+                Address = model.Address,
+                Latitude = model.Latitude,
+                Longitude = model.Longitude,
+                Image = ImageHelper.SaveImageToServer(httpRequest.Files[0])
+            };
 
             try
             {
@@ -85,7 +103,7 @@ namespace RentApp.Controllers
                 }
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok("BranchOffice successfully edited");
         }
 
         // POST: api/BranchOffices
@@ -108,7 +126,7 @@ namespace RentApp.Controllers
             Service service = unitOfWork.Services.Get(model.ServiceId);
 
             BranchOffice branchOffice = new BranchOffice
-            {   
+            {
                 Address = model.Address,
                 Latitude = model.Latitude,
                 Longitude = model.Longitude,
@@ -134,7 +152,7 @@ namespace RentApp.Controllers
             {
                 return NotFound();
             }
-
+            
             unitOfWork.BranchOffices.Remove(branchOffice);
             unitOfWork.Complete();
 

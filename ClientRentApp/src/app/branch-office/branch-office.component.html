@@ -1,14 +1,14 @@
 <div class="container">
-      <div *ngFor='let branchOffice of branchOffices'>
-        <form #f="ngForm" (ngSubmit)="onDelete(f, branchOffice.Id)">
-          <br/><br/><br/>
-          <img src='http://localhost:51680/api/BranchOffices?imageId={{branchOffice.Image}}' height="300" weight="300"/><br/><br/>
-          <label>Address:</label> {{branchOffice.Address}}<br/>
-          <label>Latitude:</label> {{branchOffice.Latitude}}<br/>
-          <label>Longitude:</label> {{branchOffice.Longitude}}<br/>
-          
-          <button type="submit" class="btn btn-default">Delete</button>
-          <button [routerLink]="['/EditBranchOffice/', branchOffice.Id]">Edit</button>
-        </form>
-      </div>
+  <div *ngFor='let branchOffice of branchOffices'>
+    <form #f="ngForm" (ngSubmit)="onDelete(f, branchOffice.Id)">
+      <br/><br/><br/>
+      <img src='http://localhost:51680/api/BranchOffices?imageId={{branchOffice.Image}}' height="300" weight="300"/><br/><br/>
+      <label>Address:</label> {{branchOffice.Address}}<br/>
+      <label>Latitude:</label> {{branchOffice.Latitude}}<br/>
+      <label>Longitude:</label> {{branchOffice.Longitude}}<br/>
+      
+      <button type="submit" class="btn btn-default">Delete</button>
+      <button [routerLink]="['/EditBranchOffice/', branchOffice.Id]">Edit</button>
+    </form>
+  </div>
 </div>

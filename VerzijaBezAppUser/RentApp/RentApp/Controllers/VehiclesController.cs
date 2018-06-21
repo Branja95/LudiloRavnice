@@ -56,17 +56,61 @@ namespace RentApp.Controllers
 
         // PUT: api/Vehicles/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutVehicle(int id, Vehicle vehicle)
+        public IHttpActionResult PutVehicle(int id, EditVehicleBindingModel model)
         {
+            HttpRequest httpRequest = HttpContext.Current.Request;
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != vehicle.Id)
+            if (id != model.Id)
             {
                 return BadRequest();
             }
+
+            string imageUris = string.Empty;
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (httpRequest.Files == null)
+            {
+                return BadRequest("Images cannot be left blank\n");
+            }
+
+            int count = 0;
+            foreach (string file in httpRequest.Files)
+            {
+                count++;
+                HttpPostedFile uploadedImage = httpRequest.Files[file];
+
+                if (ValidateImage(uploadedImage))
+                {
+                    imageUris += SaveImageToServer(uploadedImage);
+
+                    if (count < httpRequest.Files.Count)
+                    {
+                        imageUris += ";_;";
+                    }
+                }
+            }
+
+            VehicleType vehicleType = unitOfWork.VehicleTypes.Get(model.VehicleTypeId);
+
+            Vehicle vehicle = new Vehicle()
+            {
+                Id = model.Id,
+                Description = model.Description,
+                Model = model.Model,
+                Manufactor = model.Manufactor,
+                PricePerHour = model.PricePerHour,
+                YearMade = model.YearMade,
+                IsAvailable = model.IsAvailable.Equals("IsAvailable") ? true : false,
+                Images = imageUris,
+                VehicleType = vehicleType,
+            };
 
             try
             {
@@ -85,7 +129,7 @@ namespace RentApp.Controllers
                 }
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok();
         }
 
         // POST: api/Vehicles
@@ -115,15 +159,15 @@ namespace RentApp.Controllers
                 {
                     imageUris += SaveImageToServer(uploadedImage);
 
-                    if(count < httpRequest.Files.Count)
+                    if (count < httpRequest.Files.Count)
                     {
                         imageUris += ";_;";
                     }
                 }
             }
-            
+
             VehicleType vehicleType = unitOfWork.VehicleTypes.Get(model.VehicleTypeId);
-           
+
             Vehicle vehicle = new Vehicle
             {
                 Description = model.Description,
@@ -133,7 +177,7 @@ namespace RentApp.Controllers
                 YearMade = model.YearMade,
                 IsAvailable = model.IsAvailable.Equals("IsAvailable") ? true : false,
                 Images = imageUris,
-                VehicleType = vehicleType
+                VehicleType = vehicleType,
             };
 
             Service service = unitOfWork.Services.Get(model.ServiceId);

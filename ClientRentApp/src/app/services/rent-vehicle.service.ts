@@ -35,4 +35,29 @@ export class RentVehicleService {
     return this.httpClient.get("http://localhost:51680/api/Services")
   }
 
+  deleteService(serviceId): Observable<any>{
+    return this.httpClient.delete("http://localhost:51680/api/Services/" + serviceId);
+  }
+
+  getService(serviceId): Observable<any>{
+    return this.httpClient.get("http://localhost:51680/api/Services/" + serviceId);
+  }
+
+  editService(serviceId, service, uploadedImage: File): Observable<any>{
+    this.formData.append('id', serviceId);
+    this.formData.append('name', service.Name)
+    this.formData.append('emailaddress', service.EmailAddress);
+    this.formData.append('description', service.Description);
+    this.formData.append('image', uploadedImage, uploadedImage.name);
+
+    let headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/json')
+
+    let result = this.httpClient.put("http://localhost:51680/api/Services/" + serviceId, this.formData, { headers: headers });
+
+    this.formData = new FormData();
+
+    return result;
+  }
+
 }

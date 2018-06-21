@@ -21,6 +21,16 @@ export class RentVehicleComponent implements OnInit {
     this.getServices();
   }
 
+  deleteService(serviceId){
+    this.rentVehicleService.deleteService(serviceId).subscribe(
+      res => { 
+      alert(res);
+    }, error => {
+      alert(error);
+    });
+    
+  }
+  
   getServices() { 
     this.rentVehicleService.getMethodServices()
     .subscribe(

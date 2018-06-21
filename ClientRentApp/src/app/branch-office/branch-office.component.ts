@@ -65,8 +65,7 @@ export class BranchOfficeComponent implements OnInit {
       },
       error => {
         alert(error);
-      }
-    )
+      })
     
   }
 

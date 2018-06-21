@@ -1,21 +1,23 @@
 <div class="container">
-  <div class="row">
-    <div id="banner">
-        &nbsp;&nbsp;&nbsp;
-        <div class="inline-block">
-            <div *ngFor='let rentVehicle of services'>
-                <img src='http://localhost:51680/api/Services?imageId={{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
-                <label>Email Address:</label> {{rentVehicle.EmailAddress}}<br/>
-                <label>Description:</label> {{rentVehicle.Description}}<br/>
-                
-                <button [routerLink]="['/AddBranchOffice/' , rentVehicle.Id]">Add Branch Office</button>
-                <button [routerLink]="['/AddVehicle/' , rentVehicle.Id]">Add Vehicle</button>
-            </div>
-        </div>
+    <div class="row">
+      <div id="banner">
+          &nbsp;&nbsp;&nbsp;
+          <div class="inline-block">
+              <div *ngFor='let rentVehicle of services'>
+                  <img src='http://localhost:51680/api/Services?imageId={{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
+                  <label>Email Address:</label> {{rentVehicle.EmailAddress}}<br/>
+                  <label>Description:</label> {{rentVehicle.Description}}<br/>
+                  
+                  <button [routerLink]="['/AddBranchOffice/' , rentVehicle.Id]">Add Branch Office</button>
+                  <button [routerLink]="['/AddVehicle/' , rentVehicle.Id]">Add Vehicle</button>
+                  <button [routerLink]="['/EditService/' , rentVehicle.Id]">Edit</button>
+                  <button type="button" (click)="deleteService(rentVehicle.Id)">Delete</button>
+              </div>
+          </div>
+      </div>
     </div>
   </div>
-</div>
-
-<div>
-    <button [routerLink]="['/AddService/']">Add Rent-Vehicle-Service</button>
-</div>
+  
+  <div>
+      <button [routerLink]="['/AddService/']">Add Rent-Vehicle-Service</button>
+  </div>

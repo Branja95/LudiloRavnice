@@ -5,32 +5,31 @@ import {
   ActivatedRoute
 } from '@angular/router';
 
-import { BranchOffice } from '../models/branch-office.model';
-import { BranchOfficeService } from '../services/branch-office.service';
-
+import { RentVehicle } from '../models/rent-vehicle.model';
+import { RentVehicleService } from '../services/rent-vehicle.service';
 
 @Component({
-  selector: 'app-edit-branch-office',
-  templateUrl: './edit-branch-office.component.html',
-  styleUrls: ['./edit-branch-office.component.css']
+  selector: 'app-edit-rent-vehicle',
+  templateUrl: './edit-rent-vehicle.component.html',
+  styleUrls: ['./edit-rent-vehicle.component.css']
 })
-export class EditBranchOfficeComponent implements OnInit  {
-  
-  BranchOfficeId: string = "-1";
-  BranchOffice: BranchOffice;
+export class EditRentVehicleComponent implements OnInit {
+
+  ServiceId: string = "-1";
+  RentVehicle: RentVehicle;
     
   selecetdFileUrl: string = '';
   selectedFile: File = null;
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService) {
-    activatedRoute.params.subscribe(params => {this.BranchOfficeId = params["BranchOfficeId"]});
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService) {
+    activatedRoute.params.subscribe(params => {this.ServiceId = params["ServiceId"]});
   }
 
   ngOnInit() {
-    
-    this.branchOfficeService.getBranchOffice(this.BranchOfficeId).subscribe(
+    this.rentVehicleService.getService(this.ServiceId).subscribe(
       data => {
-        this.BranchOffice = data as BranchOffice;
+        this.RentVehicle = data as RentVehicle;
+        console.log(this.RentVehicle);
       },error => {
         alert(error.error.Message);
       });
@@ -54,7 +53,7 @@ export class EditBranchOfficeComponent implements OnInit  {
 
   onSubmit(form: NgForm) {
   
-    this.branchOfficeService.editBranchOffice(this.BranchOfficeId,this.BranchOffice, this.selectedFile)
+    this.rentVehicleService.editService(this.ServiceId, this.RentVehicle, this.selectedFile)
     .subscribe(
       data => {
         alert(data);
@@ -65,7 +64,8 @@ export class EditBranchOfficeComponent implements OnInit  {
       form.reset();
       this.selecetdFileUrl = '';
       this.selectedFile = null;
-      this.router.navigateByUrl('BranchOffice');
+      this.router.navigateByUrl('Service');
     
   }
+
 }

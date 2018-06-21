@@ -16,23 +16,19 @@ import { element } from 'protractor';
 })
 export class VehicleComponent implements OnInit {
 
-
+  vehicleTypes = Array<VehicleType>();
   vehicles = Array<Vehicle>()
+  vehicleType: string;
 
   constructor(private vehicleService: VehicleService) { }
 
   ngOnInit() {
     this.getVehicles()
-  }
-
-  parseImages(imageId){
-    let images = imageId.split(";_;");
-    console.log(imageId);
-    return images;
+    
   }
 
   getVehicles() { 
-    this.vehicleService.getMethodVehicles()
+    this.vehicleService.getVehicles()
     .subscribe(
       res => { 
           this.vehicles = res as Array<Vehicle>;
@@ -40,6 +36,33 @@ export class VehicleComponent implements OnInit {
       }, error => {
         alert(error);
       }); 
+  }
+
+  parseImages(imageId){
+    
+    return imageId.split(";_;");
+  }
+
+  onDelete(form: NgForm, id: string){
+    this.vehicleService.deleteVehicle(id)
+    .subscribe(
+      data => {
+        alert(data);
+      },
+      error => {
+        alert(error);
+      })
+    
+  }
+
+  getVehicleTypeName(vehicleTypeId){
+    this.vehicleService.getVehicleType(vehicleTypeId)
+    .subscribe(
+      data => {
+        this.vehicleType = data as string
+        console.log(this.vehicleType);
+      }
+    )
   }
 
 }

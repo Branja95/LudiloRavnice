@@ -16,8 +16,43 @@ namespace RentApp.Models
 
             [Required]
             [DataType(DataType.Text)]
-            [Display(Name = "VehicleType")]
-            public string VehicleType { get; set; }
+            [Display(Name = "Model")]
+            public string Model { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Manufactor")]
+            public string Manufactor { get; set; }
+
+            [Required]
+            [DataType(DataType.Date)]
+            [Display(Name = "YearMade")]
+            public DateTime YearMade { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Description")]
+            public string Description { get; set; }
+
+            [Required]
+            [RegularExpression(@"[0-9]+(\.[0-9] [0-9]?)?")]
+            [Display(Name = "PricePerHour")]
+            public double PricePerHour { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "IsAvailable")]
+            public string IsAvailable { get; set; }
+        }
+
+        public class EditVehicleBindingModel
+        {
+            [Display(Name = "Id")]
+            public int Id { get; set; }
+
+            [Display(Name = "VehicleTypeId")]
+            public int VehicleTypeId { get; set; }
+
 
             [Required]
             [DataType(DataType.Text)]
@@ -30,7 +65,6 @@ namespace RentApp.Models
             public string Manufactor { get; set; }
 
             [Required]
-            [DataType(DataType.Date)]
             [Display(Name = "YearMade")]
             public DateTime YearMade { get; set; }
 

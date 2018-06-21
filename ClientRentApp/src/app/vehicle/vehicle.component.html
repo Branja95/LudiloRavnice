@@ -1,22 +1,26 @@
 
 <div *ngFor='let vehicle of vehicles'>
-  <br/><br/>
-      <div id="banner">
-          &nbsp;&nbsp;&nbsp;
-        <div class="inline-block" *ngFor='let url of parseImages(vehicle.Images)'>
-          <img src='http://localhost:51680/api/Vehicles?imageId={{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
-        </div> 
-    </div>
+  <form #f="ngForm" (ngSubmit)="onDelete(f, vehicle.Id)">
     <br/><br/>
-    <div id="banner">
-        &nbsp;&nbsp;&nbsp;
-        <div class="inline-block">
-          <label>Vehicle Type:</label> {{vehicle.VehicleType.TypeName}}<br/>
-          <label>Manufactor:</label> {{vehicle.Manufactor}}<br/>
-          <label>Model:</label> {{vehicle.Model}}<br/>
-          <label>YearMade:</label> {{vehicle.YearMade}}<br/>
-          <label>PricePerHour:</label> {{vehicle.PricePerHour}}<br/>
-          <label>Description:</label> {{vehicle.Description}}<br/>
-       </div>
+        <div id="banner">
+            &nbsp;&nbsp;&nbsp;
+          <div class="inline-block" *ngFor='let url of parseImages(vehicle.Images)'>
+            <img src='http://localhost:51680/api/Vehicles?imageId={{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
+          </div> 
+      </div>
+      <br/><br/>
+      <div id="banner">
+      &nbsp;&nbsp;&nbsp;
+      <div class="inline-block">
+        <label>Vehicle Type:</label> {{vehicle.VehicleType.TypeName}}<br/>
+        <label>Manufactor:</label> {{vehicle.Manufactor}}<br/>
+        <label>Model:</label> {{vehicle.Model}}<br/>
+        <label>YearMade:</label> {{vehicle.YearMade}}<br/>
+        <label>PricePerHour:</label> {{vehicle.PricePerHour}}<br/>
+        <label>Description:</label> {{vehicle.Description}}<br/>
+      </div>
     </div>
+    <button type="submit" class="btn btn-default">Delete</button>
+    <button [routerLink]="['/EditVehicle/', vehicle.Id]">Edit</button>
+  </form>
 </div>
