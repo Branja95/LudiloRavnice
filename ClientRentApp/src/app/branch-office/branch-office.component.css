@@ -19,3 +19,25 @@ form .progress {
     background: orange;
     width: 0;
 }
+
+.container {
+	text-align:justify;
+	margin-left: 10%;
+	margin-right: 10%;
+	padding-top: 2%;
+	padding-bottom: 2%;
+	display: table;
+	table-layout: fixed;
+ 	width: 80%;
+}
+.parent {
+	padding: 1rem;
+}
+
+.child {
+	padding: 1rem;
+}
+
+.inline-block-child {
+	display: inline-block;
+}

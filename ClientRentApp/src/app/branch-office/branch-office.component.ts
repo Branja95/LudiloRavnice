@@ -1,13 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-
 import { BranchOffice } from '../models/branch-office.model';
-
 import { BranchOfficeService } from '../services/branch-office.service';
-import { Observable } from 'rxjs/Observable';
-import { debug } from 'util';
-import { serializePaths } from '@angular/router/src/url_tree';
 
 @Component({
   selector: 'app-branch-office',
@@ -17,18 +11,16 @@ import { serializePaths } from '@angular/router/src/url_tree';
 })
 
 export class BranchOfficeComponent implements OnInit {
-
+  
   url: string = '';
   file: File = null;
-
-  ServiceId : string = "-1";
-
+  serviceId : string = "-1";
   branchOffices = Array<BranchOffice>()
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService) {
     activatedRoute.params
     .subscribe(params => {
-      this.ServiceId = params["ServiceId"];
+      this.serviceId = params["ServiceId"];
     });
   }
 
@@ -52,7 +44,7 @@ export class BranchOfficeComponent implements OnInit {
   }
 
   onDelete(branchOfficeId: string){
-    this.branchOfficeService.deleteBranchOffice(this.ServiceId, branchOfficeId)
+    this.branchOfficeService.deleteBranchOffice(this.serviceId, branchOfficeId)
     .subscribe(
       res => {
         console.log(res);
@@ -64,7 +56,7 @@ export class BranchOfficeComponent implements OnInit {
 
   onEdit(branchOfficeId)
   {
-    this.router.navigate(['/EditBranchOffice', this.ServiceId, branchOfficeId]);
+    this.router.navigate(['/EditBranchOffice', this.serviceId, branchOfficeId]);
   }
 
   isManagerOrAdmin(){
@@ -85,8 +77,7 @@ export class BranchOfficeComponent implements OnInit {
 
 
   getBranchOffices() { 
-    console.log(this.ServiceId);
-    this.branchOfficeService.getBranchOffices(this.ServiceId)
+    this.branchOfficeService.getBranchOffices(this.serviceId)
     .subscribe(
       res => { 
           this.branchOffices = res as Array<BranchOffice>;

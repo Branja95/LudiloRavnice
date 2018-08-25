@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="row">
+    <p>
+      <agm-map  [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" [zoom]="12" [usePanning]="true"  (mapClick)="placeMarker($event)">
+      
+        <agm-marker [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" [title]="mapInfo.title" [label]="mapInfo.label">
+    
+          <agm-info-window [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" >
+            <br/>
+            <span style="font-size: 16px;font-family:'Times New Roman'">Address: {{branchOffice.Address}}</span>
+            <br/>
+            <br/>
+            <span style="font-family:'Times New Roman'; color:gray;">Latitude: {{branchOffice.Latitude}}</span>
+            <br/>
+            <span style="font-family:'Times New Roman'; color:gray;">Longitude: {{branchOffice.Longitude}}</span>
+          </agm-info-window>
+        </agm-marker>
+      </agm-map>
+    </p>
+  </div>
+</div>

@@ -1,13 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm, FormsModule } from '@angular/forms';
-import {
-  Router,
-  ActivatedRoute
-} from '@angular/router';
-
+import { NgForm } from '@angular/forms';
+import { Router, ActivatedRoute} from '@angular/router';
 import { BranchOffice } from '../models/branch-office.model';
 import { BranchOfficeService } from '../services/branch-office.service';
-
+import { MapInfo } from '../models/map-info.model';
 
 @Component({
   selector: 'app-edit-branch-office',
@@ -15,35 +11,34 @@ import { BranchOfficeService } from '../services/branch-office.service';
   styleUrls: ['./edit-branch-office.component.css'],
   providers: [BranchOfficeService]
 })
+
 export class EditBranchOfficeComponent implements OnInit  {
   
-  ServiceId : string = "-1";
-  BranchOfficeId: string = "-1";
-  BranchOffice: BranchOffice;
-    
+  serviceId : string = "-1";
+  branchOfficeId: string = "-1";
   selecetdFileUrl: string = '';
   selectedFile: File = null;
+  mapInfoCooridnates: MapInfo;
+  branchOffice: BranchOffice;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService) {
     activatedRoute.params
     .subscribe(params => {
-      this.ServiceId = params["ServiceId"];
-      this.BranchOfficeId = params["BranchOfficeId"];
+      this.serviceId = params["ServiceId"];
+      this.branchOfficeId = params["BranchOfficeId"];
     });
   }
 
   ngOnInit() {
-    
-    this.branchOfficeService.getBranchOffice(this.BranchOfficeId).subscribe(
+    this.branchOfficeService.getBranchOffice(this.branchOfficeId).subscribe(
       data => {
-        this.BranchOffice = data as BranchOffice;
+        this.branchOffice = data as BranchOffice;
       },error => {
         alert(error.error.Message);
       });
   }
 
   handleFileInput(event) {
-
     this.selectedFile = event.target.files[0];
     
     if (event.target.files && event.target.files[0]) {
@@ -55,12 +50,17 @@ export class EditBranchOfficeComponent implements OnInit  {
         this.selecetdFileUrl = reader.result;
       }
     }
+  }
 
+  receiveMessage($event) {
+    this.mapInfoCooridnates = $event;
   }
 
   onSubmit(form: NgForm) {
-  
-    this.branchOfficeService.editBranchOffice(this.ServiceId, this.BranchOfficeId,this.BranchOffice, this.selectedFile)
+    this.branchOffice.latitude = this.mapInfoCooridnates.centerLat;
+    this.branchOffice.longitude = this.mapInfoCooridnates.centerLong;
+
+    this.branchOfficeService.editBranchOffice(this.serviceId, this.branchOfficeId, this.branchOffice, this.selectedFile)
     .subscribe(
       res => {
         console.log(res);
@@ -71,6 +71,6 @@ export class EditBranchOfficeComponent implements OnInit  {
       form.reset();
       this.selecetdFileUrl = '';
       this.selectedFile = null;
-    
   }
+
 }

@@ -8,15 +8,7 @@
             <input type="text" class="form-control" [(ngModel)]="BranchOffice.Address" value="{{BranchOffice.Address}}" name="address">
           </div>
 
-          <div class="form-group">
-            <label for="latitude">Latitude:</label>
-            <input type="text" class="form-control" [(ngModel)]="BranchOffice.Latitude" value="{{BranchOffice.Latitude}}" name="latitude">
-          </div>
-
-          <div class="form-group">
-            <label for="address">Longitude:</label>
-            <input type="text" class="form-control" [(ngModel)]="BranchOffice.Longitude" value="{{BranchOffice.Longitude}}" name="longitude">
-          </div>
+          <app-map [branchOfficeId]= "BranchOfficeId" (messageEvent)="receiveMessage($event)"></app-map>
 
           <label for="file">Old Image:</label>
           <div class="form-group">
