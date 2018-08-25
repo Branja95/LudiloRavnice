@@ -21,10 +21,26 @@ export class RentVehicleComponent implements OnInit {
     this.getServices();
   }
 
+  isManagerOrAdmin(service){
+
+    if(!localStorage.role)
+    {
+      return false;
+    }
+    else
+    {
+      if(localStorage.role == "Manager" || localStorage.role == "Admin")
+      {
+        return true;
+      }
+      return false;
+    }
+  }
+
   deleteService(serviceId){
     this.rentVehicleService.deleteService(serviceId).subscribe(
       res => { 
-      alert(res);
+      console.log(res);
     }, error => {
       alert(error);
     });

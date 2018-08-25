@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
-import {
-  Router,
-  ActivatedRoute
-} from '@angular/router';
+
+import {Router, ActivatedRoute } from '@angular/router';
 
 import { RentVehicle } from '../models/rent-vehicle.model';
 import { RentVehicleService } from '../services/rent-vehicle.service';
@@ -11,12 +9,13 @@ import { RentVehicleService } from '../services/rent-vehicle.service';
 @Component({
   selector: 'app-edit-rent-vehicle',
   templateUrl: './edit-rent-vehicle.component.html',
-  styleUrls: ['./edit-rent-vehicle.component.css']
+  styleUrls: ['./edit-rent-vehicle.component.css'],
+  providers: [RentVehicleService]
 })
 export class EditRentVehicleComponent implements OnInit {
 
   ServiceId: string = "-1";
-  RentVehicle: RentVehicle;
+  rentVehicle: any;
     
   selecetdFileUrl: string = '';
   selectedFile: File = null;
@@ -27,9 +26,9 @@ export class EditRentVehicleComponent implements OnInit {
 
   ngOnInit() {
     this.rentVehicleService.getService(this.ServiceId).subscribe(
-      data => {
-        this.RentVehicle = data as RentVehicle;
-        console.log(this.RentVehicle);
+      res => {
+        this.rentVehicle = res;
+        console.log(this.rentVehicle);
       },error => {
         alert(error.error.Message);
       });
@@ -53,10 +52,10 @@ export class EditRentVehicleComponent implements OnInit {
 
   onSubmit(form: NgForm) {
   
-    this.rentVehicleService.editService(this.ServiceId, this.RentVehicle, this.selectedFile)
+    this.rentVehicleService.editService(this.ServiceId, this.rentVehicle, this.selectedFile)
     .subscribe(
-      data => {
-        alert(data);
+      res => {
+        console.log(res);
       }, error => {
         alert(error);
       });;

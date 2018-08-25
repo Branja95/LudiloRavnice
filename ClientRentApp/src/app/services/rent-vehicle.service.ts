@@ -24,7 +24,7 @@ export class RentVehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'multipart/form-data')
 
-    let result = this.httpClient.post("http://localhost:51680/api/Services",this.formData, { headers: headers });
+    let result = this.httpClient.post("http://localhost:51680/api/Services/PostService",this.formData, { headers: headers });
 
     this.formData = new FormData();
 
@@ -32,15 +32,15 @@ export class RentVehicleService {
   }
 
   getMethodServices(): Observable<any> {
-    return this.httpClient.get("http://localhost:51680/api/Services")
+    return this.httpClient.get("http://localhost:51680/api/Services/GetServices")
   }
 
   deleteService(serviceId): Observable<any>{
-    return this.httpClient.delete("http://localhost:51680/api/Services/" + serviceId);
+    return this.httpClient.delete("http://localhost:51680/api/Services/DeleteService?serviceId=" + serviceId);
   }
 
   getService(serviceId): Observable<any>{
-    return this.httpClient.get("http://localhost:51680/api/Services/" + serviceId);
+    return this.httpClient.get("http://localhost:51680/api/Services/GetService?serviceId=" + serviceId);
   }
 
   editService(serviceId, service, uploadedImage: File): Observable<any>{
@@ -53,11 +53,23 @@ export class RentVehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.put("http://localhost:51680/api/Services/" + serviceId, this.formData, { headers: headers });
+    let result = this.httpClient.put("http://localhost:51680/api/Services/PutService?serviceId=" + serviceId, this.formData, { headers: headers });
 
     this.formData = new FormData();
 
     return result;
+  }
+
+  getMethodServicesForApproves(): Observable<any> {
+    return this.httpClient.get("http://localhost:51680/api/Services/ServicesForApproves");
+  }
+
+  postMethodApproveService(id : number) {
+    return this.httpClient.post("http://localhost:51680/api/Services/ApproveService", id);
+  }
+
+  postMethodRejectService(id : number) {
+    return this.httpClient.post("http://localhost:51680/api/Services/RejectService", id);
   }
 
 }

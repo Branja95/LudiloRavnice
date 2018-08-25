@@ -18,9 +18,9 @@ export class BranchOfficeService {
   
   constructor(private httpClient: HttpClient) { }
 
-  postMethodCreateBranchOffice(branchOffice, uploadedImage: File): Observable<any> {
+  postMethodCreateBranchOffice(serviceId, branchOffice, uploadedImage: File): Observable<any> {
     
-    this.formData.append('serviceId',branchOffice.serviceId);
+    this.formData.append('serviceId',serviceId);
     this.formData.append('address', branchOffice.address)
     this.formData.append('latitude', branchOffice.latitude);
     this.formData.append('longitude', branchOffice.longitude);
@@ -29,7 +29,7 @@ export class BranchOfficeService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.post("http://localhost:51680/api/BranchOffices",this.formData, { headers: headers });
+    let result = this.httpClient.post("http://localhost:51680/api/BranchOffices/PostBranchOffice",this.formData, { headers: headers });
 
     this.formData = new FormData();
 
@@ -37,14 +37,14 @@ export class BranchOfficeService {
    }
 
    getBranchOffice(branchOfficeId): Observable<any> {
-    return this.httpClient.get("http://localhost:51680/api/BranchOffices/" + branchOfficeId);
+    return this.httpClient.get("http://localhost:51680/api/BranchOffices/GetBranchOffice?branchOfficeId=" + branchOfficeId);
    }
 
-   getBranchOffices(): Observable<any> {
-    return this.httpClient.get("http://localhost:51680/api/BranchOffices");
+   getBranchOffices(serviceId): Observable<any> {
+    return this.httpClient.get("http://localhost:51680/api/Services/GetBranchOffices?serviceId=" + serviceId);
    }
 
-   editBranchOffice(branchOfficeId, branchOffice, uploadedImage: File): Observable<any> {
+   editBranchOffice(serviceId, branchOfficeId, branchOffice, uploadedImage: File): Observable<any> {
      
     this.formData.append('id', branchOfficeId);
     this.formData.append('address', branchOffice.Address)
@@ -55,15 +55,15 @@ export class BranchOfficeService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.put("http://localhost:51680/api/BranchOffices/" + branchOfficeId, this.formData, { headers: headers });
+    let result = this.httpClient.put("http://localhost:51680/api/BranchOffices/PutBranchOffice?serviceId=" + serviceId, this.formData, { headers: headers });
 
     this.formData = new FormData();
 
     return result;
    }
 
-   deleteBranchOffice(id): Observable<any> {
-     return this.httpClient.delete("http://localhost:51680/api/BranchOffices/" + id);
+   deleteBranchOffice(serviceId, branchOfficeId): Observable<any> {
+     return this.httpClient.delete("http://localhost:51680/api/BranchOffices/DeleteBranchOffice?serviceId=" + serviceId + "&branchOfficeId=" + branchOfficeId);
    }
 
 }

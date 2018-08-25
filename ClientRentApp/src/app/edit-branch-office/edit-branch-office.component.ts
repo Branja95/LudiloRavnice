@@ -12,10 +12,12 @@ import { BranchOfficeService } from '../services/branch-office.service';
 @Component({
   selector: 'app-edit-branch-office',
   templateUrl: './edit-branch-office.component.html',
-  styleUrls: ['./edit-branch-office.component.css']
+  styleUrls: ['./edit-branch-office.component.css'],
+  providers: [BranchOfficeService]
 })
 export class EditBranchOfficeComponent implements OnInit  {
   
+  ServiceId : string = "-1";
   BranchOfficeId: string = "-1";
   BranchOffice: BranchOffice;
     
@@ -23,7 +25,11 @@ export class EditBranchOfficeComponent implements OnInit  {
   selectedFile: File = null;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService) {
-    activatedRoute.params.subscribe(params => {this.BranchOfficeId = params["BranchOfficeId"]});
+    activatedRoute.params
+    .subscribe(params => {
+      this.ServiceId = params["ServiceId"];
+      this.BranchOfficeId = params["BranchOfficeId"];
+    });
   }
 
   ngOnInit() {
@@ -54,18 +60,17 @@ export class EditBranchOfficeComponent implements OnInit  {
 
   onSubmit(form: NgForm) {
   
-    this.branchOfficeService.editBranchOffice(this.BranchOfficeId,this.BranchOffice, this.selectedFile)
+    this.branchOfficeService.editBranchOffice(this.ServiceId, this.BranchOfficeId,this.BranchOffice, this.selectedFile)
     .subscribe(
-      data => {
-        alert(data);
+      res => {
+        console.log(res);
       }, error => {
-        alert(error);
+        alert(error.error.Message);
       });;
     
       form.reset();
       this.selecetdFileUrl = '';
       this.selectedFile = null;
-      this.router.navigateByUrl('BranchOffice');
     
   }
 }

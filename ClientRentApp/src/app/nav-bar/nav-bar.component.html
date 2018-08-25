@@ -2,7 +2,6 @@
   <div class="container-fluid">
     <ul class="nav navbar-nav">
       <li><a [routerLink]="['/RentVehicle']">Rent vehicle</a></li>
-      <li><a [routerLink]="['/BranchOffice']">Branch office</a></li>
       <li><a [routerLink]="['/Vehicle']">Vehicle</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
@@ -10,7 +9,8 @@
       <div *ngIf="isLogged(); then thenBlock; else elseBlock"></div>
         
       <ng-template #thenBlock>
-          <li><a *ngIf="isAdmin()" (click)="resetNotifications()" [routerLink]="['/ApproveAccountAdmin']">Approve user accounts<span *ngIf="visibleNotifications()" class="badge badge-notify">{{accountToApprove}}</span></a></li>
+          <li><a *ngIf="isAdmin()" (click)="resetNotificationsService()" [routerLink]="['/ApproveServiceAdmin']">Approve service<span *ngIf="visibleNotificationsService()" class="badge badge-notify">{{serviceToApprove}}</span></a></li>  
+          <li><a *ngIf="isAdmin()" (click)="resetNotificationsAccount()" [routerLink]="['/ApproveAccountAdmin']">Approve user accounts<span *ngIf="visibleNotificationsAccount()" class="badge badge-notify">{{accountToApprove}}</span></a></li>
           <li><a [routerLink]="['/UserAccount']"> {{username}}</a></li>
           <li><a (click)="logoutUser()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
       </ng-template>

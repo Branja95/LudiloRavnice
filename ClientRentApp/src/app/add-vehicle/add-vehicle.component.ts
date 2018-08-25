@@ -48,7 +48,7 @@ export class AddVehicleComponent implements OnInit {
   onSubmit(form: NgForm, vehicle: Vehicle) {
     vehicle.serviceId = this.ServiceId;
 
-    this.vehicleService.postMethodCreateVehicle(vehicle, this.uploadedFiles)
+    this.vehicleService.createVehicle(vehicle, this.uploadedFiles)
     .subscribe(
       data => {
         alert(data);
@@ -62,6 +62,6 @@ export class AddVehicleComponent implements OnInit {
   }
   
   getVehicleTypes() { 
-    this.vehicleService.getMethodVehicleTypes().subscribe(res => { this.vehicleTypes = res as Array<VehicleType> });  
+    this.vehicleService.getVehicleTypes().subscribe(res => { this.vehicleTypes = res as Array<VehicleType> });  
   }
 }

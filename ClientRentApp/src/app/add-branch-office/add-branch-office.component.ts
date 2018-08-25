@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import {
-  Router,
-  ActivatedRoute
-} from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { BranchOffice } from '../models/branch-office.model';
 import { BranchOfficeService } from '../services/branch-office.service';
@@ -15,6 +12,7 @@ import { BranchOfficeService } from '../services/branch-office.service';
   providers: [BranchOfficeService]
 })
 export class AddBranchOfficeComponent implements OnInit {
+
   ServiceId: string = "-1";
   url: string = '';
   file: File = null;
@@ -45,10 +43,12 @@ export class AddBranchOfficeComponent implements OnInit {
 
     branchOffice.serviceId = this.ServiceId;
     
-    this.branchOfficeService.postMethodCreateBranchOffice(branchOffice, this.file)
+    console.log(this.ServiceId);
+
+    this.branchOfficeService.postMethodCreateBranchOffice(this.ServiceId, branchOffice, this.file)
     .subscribe(
-      data => {
-        alert(data);
+      res => {
+        console.log(res);
       }, error => {
         alert(error.error.Message);
       });;

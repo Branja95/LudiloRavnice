@@ -82,7 +82,10 @@ namespace RentApp.Helpers
         public static void DeleteImage(string imageId)
         {
             string filePath = HostingEnvironment.MapPath("~/App_Data/" + imageId);
-            File.Delete(filePath);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
         }
     }
 }

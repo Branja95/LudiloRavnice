@@ -12,14 +12,16 @@ export class NotificationService {
   private proxyName: string = 'Notifications';  
   public connection: any;  
   // create the Event Emitter  
-  public messageReceived: EventEmitter < number > ;  
+  public messageAccountReceived: EventEmitter < number > ;  
+  public messageServiceReceived: EventEmitter < number > ;  
   public connectionEstablished: EventEmitter < Boolean > ;  
   public connectionExists: Boolean;  
 
   constructor() {  
     // Constructor initialization  
     this.connectionEstablished = new EventEmitter < Boolean > ();  
-    this.messageReceived = new EventEmitter < number > ();  
+    this.messageAccountReceived = new EventEmitter < number > ();  
+    this.messageServiceReceived = new EventEmitter < number > ();  
     this.connectionExists = false;  
     // create hub connection  
     this.connection = $.hubConnection("http://localhost:51680/");  
@@ -28,6 +30,7 @@ export class NotificationService {
     this.proxy = this.connection.createHubProxy(this.proxyName);  
     // register on server events  
     this.registerOnServerAccountEvents();  
+    this.registerOnServerServiceEvents();
     // call the connecion start method to start the connection to send and receive events.  
     //this.startConnection();  
   }  
@@ -50,7 +53,14 @@ export class NotificationService {
   private registerOnServerAccountEvents(): void {  
       this.proxy.on('newUserAccountToApprove', (data: number) => {  
           console.log('Received in NotificationService: ' + JSON.stringify(data));  
-          this.messageReceived.emit(data);  
+          this.messageAccountReceived.emit(data);  
       });  
   }  
+
+  private registerOnServerServiceEvents(): void {  
+    this.proxy.on('newRentVehicleServiceToApprove', (data: number) => {  
+        console.log('Received in NotificationService: ' + JSON.stringify(data));  
+        this.messageServiceReceived.emit(data);  
+    });  
+    }  
 }

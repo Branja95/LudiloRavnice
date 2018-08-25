@@ -34,7 +34,7 @@ export class ApproveAccountAdminComponent implements OnInit {
     .subscribe(
       res => {
         console.log(res);
-        this.router.navigate(['/ApproveAccountAdmin']);
+        this.router.navigate(['/RentVehicle']);
       },
       error => {
         alert(error.error.Message);
@@ -47,7 +47,7 @@ export class ApproveAccountAdminComponent implements OnInit {
     .subscribe(
       res => {
         console.log(res);
-        this.router.navigate(['/ApproveAccountAdmin']);
+        this.router.navigate(['/RentVehicle']);
       },
       error => {
         alert(error.error.Message);

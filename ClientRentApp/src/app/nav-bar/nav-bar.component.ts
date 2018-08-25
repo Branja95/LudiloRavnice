@@ -14,11 +14,13 @@ import { NavBarService } from '../services/nav-bar.service';
 })
 export class NavBarComponent implements OnInit {
 
-  private username: string
-  private notificationCount: number
+  private username: string;
+  private role : string;
 
-  private showNotifications: boolean
+  private showNotificationsAccount: boolean;
+  private showNotificationsService: boolean;
 
+  public serviceToApprove: number;  
   public accountToApprove: number;  
   public canSendMessage: Boolean;  
 
@@ -27,32 +29,58 @@ export class NavBarComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.accountToApprove = 0;
     this.username = null;
-    this.showNotifications = false;
+    this.role = null;
+    this.accountToApprove = 0;
+    this.showNotificationsAccount = false;
+    this.serviceToApprove = 0;
+    this.showNotificationsService = false;
   }
 
-  private subscribeToEvents(): void {  
+  private subscribeToAccountEvents(): void {  
     // if connection exists it can call of method.  
     this.notificationService.connectionEstablished.subscribe(() => {  
         this.canSendMessage = true;  
     });  
     // finally our service method to call when response received from server event and transfer response to some variable to be shown on the browser.  
-    this.notificationService.messageReceived.subscribe((message: number) => {  
+    this.notificationService.messageAccountReceived.subscribe((message: number) => {  
         this._ngZone.run(() => {  
           this.accountToApprove = message;
-          this.showNotifications = true;  
+          this.showNotificationsAccount = true;  
         });  
     });  
   }  
 
-  resetNotifications() : void {
-    this.showNotifications = false;
+  private subscribeToServiceEvents(): void {  
+    // if connection exists it can call of method.  
+    this.notificationService.connectionEstablished.subscribe(() => {  
+        this.canSendMessage = true;  
+    });  
+    // finally our service method to call when response received from server event and transfer response to some variable to be shown on the browser.  
+    this.notificationService.messageServiceReceived.subscribe((message: number) => {  
+        this._ngZone.run(() => {  
+          this.serviceToApprove = message;
+          this.showNotificationsService = true;  
+        });  
+    });  
+  }  
+
+  resetNotificationsService() : void {
+    this.showNotificationsService = false;
   }
 
-  visibleNotifications()
+  visibleNotificationsService()
   {
-    return this.showNotifications;
+    return this.showNotificationsService;
+  }
+
+  resetNotificationsAccount() : void {
+    this.showNotificationsAccount = false;
+  }
+
+  visibleNotificationsAccount()
+  {
+    return this.showNotificationsAccount;
   }
 
   isLogged() : boolean
@@ -77,7 +105,8 @@ export class NavBarComponent implements OnInit {
     {
       this.notificationService.connection.qs = { "token" : `Bearer ${localStorage.jwt}` };
       this.notificationService.startConnection()
-      this.subscribeToEvents();  
+      this.subscribeToAccountEvents();  
+      this.subscribeToServiceEvents();
       this.canSendMessage = this.notificationService.connectionExists;  
     }
   }

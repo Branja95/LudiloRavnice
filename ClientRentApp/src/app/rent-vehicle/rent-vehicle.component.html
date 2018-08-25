@@ -1,23 +1,25 @@
 <div class="container">
     <div class="row">
-      <div id="banner">
-          &nbsp;&nbsp;&nbsp;
+      <div id="banner" class="col col-lg-4 col-lg-push-4">
+        <br/>
           <div class="inline-block">
               <div *ngFor='let rentVehicle of services'>
-                  <img src='http://localhost:51680/api/Services?imageId={{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
+                  <img src='http://localhost:51680/api/Services/LoadImage?imageId={{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
                   <label>Email Address:</label> {{rentVehicle.EmailAddress}}<br/>
                   <label>Description:</label> {{rentVehicle.Description}}<br/>
                   
-                  <button [routerLink]="['/AddBranchOffice/' , rentVehicle.Id]">Add Branch Office</button>
-                  <button [routerLink]="['/AddVehicle/' , rentVehicle.Id]">Add Vehicle</button>
-                  <button [routerLink]="['/EditService/' , rentVehicle.Id]">Edit</button>
-                  <button type="button" (click)="deleteService(rentVehicle.Id)">Delete</button>
+                  <!--<button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/AddBranchOffice/' , rentVehicle.Id]" class="btn btn-default">Add Branch Office</button>
+                  <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/AddVehicle/' , rentVehicle.Id]" class="btn btn-default">Add Vehicle</button>-->
+                    
+                  <button type="button" [routerLink]="['/ViewService/' , rentVehicle.Id]" class="btn btn-default">View</button> &nbsp;
+                  <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/EditService/' , rentVehicle.Id]" class="btn btn-default">Edit</button> &nbsp;
+                  <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" (click)="deleteService(rentVehicle.Id)" class="btn btn-default">Delete</button> &nbsp;
               </div>
           </div>
-      </div>
+        </div>
     </div>
-  </div>
-  
-  <div>
-      <button [routerLink]="['/AddService/']">Add Rent-Vehicle-Service</button>
-  </div>
+    <br/>
+    <div class="col col-lg-4 col-lg-push-4">
+        <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/AddService/' , rentVehicle.Id]" class="btn btn-default">Add Rent-Vehicle-Service</button>
+    </div>
+</div>

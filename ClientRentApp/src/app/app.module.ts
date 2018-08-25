@@ -19,7 +19,6 @@ import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { BranchOfficeComponent } from './branch-office/branch-office.component';
 import { VehicleComponent } from './vehicle/vehicle.component';
 import { RentVehicleComponent } from './rent-vehicle/rent-vehicle.component';
-import { ClockComponent } from './clock/clock.component';
 import { ApproveAccountComponent } from './approve-account/approve-account.component';
 import { AddBranchOfficeComponent } from './add-branch-office/add-branch-office.component';
 import { AddVehicleComponent } from './add-vehicle/add-vehicle.component';
@@ -29,6 +28,8 @@ import { ApproveAccountAdminComponent } from './approve-account-admin/approve-ac
 import { UserAccountComponent } from './user-account/user-account.component';
 import { EditRentVehicleComponent } from './edit-rent-vehicle/edit-rent-vehicle.component';
 import { EditVehicleComponent } from './edit-vehicle/edit-vehicle.component';
+import { ApproveServiceAdminComponent } from './approve-service-admin/approve-service-admin.component';
+import { ViewRentVehicleComponent } from './view-rent-vehicle/view-rent-vehicle.component';
 
 const Routes = [
   {
@@ -48,11 +49,15 @@ const Routes = [
     component: ApproveAccountAdminComponent
   },
   {
+    path: "ApproveServiceAdmin",
+    component: ApproveServiceAdminComponent
+  },
+  {
     path: "Registration",
     component: RegistrationComponent
   },
   {
-    path: "BranchOffice",
+    path: "BranchOffice/:ServiceId",
     component: BranchOfficeComponent
   },
   {
@@ -68,7 +73,7 @@ const Routes = [
     component: AddBranchOfficeComponent
   }, 
   {
-    path: "EditBranchOffice/:BranchOfficeId",
+    path: "EditBranchOffice/:ServiceId/:BranchOfficeId",
     component: EditBranchOfficeComponent
   },
   {
@@ -86,7 +91,11 @@ const Routes = [
   {
     path: "EditService/:ServiceId",
     component: EditRentVehicleComponent
-  }
+  },
+  {
+    path: "ViewService/:ServiceId",
+    component: ViewRentVehicleComponent
+  },
 ]
 
 @NgModule({
@@ -98,7 +107,6 @@ const Routes = [
     BranchOfficeComponent,
     VehicleComponent,
     RentVehicleComponent,
-    ClockComponent,
     ApproveAccountComponent,
     AddBranchOfficeComponent,
     EditBranchOfficeComponent,
@@ -107,7 +115,9 @@ const Routes = [
     AddRentVehicleComponent,
     EditRentVehicleComponent,
     ApproveAccountAdminComponent,
-    UserAccountComponent
+    UserAccountComponent,
+    ApproveServiceAdminComponent,
+    ViewRentVehicleComponent
   ],
   imports: [
     BrowserModule,

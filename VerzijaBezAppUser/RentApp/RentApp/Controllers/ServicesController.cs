@@ -1,71 +1,85 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 using System.Web;
-using System.Web.Hosting;
 using System.Web.Http;
-using System.Web.Http.Description;
-using RentApp.Helpers;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.OAuth;
+using RentApp.Models;
 using RentApp.Models.Entities;
+using RentApp.Providers;
+using RentApp.Results;
 using RentApp.Persistance.UnitOfWork;
+using RentApp.Hubs;
+using System.Linq;
+using System.Collections;
+using RentApp.Helpers;
 using static RentApp.Models.ServiceBindingModel;
+using System.Runtime.Remoting.Messaging;
+using RentApp.Services;
+using System.Web.Http.Description;
+using System.Net;
+using System.Data.Entity.Infrastructure;
 
 namespace RentApp.Controllers
 {
+    [Authorize]
+    [RoutePrefix("api/Services")]
     public class ServicesController : ApiController
     {
         private string validationErrorMessage;
         private readonly IUnitOfWork unitOfWork;
+        private readonly ISMTPService SMTPService;
 
-        public ServicesController(IUnitOfWork unitOfWork)
+        public ServicesController() { }
+
+        public ServicesController(ApplicationUserManager userManager,
+           IUnitOfWork unitOfWork,
+           ISMTPService SMTPService)
         {
+            UserManager = userManager;
             this.unitOfWork = unitOfWork;
+            this.SMTPService = SMTPService;
         }
 
-        // GET: api/Services
-        public IEnumerable<Service> GetServices()
-        {
-            return unitOfWork.Services.GetAll();
-        }
+        public ApplicationUserManager UserManager { get; private set; }
 
-        // GET: api/Vehicles
+
+        // GET: api/Services/GetServices
         [HttpGet]
-        public HttpResponseMessage LoadImage(string imageId)
+        [AllowAnonymous]
+        [Route("GetServices")]
+        public IHttpActionResult GetServices()
         {
-            HttpResponseMessage result;
+            IEnumerable<Service> services = unitOfWork.Services.Find(s => s.IsApproved);
 
-            String filePath = HostingEnvironment.MapPath("~/App_Data/" + imageId);
+            List<Service> servicesList = new List<Service>(services);
 
-            if (File.Exists(filePath))
-            {
-                result = new HttpResponseMessage(HttpStatusCode.OK);
-                FileStream fileStream = new FileStream(filePath, FileMode.Open);
-                Image image = Image.FromStream(fileStream);
-                MemoryStream memoryStream = new MemoryStream();
-                image.Save(memoryStream, ImageFormat.Jpeg);
-                result.Content = new ByteArrayContent(memoryStream.ToArray());
-                result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-                fileStream.Close();
-            }
-            else
-            {
-                result = new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
-
-            return result;
+            return Ok(servicesList);
         }
 
-        // GET: api/Services/5
-        [ResponseType(typeof(Service))]
-        public IHttpActionResult GetService(int id)
+        // GET: api/Services/LoadImage
+        [HttpGet]
+        [Route("LoadImage")]
+        [AllowAnonymous]
+        public HttpResponseMessage LoadImage([FromUri] string imageId)
         {
-            Service service = unitOfWork.Services.Get(id);
+            return ImageHelper.LoadImage(imageId);
+        }
+
+        // GET: api/Services/GetService/5
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("GetService")]
+        public IHttpActionResult GetService([FromUri] long serviceId)
+        {
+            Service service = unitOfWork.Services.Get(serviceId);
             if (service == null)
             {
                 return NotFound();
@@ -74,58 +88,149 @@ namespace RentApp.Controllers
             return Ok(service);
         }
 
-
-        // PUT: api/Services/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutService(int id, EditRentVehicleServiceBindingModel model)
+        // GET: api/Services/GetBranchOffices
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("GetBranchOffices")]
+        public IHttpActionResult GetBranchOffices([FromUri] long serviceId)
         {
+            Service service = unitOfWork.Services.Get(serviceId);
+
+            if(service == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(service.BranchOfficces);
+
+        }
+
+        // PUT: api/Services/PutService/5
+        [HttpPut]
+        [Route("PutService")]
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<IHttpActionResult> PutService([FromUri] long serviceId, EditRentVehicleServiceBindingModel model)
+        {
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            Service serviceForValidation = unitOfWork.Services.Get(serviceId);
+
+            if(serviceForValidation == null)
+            {
+                return BadRequest("Service don't exists.");
+            }
+
+            if (UserManager.IsInRole(user.Id, "Manager") && !UserManager.IsInRole(user.Id, "Admin"))
+            {
+                if (serviceForValidation.Creator != user.Id)
+                {
+                    return BadRequest("Access denied.");
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != model.Id)
+            if (serviceId != model.Id)
             {
                 return BadRequest();
             }
+
             HttpRequest httpRequest = HttpContext.Current.Request;
 
             if (!ImageHelper.ValidateImage(httpRequest.Files[0], out validationErrorMessage))
             {
                 return BadRequest(validationErrorMessage);
             }
-            Service service = new Service()
-            {
-                Id = model.Id,
-                Name = model.Name,
-                EmailAddress = model.EmailAddress,
-                Description = model.Description,
-                LogoImage = ImageHelper.SaveImageToServer(httpRequest.Files[0])
-            };
 
-            try
-            {
-                unitOfWork.Services.Update(service);
-                unitOfWork.Complete();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ServiceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            Service oldService = unitOfWork.Services.Get(serviceId);
+
+            ImageHelper.DeleteImage(oldService.LogoImage);
+
+            oldService.Name = model.Name;
+            oldService.EmailAddress = model.EmailAddress;
+            oldService.Description = model.Description;
+            oldService.LogoImage = ImageHelper.SaveImageToServer(httpRequest.Files[0]);
+
+            unitOfWork.Services.Update(oldService);
+            unitOfWork.Complete();
 
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Services
-        [ResponseType(typeof(Service))]
-        public IHttpActionResult PostService(CreateRentVehicleServiceBindingModel model)
+
+        // GET: api/Services/ServicesForApproves
+        [HttpGet]
+        [Route("ServicesForApproves")]
+        [Authorize(Roles = "Admin")]
+        public IHttpActionResult ServicesForApproves()
+        {
+            IEnumerable<Service> servicesForApproves = unitOfWork.Services.Find(s => !s.IsApproved);
+
+            List<Service> servicesForApprovesList = new List<Service>(servicesForApproves);
+
+            return Ok(servicesForApprovesList);
+        }
+
+        // POST api/Services/ApproveService
+        [HttpPost]
+        [Route("ApproveService")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IHttpActionResult> ApproveService([FromBody] long id)
+        {
+
+            if (unitOfWork.Services.Get(id) == null)
+            {
+                return BadRequest("Bad request. Id don't exists.");
+            }
+
+            Service serviceForApprove = unitOfWork.Services.Get(id);
+
+            RAIdentityUser user = await UserManager.FindByIdAsync(serviceForApprove.Creator);
+
+            serviceForApprove.IsApproved = true;
+
+            SMTPService.SendMail("Service approved", "Your service "+ serviceForApprove.Name + " is approved, now you can add branch offices and vehicles.", user.Email);
+
+            unitOfWork.Services.Update(serviceForApprove);
+            unitOfWork.Complete();
+
+            return Ok("Service Successfully approved.");
+        }
+
+        // POST api/Services/RejectService
+        [HttpPost]
+        [Route("RejectService")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IHttpActionResult> RejectService([FromBody]long id)
+        {
+
+            if (unitOfWork.Services.Get(id) == null)
+            {
+                return BadRequest("Bad request. Id don't exists.");
+            }
+
+            Service serviceForApprove = unitOfWork.Services.Get(id);
+
+            RAIdentityUser user = await UserManager.FindByIdAsync(serviceForApprove.Creator);
+
+            SMTPService.SendMail("Service rejected", "Your service " + serviceForApprove.Name + " is rejected.", user.Email);
+
+            ImageHelper.DeleteImage(serviceForApprove.LogoImage);
+
+            unitOfWork.Services.Remove(serviceForApprove);
+            unitOfWork.Complete();
+
+            return Ok("Service Successfully rejected.");
+        }
+
+        // POST: api/Services/PostService
+        [HttpPost]
+        [Route("PostService")]
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<IHttpActionResult> PostService(CreateRentVehicleServiceBindingModel model)
         {
             HttpRequest httpRequest = HttpContext.Current.Request;
 
@@ -139,35 +244,57 @@ namespace RentApp.Controllers
                 return BadRequest(validationErrorMessage);
             }
 
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
             Service service = new Service()
             {
+                Creator = user.Id,
                 Name = model.Name,
                 EmailAddress = model.ContactEmail,
                 Description = model.Description,
-                LogoImage = ImageHelper.SaveImageToServer(httpRequest.Files[0])
+                LogoImage = ImageHelper.SaveImageToServer(httpRequest.Files[0]),
+                IsApproved = false
             };
 
             unitOfWork.Services.Add(service);
             unitOfWork.Complete();
 
+            NotificationHub.NewRentVehicleServiceToApprove(unitOfWork.Services.Find(s => !s.IsApproved).Count());
+
             return Ok("RentVehicle Service succsessfully created");
         }
 
-        // DELETE: api/Services/5
-        [ResponseType(typeof(Service))]
-        public IHttpActionResult DeleteService(int id)
+        // DELETE: api/Services/DeleteService/5
+        [HttpDelete]
+        [Route("DeleteService")]
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<IHttpActionResult> DeleteService([FromUri] int serviceId)
         {
-            Service service = unitOfWork.Services.Get(id);
+            Service service = unitOfWork.Services.Get(serviceId);
+
             if (service == null)
             {
                 return NotFound();
             }
-           
+
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            if (UserManager.IsInRole(user.Id, "Manager") && !UserManager.IsInRole(user.Id, "Admin"))
+            {
+                if (service.Creator != user.Id)
+                {
+                    return BadRequest("Access denied.");
+                }
+            }
+
             List<long> branchOfficeIds = new List<long>();
 
-            foreach(BranchOffice branchOffice in service.BranchOfficces)
+            if (service.BranchOfficces != null)
             {
-                branchOfficeIds.Add(branchOffice.Id);
+                foreach (BranchOffice branchOffice in service.BranchOfficces)
+                {
+                    branchOfficeIds.Add(branchOffice.Id);
+                }
             }
 
             foreach(long branchOfficeId in branchOfficeIds)
@@ -178,13 +305,33 @@ namespace RentApp.Controllers
 
             unitOfWork.Complete();
 
+            List<long> vehiclesIds = new List<long>();
+
+            if (service.Vehicles != null)
+            {
+                foreach (Vehicle vehicle in service.Vehicles)
+                {
+                    vehiclesIds.Add(vehicle.Id);
+                }
+            }
+
+            foreach (long vehicleId in vehiclesIds)
+            {
+                Vehicle vehicle = unitOfWork.Vehicles.Get(vehicleId);
+                unitOfWork.Vehicles.Remove(vehicle);
+            }
+
+            unitOfWork.Complete();
+
+            ImageHelper.DeleteImage(service.LogoImage);
+
             unitOfWork.Services.Remove(service);
             unitOfWork.Complete();
 
             return Ok(service);
         }
 
-        private bool ServiceExists(int id)
+        private bool ServiceExists(long id)
         {
             return unitOfWork.Services.Get(id) != null;
         }

@@ -1,44 +1,77 @@
-﻿using System.Data.Entity.Infrastructure;
-using System.Net;
-using System.Web.Http;
-using System.Web.Http.Description;
-using RentApp.Models.Entities;
-using RentApp.Persistance.UnitOfWork;
+﻿using System;
 using System.Collections.Generic;
-using static RentApp.Models.BranchOfficeBindingModel;
-using System.Web;
-using System;
 using System.Net.Http;
-using System.IO;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Net.Http.Headers;
-using System.Web.Hosting;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.OAuth;
+using RentApp.Models;
+using RentApp.Models.Entities;
+using RentApp.Providers;
+using RentApp.Results;
+using RentApp.Persistance.UnitOfWork;
+using RentApp.Hubs;
+using System.Linq;
+using System.Collections;
 using RentApp.Helpers;
+using System.Runtime.Remoting.Messaging;
+using RentApp.Services;
+using System.Web.Http.Description;
+using System.Net;
+using System.Data.Entity.Infrastructure;
+using static RentApp.Models.BranchOfficeBindingModel;
+
 
 namespace RentApp.Controllers
 {
+    [Authorize]
+    [RoutePrefix("api/BranchOffices")]
     public class BranchOfficesController : ApiController
     {
-        private string validationErrorMessage = "";
+        private string validationErrorMessage;
         private readonly IUnitOfWork unitOfWork;
+        private readonly ISMTPService SMTPService;
 
-        public BranchOfficesController(IUnitOfWork unitOfWork)
+        public BranchOfficesController() { }
+
+        public BranchOfficesController(ApplicationUserManager userManager,
+           IUnitOfWork unitOfWork,
+           ISMTPService SMTPService)
         {
+            UserManager = userManager;
             this.unitOfWork = unitOfWork;
+            this.SMTPService = SMTPService;
         }
 
-        // GET: api/BranchOffices
-        public IEnumerable<BranchOffice> GetBranchOffices()
+        public ApplicationUserManager UserManager { get; private set; }
+
+        // GET: api/BranchOffices/GetBranchOffices
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("GetBranchOffices")]
+        public IHttpActionResult GetBranchOffices()
         {
-            return unitOfWork.BranchOffices.GetAll();
+            IEnumerable<BranchOffice> branchOffices = unitOfWork.BranchOffices.GetAll();
+
+            List<BranchOffice> branchOfficesList = new List<BranchOffice>(branchOffices);
+
+            return Ok(branchOfficesList);
+
         }
 
-        // GET: api/BranchOffices/5
-        [ResponseType(typeof(BranchOffice))]
-        public IHttpActionResult GetBranchOffice(int id)
+        // GET: api/BranchOffices/GetBranchOffice
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("GetBranchOffice")]
+        public IHttpActionResult GetBranchOffice([FromUri] long branchOfficeId)
         {
-            BranchOffice branchOffice = unitOfWork.BranchOffices.Get(id);
+            BranchOffice branchOffice = unitOfWork.BranchOffices.Get(branchOfficeId);
             if (branchOffice == null)
             {
                 return NotFound();
@@ -47,27 +80,49 @@ namespace RentApp.Controllers
             return Ok(branchOffice);
         }
 
-        // GET: api/BranchOffices
+        // GET: api/BranchOffices/LoadImage
         [HttpGet]
-        public HttpResponseMessage LoadImage(string imageId)
+        [Route("LoadImage")]
+        [AllowAnonymous]
+        public HttpResponseMessage LoadImage([FromUri] string imageId)
         {
             return ImageHelper.LoadImage(imageId);
         }
 
-        // PUT: api/BranchOffices/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutBranchOffice(int id, EditBranchOfficeBindingModel model)
+        // PUT: api/BranchOffices/PutBranchOffice
+        [HttpPut]
+        [Route("PutBranchOffice")]
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<IHttpActionResult> PutBranchOffice([FromUri] long serviceId, EditBranchOfficeBindingModel model)
         {
 
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            Service serviceForValidation = unitOfWork.Services.Get(serviceId);
+
+            if (serviceForValidation == null)
+            {
+                return BadRequest("Service don't exists.");
+            }
+
+            if (UserManager.IsInRole(user.Id, "Manager") && !UserManager.IsInRole(user.Id, "Admin"))
+            {
+                if (serviceForValidation.Creator != user.Id)
+                {
+                    return BadRequest("Access denied.");
+                }
+            }
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != model.Id)
+            BranchOffice oldBranchOffice = unitOfWork.BranchOffices.Get(model.Id);
+
+            if (oldBranchOffice == null)
             {
-                return BadRequest();
+                return BadRequest("Branch office don't exists.");
             }
 
             HttpRequest httpRequest = HttpContext.Current.Request;
@@ -77,39 +132,31 @@ namespace RentApp.Controllers
                 return BadRequest(validationErrorMessage);
             }
 
-            BranchOffice branchOffice = new BranchOffice
+            if(!serviceForValidation.BranchOfficces.Contains(oldBranchOffice))
             {
-                Id = model.Id,
-                Address = model.Address,
-                Latitude = model.Latitude,
-                Longitude = model.Longitude,
-                Image = ImageHelper.SaveImageToServer(httpRequest.Files[0])
-            };
+                return BadRequest("Branch office don't exists.");
+            }
 
-            try
-            {
-                unitOfWork.BranchOffices.Update(branchOffice);
-                unitOfWork.Complete();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BranchOfficeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            ImageHelper.DeleteImage(oldBranchOffice.Image);
+
+            oldBranchOffice.Address = model.Address;
+            oldBranchOffice.Latitude = model.Latitude;
+            oldBranchOffice.Longitude = model.Longitude;
+            oldBranchOffice.Image = ImageHelper.SaveImageToServer(httpRequest.Files[0]);
+
+            unitOfWork.BranchOffices.Update(oldBranchOffice);
+            unitOfWork.Complete();
 
             return Ok("BranchOffice successfully edited");
         }
 
-        // POST: api/BranchOffices
-        [ResponseType(typeof(BranchOffice))]
-        public IHttpActionResult PostBranchOffice(CreateBranchOfficeBindingModel model)
+        // POST: api/BranchOffices/PostBranchOffice
+        [HttpPost]
+        [Route("PostBranchOffice")]
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<IHttpActionResult> PostBranchOffice(CreateBranchOfficeBindingModel model)
         {
+
             HttpRequest httpRequest = HttpContext.Current.Request;
 
             if (!ModelState.IsValid)
@@ -122,8 +169,22 @@ namespace RentApp.Controllers
                 return BadRequest(validationErrorMessage);
             }
 
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
             Service service = unitOfWork.Services.Get(model.ServiceId);
+
+            if (service == null)
+            {
+                return BadRequest("Service don't exists.");
+            }
+
+            if (UserManager.IsInRole(user.Id, "Manager") && !UserManager.IsInRole(user.Id, "Admin"))
+            {
+                if (service.Creator != user.Id)
+                {
+                    return BadRequest("Access denied.");
+                }
+            }
 
             BranchOffice branchOffice = new BranchOffice
             {
@@ -140,26 +201,48 @@ namespace RentApp.Controllers
             unitOfWork.BranchOffices.Add(branchOffice);
             unitOfWork.Complete();
 
-            return Ok("BranchOffice successfully created");
+            return Ok("Branch office successfully created");
         }
 
-        // DELETE: api/BranchOffices/5
-        [ResponseType(typeof(BranchOffice))]
-        public IHttpActionResult DeleteBranchOffice(int id)
+        // DELETE: api/BranchOffices/DeleteBranchOffice
+        [HttpDelete]
+        [Route("DeleteBranchOffice")]
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<IHttpActionResult> DeleteBranchOffice([FromUri] long serviceId, [FromUri] long branchOfficeId)
         {
-            BranchOffice branchOffice = unitOfWork.BranchOffices.Get(id);
+            BranchOffice branchOffice = unitOfWork.BranchOffices.Get(branchOfficeId);
             if (branchOffice == null)
             {
                 return NotFound();
             }
-            
+
+            Service service = unitOfWork.Services.Get(serviceId);
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            if (UserManager.IsInRole(user.Id, "Manager") && !UserManager.IsInRole(user.Id, "Admin"))
+            {
+                if (service.Creator != user.Id)
+                {
+                    return BadRequest("Access denied.");
+                }
+            }
+
+            service.BranchOfficces.Remove(branchOffice);
+
+            ImageHelper.DeleteImage(branchOffice.Image);
+
             unitOfWork.BranchOffices.Remove(branchOffice);
             unitOfWork.Complete();
 
-            return Ok(branchOffice);
+            return Ok("Branch office successfully deleted.");
         }
 
-        private bool BranchOfficeExists(int id)
+        private bool BranchOfficeExists(long id)
         {
             return unitOfWork.BranchOffices.Get(id) != null;
         }

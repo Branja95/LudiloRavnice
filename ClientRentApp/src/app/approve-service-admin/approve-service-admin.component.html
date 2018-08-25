@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="row">
+      <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Logo</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let service of services">
+              <td> <img src='http://localhost:51680/api/Services/LoadImage?imageId={{service.LogoImage}}' height="100" weight="100"/></td>
+              <td>{{service.Name}}</td>
+              <td>{{service.EmailAddress}}</td>
+              <td>{{service.Description}}</td>
+              <td><button type="button" (click)="approveService(service.Id)" class="btn btn-default">Approve</button></td>
+              <td><button type="button" (click)="rejectService(service.Id)" class="btn btn-default">Reject</button></td>
+            </tr>
+          </tbody>
+        </table>
+  </div>
+</div>

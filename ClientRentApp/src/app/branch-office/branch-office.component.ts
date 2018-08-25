@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { BranchOffice } from '../models/branch-office.model';
 
 import { BranchOfficeService } from '../services/branch-office.service';
 import { Observable } from 'rxjs/Observable';
 import { debug } from 'util';
+import { serializePaths } from '@angular/router/src/url_tree';
 
 @Component({
   selector: 'app-branch-office',
@@ -14,14 +15,22 @@ import { debug } from 'util';
   styleUrls: ['./branch-office.component.css'],
   providers: [BranchOfficeService]
 })
+
 export class BranchOfficeComponent implements OnInit {
 
   url: string = '';
   file: File = null;
 
+  ServiceId : string = "-1";
+
   branchOffices = Array<BranchOffice>()
 
-  constructor(private branchOfficeService: BranchOfficeService) { }
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService) {
+    activatedRoute.params
+    .subscribe(params => {
+      this.ServiceId = params["ServiceId"];
+    });
+  }
 
   ngOnInit() {
     this.getBranchOffices();
@@ -42,40 +51,47 @@ export class BranchOfficeComponent implements OnInit {
 
   }
 
-  onSubmit(form: NgForm, branchOffice: BranchOffice) {
-
-    this.branchOfficeService.postMethodCreateBranchOffice(branchOffice, this.file)
+  onDelete(branchOfficeId: string){
+    this.branchOfficeService.deleteBranchOffice(this.ServiceId, branchOfficeId)
     .subscribe(
-      data => {
-        alert(data);
-      }, error => {
-        alert(error.error.Message);
-      });;
-
-    form.reset();
-    this.url = '';
-    this.file = null;
-  }
-
-  onDelete(form: NgForm, id: string){
-    this.branchOfficeService.deleteBranchOffice(id)
-    .subscribe(
-      data => {
-        alert(data);
+      res => {
+        console.log(res);
       },
       error => {
         alert(error);
       })
-    
   }
 
+  onEdit(branchOfficeId)
+  {
+    this.router.navigate(['/EditBranchOffice', this.ServiceId, branchOfficeId]);
+  }
+
+  isManagerOrAdmin(){
+
+    if(!localStorage.role)
+    {
+      return false;
+    }
+    else
+    {
+      if(localStorage.role == "Manager" || localStorage.role == "Admin")
+      {
+        return true;
+      }
+      return false;
+    }
+  }
+
+
   getBranchOffices() { 
-    
-    this.branchOfficeService.getBranchOffices()
+    console.log(this.ServiceId);
+    this.branchOfficeService.getBranchOffices(this.ServiceId)
     .subscribe(
       res => { 
           this.branchOffices = res as Array<BranchOffice>;
-      }, error => {
+      }, 
+      error => {
         alert(error);
       });
   }
