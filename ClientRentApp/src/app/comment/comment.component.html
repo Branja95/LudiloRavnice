@@ -1,3 +1,11 @@
-<p>
-  comment works!
-</p>
+<div *ngFor='let comment of comments'>
+    <div class="inline-block">
+        <label>Comment:</label><br/>
+        <div class="inline-block">
+            <label >User:</label> {{comment.UserId}}<br/>
+            <label>Text:</label> {{comment.Text}}<br/>
+            <label type="Date">Date:</label> {{comment.DateTime}}<br/>
+          </div>
+          <br/><br/><br/>
+    </div>
+  </div>

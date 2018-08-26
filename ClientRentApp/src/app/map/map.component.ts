@@ -8,47 +8,85 @@ import { BranchOffice } from '../models/branch-office.model';
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
-  styles: ['agm-map {height: 300px; width: 500px;}'] //postavljamo sirinu i visinu mape
+  styles: ['agm-map {height: 500px; width: 700px;}']
 })
 
 export class MapComponent implements OnInit {
  
+  @Input() serviceId: string;
   @Input() branchOfficeId: string;
+  @Input() mapType: string;
  
-  @Output() messageEvent = new EventEmitter<MapInfo>();
+  @Output() messageEvent = new EventEmitter<string>();
+  @Output() newCoordinates = new EventEmitter<MapInfo>();
+
+  centerLatitude =  45.254796;
+  centerLongitude =  19.844581;
 
   mapInfo: MapInfo;
-  
   branchOffice: any;
+  branchOffices: BranchOffice[];
 
   ngOnInit() {
-    this.branchOffice = this.getBranchOffice();
-    this.mapInfo = new MapInfo(this.branchOffice.Latitude, this.branchOffice.Longitude, "assets/ftn.png", "ftn" , "" , "http://ftn.uns.ac.rs/691618389/fakultet-tehnickih-nauka");
+    if(this.mapType == "edit")
+    {
+      this.getBranchOffice();
+    }
+    else 
+    {
+      this.getBranchOffices();
+    }
+  }
+
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService){ }
+
+  isEdit():boolean{
+    if(this.mapType == "edit")
+    {
+      return true;
+    }
+    else 
+    {
+      return false;
+    }
+  }
+
+  getBranchOffice(){
+    this.branchOfficeService.getBranchOffice(this.branchOfficeId).subscribe(
+      res => {
+        this.branchOffice = res as BranchOffice;
+        this.mapInfo = new MapInfo(this.branchOffice.Latitude, this.branchOffice.Longitude, "", "" , "" , "");
+      }, error =>{
+        console.log(error);
+      })
+  }
+
+  getBranchOffices(){
+    this.branchOfficeService.getBranchOffices(this.serviceId).subscribe(
+      res => {
+        this.branchOffices = res;
+        this.mapInfo = new MapInfo(this.centerLatitude, this.centerLongitude, "", "" , "" , "");
+      }, error =>{
+        console.log(error);
+      })
+  }
+
+  previous;
+  
+  markerClicked(branchOfficeId: string, infowindow){
+    this.messageEvent.emit(branchOfficeId);
+
+    if (this.previous) {
+      this.previous.close();
+    }
+    this.previous = infowindow;
   }
 
   placeMarker($event){
     this.mapInfo.centerLat = $event.coords.lat;
     this.mapInfo.centerLong = $event.coords.lng;
 
-    this.sendMessage();
-  }
-  
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService){ }
-
-  getBranchOffice(){
-    this.branchOfficeService.getBranchOffice(this.branchOfficeId).subscribe(
-      res => {
-        this.branchOffice = res as any;
-        this.mapInfo = new MapInfo(this.branchOffice.Latitude, this.branchOffice.Longitude, 
-          "assets/ftn.png",
-          this.branchOffice.Address , "" , "");
-      }, error =>{
-        console.log(error);
-      })
-  }
-
-  sendMessage() {
-    this.messageEvent.emit(this.mapInfo)
+    this.newCoordinates.emit(this.mapInfo)
   }
 
 }

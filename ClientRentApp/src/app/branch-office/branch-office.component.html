@@ -1,18 +1,24 @@
+<div class='parent'>
+  <div *ngIf="isMarkerClicked(); then thenBlock; else elseBlock"></div>
 
-<div class='parent' *ngFor='let branchOffice of branchOffices'>
-  <div class='child inline-block-child'>
-    <img src='http://localhost:51680/api/BranchOffices/LoadImage?imageId={{branchOffice.Image}}' height="300" weight="300"/><br/><br/><br/>
-  </div> 
-  <div class='child inline-block-child'>
-      <app-map [branchOfficeId]="branchOffice.Id"></app-map>
-  </div>
-  <div class='child inline-block-child'>
-    <button type="button" *ngIf="isManagerOrAdmin()" (click)="onDelete(branchOffice.Id)" class="btn btn-default">Delete</button> 
-    <button type="button" *ngIf="isManagerOrAdmin()" (click)="onEdit(branchOffice.Id)" class="btn btn-default">Edit</button>
-  </div>
+  <ng-template #thenBlock>
+      <div class='child inline-block-child'>
+        <img src='http://localhost:51680/api/BranchOffices/LoadImage?imageId={{branchOffice.Image}}' height="300px" weight="300px"/>
+        <br/><br/>
+        <label>Address:</label> {{branchOffice.Address}}
+        <br/><br/>
+        <button type="button" *ngIf="isManagerOrAdmin()" (click)="onDelete(branchOffice.Id)" class="btn btn-default">Delete</button>
+         &nbsp; 
+        <button type="button" *ngIf="isManagerOrAdmin()" (click)="onEdit(branchOffice.Id)" class="btn btn-default">Edit</button>
+      </div> 
+      <div class='child inline-block-child'>
+          <app-map  [serviceId]="serviceId" (messageEvent)="receiveMessage($event)"></app-map>
+      </div>
+  </ng-template>
+  
+  <ng-template #elseBlock>
+      <div class='child inline-block-child'>
+        <app-map  [serviceId]="serviceId" (messageEvent)="receiveMessage($event)"></app-map>
+      </div>
+  </ng-template>
 </div>
-<br/>
-<br/>
-<button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/AddBranchOffice/' , ServiceId]" class="btn btn-default">Add Branch Office</button> &nbsp;
-
-

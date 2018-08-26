@@ -15,7 +15,8 @@ export class BranchOfficeComponent implements OnInit {
   url: string = '';
   file: File = null;
   serviceId : string = "-1";
-  branchOffices = Array<BranchOffice>()
+  branchOfficeId : string = "-1";
+  branchOffice: BranchOffice;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService) {
     activatedRoute.params
@@ -25,7 +26,11 @@ export class BranchOfficeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getBranchOffices();
+  }
+  
+  receiveMessage($messageEvent) {
+    this.branchOfficeId = $messageEvent;
+    this.getBranchOffice();
   }
 
   handleFileInput(event) {
@@ -54,8 +59,7 @@ export class BranchOfficeComponent implements OnInit {
       })
   }
 
-  onEdit(branchOfficeId)
-  {
+  onEdit(branchOfficeId){
     this.router.navigate(['/EditBranchOffice', this.serviceId, branchOfficeId]);
   }
 
@@ -75,16 +79,26 @@ export class BranchOfficeComponent implements OnInit {
     }
   }
 
-
-  getBranchOffices() { 
-    this.branchOfficeService.getBranchOffices(this.serviceId)
+  getBranchOffice() { 
+    this.branchOfficeService.getBranchOffice(this.branchOfficeId)
     .subscribe(
-      res => { 
-          this.branchOffices = res as Array<BranchOffice>;
+      res => {
+          this.branchOffice = res as BranchOffice;
       }, 
       error => {
         alert(error);
       });
+  }
+
+  isMarkerClicked() : boolean{
+    if(this.branchOffice == null)
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
   }
 
 }

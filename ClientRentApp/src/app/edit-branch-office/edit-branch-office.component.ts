@@ -14,6 +14,7 @@ import { MapInfo } from '../models/map-info.model';
 
 export class EditBranchOfficeComponent implements OnInit  {
   
+  mapType = "edit";
   serviceId : string = "-1";
   branchOfficeId: string = "-1";
   selecetdFileUrl: string = '';
@@ -52,11 +53,13 @@ export class EditBranchOfficeComponent implements OnInit  {
     }
   }
 
-  receiveMessage($event) {
+  receiveNewCoordinates($event) {
     this.mapInfoCooridnates = $event;
   }
 
   onSubmit(form: NgForm) {
+    console.log("x:" + this.mapInfoCooridnates.centerLat);
+    console.log("y:" + this.mapInfoCooridnates.centerLong);
     this.branchOffice.latitude = this.mapInfoCooridnates.centerLat;
     this.branchOffice.longitude = this.mapInfoCooridnates.centerLong;
 
