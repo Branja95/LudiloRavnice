@@ -14,6 +14,10 @@
                   <button type="button" [routerLink]="['/ViewService/' , rentVehicle.Id]" class="btn btn-default">View</button> &nbsp;
                   <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/EditService/' , rentVehicle.Id]" class="btn btn-default">Edit</button> &nbsp;
                   <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" (click)="deleteService(rentVehicle.Id)" class="btn btn-default">Delete</button> &nbsp;
+                  <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/Comment/' , rentVehicle.Id]" class="btn btn-default">View Comments</button> &nbsp;
+                  <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/Rating/' , rentVehicle.Id]" class="btn btn-default">View Ratings</button> &nbsp;
+                  <button type="button"  [routerLink]="['/AddComment/' , rentVehicle.Id]" class="btn btn-default">Comment</button> &nbsp;
+                  <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/AddRating/' , rentVehicle.Id]" class="btn btn-default">Rate</button> &nbsp;
               </div>
           </div>
         </div>

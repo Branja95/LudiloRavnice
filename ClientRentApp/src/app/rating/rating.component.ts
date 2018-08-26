@@ -16,16 +16,18 @@ export class RatingComponent implements OnInit {
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService) { 
     activatedRoute.params.subscribe(params => {this.serviceId = params["ServiceId"]});
+
+    console.log("ServiceId: " + this.serviceId);
   }
 
   ngOnInit() {
-    /* this.rentVehicleService.getRatings(this.serviceId).subscribe(
+    this.rentVehicleService.getMethodRatings(this.serviceId).subscribe(
       res => {
         this.ratings = res as Array<Rating>;
       }, 
       error =>{
         console.log(error);
-      }); */
+      }); 
   }
 
 }

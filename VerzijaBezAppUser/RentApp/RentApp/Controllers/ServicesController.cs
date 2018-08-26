@@ -105,6 +105,40 @@ namespace RentApp.Controllers
 
         }
 
+        // GET: api/Services/GetComments
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("GetComments")]
+        public IHttpActionResult GetComments([FromUri] long serviceId)
+        {
+            Service service = unitOfWork.Services.Get(serviceId);
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            List<Comment> comments = new List<Comment>(service.Comments);
+
+            return Ok(comments);
+        }
+        
+        // GET: api/Services/GetRatings
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("GetRatings")]
+        public IHttpActionResult GetRatings([FromUri] long serviceId)
+        {
+            Service service = unitOfWork.Services.Get(serviceId);
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            List<Rating> ratings = new List<Rating>(service.Ratings);
+
+            return Ok(ratings);
+        }
+
         // PUT: api/Services/PutService/5
         [HttpPut]
         [Route("PutService")]

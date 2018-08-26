@@ -16,17 +16,18 @@ export class CommentComponent implements OnInit {
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService) {
     activatedRoute.params.subscribe(params => {this.serviceId = params["ServiceId"]});
+    console.log("ServiceId: " + this.serviceId);
   }
 
   ngOnInit() {
-    /* this.rentVehicleService.getComments(this.serviceId).subscribe(
+    this.rentVehicleService.getMethodComments(this.serviceId).subscribe(
       res => {
         this.comments = res as Array<Comment>;
         console.log(this.comments);
       }, 
       error =>{
         console.log(error);
-      }); */
+      }); 
   }
 
 }

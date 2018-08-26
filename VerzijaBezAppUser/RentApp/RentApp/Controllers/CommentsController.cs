@@ -8,6 +8,9 @@ using RentApp.Models.Entities;
 using RentApp.Persistance;
 using RentApp.Persistance.UnitOfWork;
 using System.Collections.Generic;
+using System;
+using static RentApp.Models.CommentBindingModel;
+using System.Threading.Tasks;
 
 namespace RentApp.Controllers
 {
@@ -73,19 +76,33 @@ namespace RentApp.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Comments
-        [ResponseType(typeof(Comment))]
-        public IHttpActionResult PostComment(Comment comment)
+        // POST: api/Comments/PostComment
+        public IHttpActionResult PostComment(CreateCommentBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            Comment comment = new Comment
+            {
+                Text = model.Text,
+                DateTime = DateTime.Now,
+                UserId = "David"
+            };
+            
+            Service service = unitOfWork.Services.Get(model.ServiceId);
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            service.Comments.Add(comment);
+
             unitOfWork.Comments.Add(comment);
             unitOfWork.Complete();
 
-            return CreatedAtRoute("DefaultApi", new { id = comment.Id }, comment);
+            return Ok(HttpStatusCode.OK);
         }
 
         // DELETE: api/Comments/5

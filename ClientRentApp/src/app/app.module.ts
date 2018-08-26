@@ -110,6 +110,22 @@ const Routes = [
   {
     path: "Map/:BranchOfficeId",
     component: MapComponent
+  },
+  {
+    path: "Comment/:ServiceId",
+    component: CommentComponent
+  },
+  {
+    path: "Rating/:ServiceId",
+    component: RatingComponent
+  },
+  {
+    path: "AddComment/:ServiceId",
+    component: AddCommentComponent
+  },
+  {
+    path: "AddRating/:ServiceId",
+    component: AddRatingComponent
   }
 ]
 

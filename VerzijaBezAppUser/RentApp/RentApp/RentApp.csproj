@@ -327,6 +327,7 @@
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\BranchOfficeBindingModel.cs" />
+    <Compile Include="Models\CommentBindingModel.cs" />
     <Compile Include="Models\Entities\AccountForApprove.cs" />
     <Compile Include="Models\Entities\BranchOffice.cs" />
     <Compile Include="Models\Entities\RAIdentityUser.cs" />
@@ -337,6 +338,7 @@
     <Compile Include="Models\Entities\ServiceForApprove.cs" />
     <Compile Include="Models\Entities\Vehicle.cs" />
     <Compile Include="Models\Entities\VehicleType.cs" />
+    <Compile Include="Models\RatingBindingModel.cs" />
     <Compile Include="Models\ServiceBindingModel.cs" />
     <Compile Include="Models\VehicleBindingModel.cs" />
     <Compile Include="Persistance\RADBContext.cs" />

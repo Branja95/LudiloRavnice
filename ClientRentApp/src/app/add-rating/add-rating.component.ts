@@ -3,6 +3,7 @@ import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { RatingService } from '../services/rating.service';
 import { Rating } from '../models/rating.model';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-add-rating',
@@ -14,7 +15,7 @@ export class AddRatingComponent implements OnInit {
 
   serviceId: string = "-1";
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private ratingService: RatingService) { 
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private ratingService: RatingService, private location: Location) { 
     activatedRoute.params.subscribe(params => {this.serviceId = params["ServiceId"]});
   }
 
@@ -31,6 +32,8 @@ export class AddRatingComponent implements OnInit {
       }, error =>{
         console.log(error);
       });
+
+    this.location.back();
   }
 
 }

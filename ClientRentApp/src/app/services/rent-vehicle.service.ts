@@ -31,16 +31,28 @@ export class RentVehicleService {
     return result;
   }
 
+  getService(serviceId): Observable<any>{
+    return this.httpClient.get("http://localhost:51680/api/Services/GetService?serviceId=" + serviceId);
+  }
+
   getMethodServices(): Observable<any> {
     return this.httpClient.get("http://localhost:51680/api/Services/GetServices")
   }
 
-  deleteService(serviceId): Observable<any>{
-    return this.httpClient.delete("http://localhost:51680/api/Services/DeleteService?serviceId=" + serviceId);
+  getMethodComments(serviceId : string){
+    return this.httpClient.get("http://localhost:51680/api/Services/GetComments?serviceId=" + serviceId);
   }
 
-  getService(serviceId): Observable<any>{
-    return this.httpClient.get("http://localhost:51680/api/Services/GetService?serviceId=" + serviceId);
+  getMethodRatings(serviceId : string){
+    return this.httpClient.get("http://localhost:51680/api/Services/GetRatings?serviceId=" + serviceId);
+  }
+
+  getMethodServicesForApproves(): Observable<any> {
+    return this.httpClient.get("http://localhost:51680/api/Services/ServicesForApproves");
+  }
+
+  deleteService(serviceId): Observable<any>{
+    return this.httpClient.delete("http://localhost:51680/api/Services/DeleteService?serviceId=" + serviceId);
   }
 
   editService(serviceId, service, uploadedImage: File): Observable<any>{
@@ -60,10 +72,6 @@ export class RentVehicleService {
     return result;
   }
 
-  getMethodServicesForApproves(): Observable<any> {
-    return this.httpClient.get("http://localhost:51680/api/Services/ServicesForApproves");
-  }
-
   postMethodApproveService(id : number) {
     return this.httpClient.post("http://localhost:51680/api/Services/ApproveService", id);
   }
@@ -71,5 +79,5 @@ export class RentVehicleService {
   postMethodRejectService(id : number) {
     return this.httpClient.post("http://localhost:51680/api/Services/RejectService", id);
   }
-
+  
 }

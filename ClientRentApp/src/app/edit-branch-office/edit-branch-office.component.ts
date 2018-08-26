@@ -4,6 +4,7 @@ import { Router, ActivatedRoute} from '@angular/router';
 import { BranchOffice } from '../models/branch-office.model';
 import { BranchOfficeService } from '../services/branch-office.service';
 import { MapInfo } from '../models/map-info.model';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-edit-branch-office',
@@ -22,7 +23,7 @@ export class EditBranchOfficeComponent implements OnInit  {
   mapInfoCooridnates: MapInfo;
   branchOffice: BranchOffice;
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService) {
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private location: Location, private branchOfficeService: BranchOfficeService) {
     activatedRoute.params
     .subscribe(params => {
       this.serviceId = params["ServiceId"];
@@ -71,9 +72,11 @@ export class EditBranchOfficeComponent implements OnInit  {
         alert(error.error.Message);
       });;
     
-      form.reset();
-      this.selecetdFileUrl = '';
-      this.selectedFile = null;
+    this.location.back();
+
+    form.reset();
+    this.selecetdFileUrl = '';
+    this.selectedFile = null;
   }
 
 }
