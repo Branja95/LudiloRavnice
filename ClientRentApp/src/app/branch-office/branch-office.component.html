@@ -1,16 +1,24 @@
-<div class="container">
-  <div id="banner" class="col col-lg-4 col-lg-push-4">
-    <div *ngFor='let branchOffice of branchOffices'>
-        <img src='http://localhost:51680/api/BranchOffices/LoadImage?imageId={{branchOffice.Image}}' height="300" weight="300"/><br/><br/>
-        <label>Address:</label> {{branchOffice.Address}}<br/>
-        <label>Latitude:</label> {{branchOffice.Latitude}}<br/>
-        <label>Longitude:</label> {{branchOffice.Longitude}}<br/>
-        
+<div class='parent'>
+  <div *ngIf="isMarkerClicked(); then thenBlock; else elseBlock"></div>
+
+  <ng-template #thenBlock>
+      <div class='child inline-block-child'>
+        <img src='http://localhost:51680/api/BranchOffices/LoadImage?imageId={{branchOffice.Image}}' height="300px" weight="300px"/>
+        <br/><br/>
+        <label>Address:</label> {{branchOffice.Address}}
+        <br/><br/>
         <button type="button" *ngIf="isManagerOrAdmin()" (click)="onDelete(branchOffice.Id)" class="btn btn-default">Delete</button>
+         &nbsp; 
         <button type="button" *ngIf="isManagerOrAdmin()" (click)="onEdit(branchOffice.Id)" class="btn btn-default">Edit</button>
-    </div>
-    <br/>
-    <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/AddBranchOffice/' , ServiceId]" class="btn btn-default">Add Branch Office</button> &nbsp;
+      </div> 
+      <div class='child inline-block-child'>
+          <app-map  [serviceId]="serviceId" (messageEvent)="receiveMessage($event)"></app-map>
+      </div>
+  </ng-template>
   
-  </div>
+  <ng-template #elseBlock>
+      <div class='child inline-block-child'>
+        <app-map  [serviceId]="serviceId" (messageEvent)="receiveMessage($event)"></app-map>
+      </div>
+  </ng-template>
 </div>

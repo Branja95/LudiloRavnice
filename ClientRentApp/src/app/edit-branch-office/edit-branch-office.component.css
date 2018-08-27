@@ -1,0 +1,12 @@
+.parent {
+	padding: 1rem;
+}
+
+.child {
+    padding: 1rem;
+    float: left;
+}
+
+.inline-block-child {
+    display: inline-block;
+}

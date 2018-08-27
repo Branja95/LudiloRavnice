@@ -8,6 +8,7 @@ using RentApp.Models.Entities;
 using RentApp.Persistance;
 using RentApp.Persistance.UnitOfWork;
 using System.Collections.Generic;
+using static RentApp.Models.RatingBindingModel;
 
 namespace RentApp.Controllers
 {
@@ -75,17 +76,31 @@ namespace RentApp.Controllers
 
         // POST: api/Ratings
         [ResponseType(typeof(Rating))]
-        public IHttpActionResult PostRating(Rating rating)
+        public IHttpActionResult PostRating(CreateRatingBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            Rating rating = new Rating
+            {
+                UserId = "David",
+                Value = model.Value
+            };
+
+            Service service = unitOfWork.Services.Get(model.ServiceId);
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            service.Ratings.Add(rating);
+
             unitOfWork.Ratings.Add(rating);
             unitOfWork.Complete();
 
-            return CreatedAtRoute("DefaultApi", new { id = rating.Id }, rating);
+            return Ok(HttpStatusCode.OK);
         }
 
         // DELETE: api/Ratings/5

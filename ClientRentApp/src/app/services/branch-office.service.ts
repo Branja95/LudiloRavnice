@@ -48,8 +48,8 @@ export class BranchOfficeService {
      
     this.formData.append('id', branchOfficeId);
     this.formData.append('address', branchOffice.Address)
-    this.formData.append('latitude', branchOffice.Latitude);
-    this.formData.append('longitude', branchOffice.Longitude);
+    this.formData.append('latitude', branchOffice.latitude);
+    this.formData.append('longitude', branchOffice.longitude);
     this.formData.append('image', uploadedImage, uploadedImage.name);
 
     let headers = new HttpHeaders();

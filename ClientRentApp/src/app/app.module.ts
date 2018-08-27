@@ -7,6 +7,8 @@ import { HttpClientXsrfModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import { NgForm  } from '@angular/forms';
 
+import { AgmCoreModule } from '@agm/core';
+
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 
@@ -31,6 +33,11 @@ import { EditVehicleComponent } from './edit-vehicle/edit-vehicle.component';
 import { ApproveServiceAdminComponent } from './approve-service-admin/approve-service-admin.component';
 import { ViewRentVehicleComponent } from './view-rent-vehicle/view-rent-vehicle.component';
 import { ServiceVehiclesComponent } from './service-vehicles/service-vehicles.component';
+import { MapComponent } from './map/map.component';
+import { RatingComponent } from './rating/rating.component';
+import { CommentComponent } from './comment/comment.component';
+import { AddRatingComponent } from './add-rating/add-rating.component';
+import { AddCommentComponent } from './add-comment/add-comment.component';
 
 const Routes = [
   {
@@ -64,6 +71,10 @@ const Routes = [
   {
     path: "Vehicles/:ServiceId",
     component: ServiceVehiclesComponent
+  },
+  {
+    path: "BranchOffice",
+    component: BranchOfficeComponent
   },
   {
     path: "Vehicle",
@@ -101,6 +112,26 @@ const Routes = [
     path: "ViewService/:ServiceId",
     component: ViewRentVehicleComponent
   },
+  {
+    path: "Map/:BranchOfficeId",
+    component: MapComponent
+  },
+  {
+    path: "Comment/:ServiceId",
+    component: CommentComponent
+  },
+  {
+    path: "Rating/:ServiceId",
+    component: RatingComponent
+  },
+  {
+    path: "AddComment/:ServiceId",
+    component: AddCommentComponent
+  },
+  {
+    path: "AddRating/:ServiceId",
+    component: AddRatingComponent
+  }
 ]
 
 @NgModule({
@@ -124,6 +155,12 @@ const Routes = [
     ApproveServiceAdminComponent,
     ViewRentVehicleComponent,
     ServiceVehiclesComponent
+    ViewRentVehicleComponent,
+    MapComponent,
+    RatingComponent,
+    CommentComponent,
+    AddRatingComponent,
+    AddCommentComponent
   ],
   imports: [
     BrowserModule,
@@ -133,7 +170,8 @@ const Routes = [
     HttpModule,
     HttpClientModule,
     HttpClientXsrfModule,
-    JsonpModule
+    JsonpModule,
+    AgmCoreModule.forRoot({apiKey: 'AIzaSyDnihJyw_34z5S1KZXp90pfTGAqhFszNJk'})
   ],
   providers: [
     {
