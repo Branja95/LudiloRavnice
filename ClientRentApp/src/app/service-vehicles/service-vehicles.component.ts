@@ -60,7 +60,6 @@ export class ServiceVehiclesComponent implements OnInit {
       error => {
         alert(error);
       })
-    
   }
 
   getVehicleTypeName(vehicleTypeId){

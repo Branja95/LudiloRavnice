@@ -69,7 +69,7 @@ export class EditVehicleComponent implements OnInit {
       form.reset();
       this.urls = new Array<string>();
       this.uploadedFiles = null;
-      this.router.navigateByUrl("/RentVehicle");
+      this.router.navigateByUrl("/Vehicle");
   }
 
   getVehicleTypes() { 

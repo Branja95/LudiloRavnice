@@ -5,7 +5,7 @@
         <div id="banner">
             &nbsp;&nbsp;&nbsp;
           <div class="inline-block" *ngFor='let url of parseImages(vehicle.Images)'>
-            <img src='http://localhost:51680/api/Vehicles?imageId={{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
+            <img src='http://localhost:51680/api/Vehicles/LoadImage?imageId={{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
           </div> 
       </div>
       <br/><br/>
@@ -18,9 +18,15 @@
         <label>YearMade:</label> {{vehicle.YearMade}}<br/>
         <label>PricePerHour:</label> {{vehicle.PricePerHour}}<br/>
         <label>Description:</label> {{vehicle.Description}}<br/>
+        <div *ngIf="vehicle.IsAvailable; else NotAvailable">
+          <label><font color="green">Available</font></label><br/>   
+        </div>
+        <ng-template #NotAvailable>
+          <label><font color="red">Not Available</font></label><br/>
+        </ng-template>
       </div>
     </div>
-    <button type="submit" class="btn btn-default">Delete</button>
-    <button [routerLink]="['/EditVehicle/', vehicle.Id]">Edit</button>
+    <button type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;&nbsp;
+    <button [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>
   </form>
 </div>

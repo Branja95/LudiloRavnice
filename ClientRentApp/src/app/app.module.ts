@@ -154,7 +154,7 @@ const Routes = [
     UserAccountComponent,
     ApproveServiceAdminComponent,
     ViewRentVehicleComponent,
-    ServiceVehiclesComponent
+    ServiceVehiclesComponent,
     ViewRentVehicleComponent,
     MapComponent,
     RatingComponent,

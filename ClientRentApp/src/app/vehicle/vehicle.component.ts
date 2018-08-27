@@ -42,7 +42,7 @@ export class VehicleComponent implements OnInit {
     return imageId.split(";_;");
   }
 
-  onDelete(form: NgForm, id: string){
+  onDelete(id){
     this.vehicleService.deleteVehicle(id)
     .subscribe(
       data => {
@@ -51,7 +51,6 @@ export class VehicleComponent implements OnInit {
       error => {
         alert(error);
       })
-    
   }
 
   getVehicleTypeName(vehicleTypeId){
