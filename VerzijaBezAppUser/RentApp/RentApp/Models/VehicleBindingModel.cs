@@ -8,11 +8,13 @@ namespace RentApp.Models
     {
         public class CreateVehicleBindingModel
         {
+            [Required]
             [Display(Name = "ServiceId")]
-            public int ServiceId { get; set; }
+            public long ServiceId { get; set; }
 
+            [Required]
             [Display(Name = "VehicleTypeId")]
-            public int VehicleTypeId { get; set; }
+            public long VehicleTypeId { get; set; }
 
             [Required]
             [DataType(DataType.Text)]
@@ -35,7 +37,7 @@ namespace RentApp.Models
             public string Description { get; set; }
 
             [Required]
-            [RegularExpression(@"[0-9]+(\.[0-9] [0-9]?)?")]
+            [RegularExpression(@"^[+]?(\d*\.)?\d+$")]
             [Display(Name = "PricePerHour")]
             public double PricePerHour { get; set; }
 
@@ -47,12 +49,13 @@ namespace RentApp.Models
 
         public class EditVehicleBindingModel
         {
+            [Required]
             [Display(Name = "Id")]
-            public int Id { get; set; }
+            public long Id { get; set; }
 
+            [Required]
             [Display(Name = "VehicleTypeId")]
-            public int VehicleTypeId { get; set; }
-
+            public long VehicleTypeId { get; set; }
 
             [Required]
             [DataType(DataType.Text)]
@@ -74,7 +77,7 @@ namespace RentApp.Models
             public string Description { get; set; }
 
             [Required]
-            [RegularExpression(@"[0-9]+(\.[0-9] [0-9]?)?")]
+            [RegularExpression(@"^[+]?(\d*\.)?\d+$")]
             [Display(Name = "PricePerHour")]
             public double PricePerHour { get; set; }
 

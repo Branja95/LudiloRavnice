@@ -118,9 +118,9 @@ namespace RentApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            BranchOffice oldBranchOffice = unitOfWork.BranchOffices.Get(model.Id);
+            BranchOffice branchOffice = unitOfWork.BranchOffices.Get(model.Id);
 
-            if (oldBranchOffice == null)
+            if (branchOffice == null)
             {
                 return BadRequest("Branch office don't exists.");
             }
@@ -132,19 +132,19 @@ namespace RentApp.Controllers
                 return BadRequest(validationErrorMessage);
             }
 
-            if(!serviceForValidation.BranchOfficces.Contains(oldBranchOffice))
+            if(!serviceForValidation.BranchOfficces.Contains(branchOffice))
             {
                 return BadRequest("Branch office don't exists.");
             }
 
-            ImageHelper.DeleteImage(oldBranchOffice.Image);
+            ImageHelper.DeleteImage(branchOffice.Image);
 
-            oldBranchOffice.Address = model.Address;
-            oldBranchOffice.Latitude = model.Latitude;
-            oldBranchOffice.Longitude = model.Longitude;
-            oldBranchOffice.Image = ImageHelper.SaveImageToServer(httpRequest.Files[0]);
+            branchOffice.Address = model.Address;
+            branchOffice.Latitude = model.Latitude;
+            branchOffice.Longitude = model.Longitude;
+            branchOffice.Image = ImageHelper.SaveImageToServer(httpRequest.Files[0]);
 
-            unitOfWork.BranchOffices.Update(oldBranchOffice);
+            unitOfWork.BranchOffices.Update(branchOffice);
             unitOfWork.Complete();
 
             return Ok("BranchOffice successfully edited");

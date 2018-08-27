@@ -15,12 +15,14 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Net.Http.Headers;
 using RentApp.Helpers;
+using System.Threading.Tasks;
 
 namespace RentApp.Controllers
 {
+    [Authorize]
+    [RoutePrefix("api/Vehicles")]
     public class VehiclesController : ApiController
     {
-        private string validationErrorMessage;
         private readonly IUnitOfWork unitOfWork;
 
         public VehiclesController(IUnitOfWork unitOfWork)
@@ -28,15 +30,20 @@ namespace RentApp.Controllers
             this.unitOfWork = unitOfWork;
         }
 
-        // GET: api/Vehicles
+        // GET: api/Vehicles/GetVehicles
+        [HttpGet]
+        [Route("GetVehicles")]
+        [AllowAnonymous]
         public IEnumerable<Vehicle> GetVehicles()
         {
             return unitOfWork.Vehicles.GetAll();
         }
 
-        // GET: api/Vehicles/5
-        [ResponseType(typeof(Vehicle))]
-        public IHttpActionResult GetVehicle(int id)
+        // GET: api/Vehicles/GetVehicle/5
+        [HttpGet]
+        [Route("GetVehicle")]
+        [AllowAnonymous]
+        public IHttpActionResult GetVehicle([FromUri] int id)
         {
             Vehicle vehicle = unitOfWork.Vehicles.Get(id);
             if (vehicle == null)
@@ -47,70 +54,98 @@ namespace RentApp.Controllers
             return Ok(vehicle);
         }
 
-        // GET: api/Vehicles
+        // GET: api/Vehicles/LoadImage
         [HttpGet]
-        public HttpResponseMessage LoadImage(string imageId)
+        [Route("LoadImage")]
+        [AllowAnonymous]
+        public HttpResponseMessage LoadImage([FromUri] string imageId)
         {
             return ImageHelper.LoadImage(imageId);
         }
 
-        // PUT: api/Vehicles/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutVehicle(int id, EditVehicleBindingModel model)
+        // PUT: api/Vehicles/PutVehicle/5
+        [HttpPut]
+        [Route("PutVehicle")]
+        [Authorize(Roles = "Admin, Manager")]
+        public IHttpActionResult PutVehicle([FromUri] int id, EditVehicleBindingModel model)
         {
             HttpRequest httpRequest = HttpContext.Current.Request;
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
             if (id != model.Id)
             {
                 return BadRequest();
             }
 
-            string imageUris = string.Empty;
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
             if (httpRequest.Files == null)
             {
                 return BadRequest("Images cannot be left blank\n");
             }
 
+            Vehicle vehicle = null;
+
+            try
+            {
+                vehicle = unitOfWork.Vehicles.Get(id);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!VehicleExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            string[] oldImageUris = vehicle.Images.Split(new string[] { ";_;" }, StringSplitOptions.None);
+
+            foreach(string imageId in oldImageUris)
+            {
+                ImageHelper.DeleteImage(imageId);
+            }
+
+            string imageUris = string.Empty;
             int count = 0;
+
             foreach (string file in httpRequest.Files)
             {
                 count++;
                 HttpPostedFile uploadedImage = httpRequest.Files[file];
 
-                if (ValidateImage(uploadedImage))
+                string validationErrorMessage = string.Empty;
+
+                if (ImageHelper.ValidateImage(uploadedImage, out validationErrorMessage))
                 {
-                    imageUris += SaveImageToServer(uploadedImage);
+                    imageUris += ImageHelper.SaveImageToServer(uploadedImage);
 
                     if (count < httpRequest.Files.Count)
                     {
                         imageUris += ";_;";
                     }
                 }
+                else
+                {
+                    BadRequest(validationErrorMessage);
+                }
             }
 
             VehicleType vehicleType = unitOfWork.VehicleTypes.Get(model.VehicleTypeId);
 
-            Vehicle vehicle = new Vehicle()
-            {
-                Id = model.Id,
-                Description = model.Description,
-                Model = model.Model,
-                Manufactor = model.Manufactor,
-                PricePerHour = model.PricePerHour,
-                YearMade = model.YearMade,
-                IsAvailable = model.IsAvailable.Equals("IsAvailable") ? true : false,
-                Images = imageUris,
-                VehicleType = vehicleType,
-            };
+            vehicle.Description = model.Description;
+            vehicle.Model = model.Model;
+            vehicle.Manufactor = model.Manufactor;
+            vehicle.PricePerHour = model.PricePerHour;
+            vehicle.YearMade = model.YearMade;
+            vehicle.IsAvailable = model.IsAvailable.Equals("Available") ? true : false;
+            vehicle.Images = imageUris;
+            vehicle.VehicleType = vehicleType;
 
             try
             {
@@ -129,16 +164,16 @@ namespace RentApp.Controllers
                 }
             }
 
-            return Ok();
+            return Ok("Vehicle successfully updated.");
         }
 
-        // POST: api/Vehicles
-        [ResponseType(typeof(Vehicle))]
+        // POST: api/Vehicles/PostVehicle/
+        [HttpPost]
+        [Route("PostVehicle")]
+        [Authorize(Roles = "Admin, Manager")]
         public IHttpActionResult PostVehicle(CreateVehicleBindingModel model)
         {
             HttpRequest httpRequest = HttpContext.Current.Request;
-
-            string imageUris = string.Empty;
 
             if (!ModelState.IsValid)
             {
@@ -149,20 +184,28 @@ namespace RentApp.Controllers
                 return BadRequest("Images cannot be left blank\n");
             }
 
+            string imageUris = string.Empty;
             int count = 0;
+
             foreach (string file in httpRequest.Files)
             {
                 count++;
                 HttpPostedFile uploadedImage = httpRequest.Files[file];
 
-                if (ValidateImage(uploadedImage))
+                string validationErrorMessage = string.Empty;
+
+                if (ImageHelper.ValidateImage(uploadedImage, out validationErrorMessage))
                 {
-                    imageUris += SaveImageToServer(uploadedImage);
+                    imageUris += ImageHelper.SaveImageToServer(uploadedImage);
 
                     if (count < httpRequest.Files.Count)
                     {
                         imageUris += ";_;";
                     }
+                }
+                else
+                {
+                    return BadRequest(validationErrorMessage);
                 }
             }
 
@@ -187,13 +230,15 @@ namespace RentApp.Controllers
             unitOfWork.Vehicles.Add(vehicle);
             unitOfWork.Complete();
 
-            return Ok("Vehicle successfully created");
+            return Ok("Vehicle successfully created.");
 
         }
 
-        // DELETE: api/Vehicles/5
-        [ResponseType(typeof(Vehicle))]
-        public IHttpActionResult DeleteVehicle(int id)
+        // DELETE: api/Vehicles/DeleteVehicle/5
+        [HttpDelete]
+        [Route("DeleteVehicle")]
+        [Authorize(Roles = "Admin, Manager")]
+        public IHttpActionResult DeleteVehicle([FromUri] int id)
         {
             Vehicle vehicle = unitOfWork.Vehicles.Get(id);
             if (vehicle == null)
@@ -204,7 +249,7 @@ namespace RentApp.Controllers
             unitOfWork.Vehicles.Remove(vehicle);
             unitOfWork.Complete();
 
-            return Ok(vehicle);
+            return Ok($"Vehicle with id { vehicle.Id } successfully deleted.");
         }
 
         private bool VehicleExists(int id)
@@ -220,46 +265,6 @@ namespace RentApp.Controllers
             };
 
             return vehicle;
-        }
-
-        private bool ValidateImage(HttpPostedFile image)
-        {
-            bool isImageValid = true;
-
-            int maximumImageSize = 1024 * 1024 * 1;
-
-            IList<string> allowedImageExtensions = new List<string> { ".jpg", ".gif", ".png" };
-
-            validationErrorMessage = string.Empty;
-
-            string extension = image.FileName.Substring(image.FileName.LastIndexOf('.'));
-
-            if (image == null)
-            {
-                validationErrorMessage += "Image cannot be left blank!\n";
-                isImageValid = false;
-            }
-            if (!allowedImageExtensions.Contains(extension.ToLower()))
-            {
-                validationErrorMessage += "Image format is not supported!\n";
-                isImageValid = false;
-            }
-            if (image.ContentLength > maximumImageSize)
-            {
-                validationErrorMessage += "Image size is too big!\n";
-                isImageValid = false;
-            }
-
-            return isImageValid;
-        }
-
-        private string SaveImageToServer(HttpPostedFile image)
-        {
-            string imageId = Guid.NewGuid() + image.FileName;
-            string fileLocationOnServer = HttpContext.Current.Server.MapPath("~/App_Data/" + imageId);
-            image.SaveAs(fileLocationOnServer);
-
-            return imageId;
         }
     }
 }

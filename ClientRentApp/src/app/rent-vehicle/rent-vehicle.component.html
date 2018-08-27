@@ -10,10 +10,11 @@
                   
                   <!--<button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/AddBranchOffice/' , rentVehicle.Id]" class="btn btn-default">Add Branch Office</button>
                   <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/AddVehicle/' , rentVehicle.Id]" class="btn btn-default">Add Vehicle</button>-->
-                    
+
                   <button type="button" [routerLink]="['/ViewService/' , rentVehicle.Id]" class="btn btn-default">View</button> &nbsp;
                   <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/EditService/' , rentVehicle.Id]" class="btn btn-default">Edit</button> &nbsp;
                   <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" (click)="deleteService(rentVehicle.Id)" class="btn btn-default">Delete</button> &nbsp;
+                    
               </div>
           </div>
         </div>

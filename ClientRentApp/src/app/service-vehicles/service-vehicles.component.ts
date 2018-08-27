@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+
+import { Router, ActivatedRoute, Params } from '@angular/router';
+
 import { NgForm } from '@angular/forms';
 
 import { VehicleType } from '../models/vehicle-type.model';
@@ -9,25 +12,31 @@ import { Vehicle } from '../models/vehicle.model';
 import { element } from 'protractor';
 
 @Component({
-  selector: 'app-vehicle',
-  templateUrl: './vehicle.component.html',
-  styleUrls: ['./vehicle.component.css'],
-  providers: [VehicleService]
+  selector: 'app-service-vehicles',
+  templateUrl: './service-vehicles.component.html',
+  styleUrls: ['./service-vehicles.component.css']
 })
-export class VehicleComponent implements OnInit {
+export class ServiceVehiclesComponent implements OnInit {
 
   vehicleTypes = Array<VehicleType>();
   vehicles = Array<Vehicle>()
   vehicleType: string;
 
-  constructor(private vehicleService: VehicleService) { }
+  ServiceId : string = "-1";
+
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private vehicleService: VehicleService) {
+    activatedRoute.params
+    .subscribe(params => {
+      this.ServiceId = params["ServiceId"];
+    });
+  }
 
   ngOnInit() {
     this.getVehicles()   
   }
 
   getVehicles() { 
-    this.vehicleService.getVehicles()
+    this.vehicleService.getServiceVehicles(this.ServiceId)
     .subscribe(
       res => { 
           this.vehicles = res as Array<Vehicle>;
@@ -42,7 +51,7 @@ export class VehicleComponent implements OnInit {
     return imageId.split(";_;");
   }
 
-  onDelete(form: NgForm, id: string){
+  onDelete(id){
     this.vehicleService.deleteVehicle(id)
     .subscribe(
       data => {
@@ -63,5 +72,4 @@ export class VehicleComponent implements OnInit {
       }
     )
   }
-
 }

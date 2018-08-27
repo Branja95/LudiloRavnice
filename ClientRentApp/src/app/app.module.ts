@@ -30,6 +30,7 @@ import { EditRentVehicleComponent } from './edit-rent-vehicle/edit-rent-vehicle.
 import { EditVehicleComponent } from './edit-vehicle/edit-vehicle.component';
 import { ApproveServiceAdminComponent } from './approve-service-admin/approve-service-admin.component';
 import { ViewRentVehicleComponent } from './view-rent-vehicle/view-rent-vehicle.component';
+import { ServiceVehiclesComponent } from './service-vehicles/service-vehicles.component';
 
 const Routes = [
   {
@@ -59,6 +60,10 @@ const Routes = [
   {
     path: "BranchOffice/:ServiceId",
     component: BranchOfficeComponent
+  },
+  {
+    path: "Vehicles/:ServiceId",
+    component: ServiceVehiclesComponent
   },
   {
     path: "Vehicle",
@@ -117,7 +122,8 @@ const Routes = [
     ApproveAccountAdminComponent,
     UserAccountComponent,
     ApproveServiceAdminComponent,
-    ViewRentVehicleComponent
+    ViewRentVehicleComponent,
+    ServiceVehiclesComponent
   ],
   imports: [
     BrowserModule,

@@ -6,6 +6,7 @@
       
       <button type="button" [routerLink]="['/BranchOffice/' , rentVehicle.Id]" class="btn btn-default">View Branch Offices</button> &nbsp;
       <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/AddBranchOffice/' , rentVehicle.Id]" class="btn btn-default">Add Branch Office</button> &nbsp;
+      <button type="button" [routerLink]="['/Vehicles/' , rentVehicle.Id]" class="btn btn-default">View vehicles</button> &nbsp;
       <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/AddVehicle/' , rentVehicle.Id]" class="btn btn-default">Add Vehicle</button> &nbsp;
         
       <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/EditService/' , rentVehicle.Id]" class="btn btn-default">Edit</button> &nbsp;

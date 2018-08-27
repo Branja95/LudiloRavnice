@@ -17,6 +17,8 @@ import { VehicleService } from '../services/vehicle.service';
 export class EditVehicleComponent implements OnInit {
 
   VehicleId: string = "-1";
+  VehicleAvailable: string = "";
+  VehicleYearMade: string = "";
   Vehicle: Vehicle;
 
   urls: Array<string> = new Array<string>();
@@ -32,6 +34,8 @@ export class EditVehicleComponent implements OnInit {
     this.vehicleService.getVehicle(this.VehicleId).subscribe(
       data => {
         this.Vehicle = data as Vehicle;
+        this.getAvailable(data.IsAvailable);
+        this.getYearMade(data.YearMade);
       },error => {
         alert(error.error.Message);
       });
@@ -53,19 +57,19 @@ export class EditVehicleComponent implements OnInit {
     }
   }
 
-  onSubmit(form: NgForm) {
-    this.vehicleService.editVehicle(this.VehicleId, this.Vehicle, this.uploadedFiles)
+  onSubmit(form: NgForm, vehicle: Vehicle) {
+    this.vehicleService.editVehicle(this.VehicleId, vehicle, this.uploadedFiles)
     .subscribe(
       data => {
         alert(data);
       }, error => {
-        alert(error);
+        console.log(error);
       });;
     
       form.reset();
       this.urls = new Array<string>();
       this.uploadedFiles = null;
-      this.router.navigateByUrl('Vehicle');
+      this.router.navigateByUrl("/RentVehicle");
   }
 
   getVehicleTypes() { 
@@ -78,6 +82,22 @@ export class EditVehicleComponent implements OnInit {
 
   parseImages(imageId){
     return imageId.split(";_;");
+  }
+
+  getAvailable(isAvailable : Boolean) {
+    if(isAvailable)
+    {
+      this.VehicleAvailable = "Available";
+    }
+    else
+    {
+      this.VehicleAvailable = "Not Available";
+    }
+  }
+
+  getYearMade(yearMade : string){
+    let splited = yearMade.split("T");
+    this.VehicleYearMade = splited[0];
   }
 
 }

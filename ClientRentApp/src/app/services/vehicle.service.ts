@@ -24,7 +24,7 @@ export class VehicleService {
 
   createVehicle(vehicle, uploadedImages: FileList): Observable<any> {
     this.formData.append('serviceId', vehicle.serviceId);
-    this.formData.append('vehicleTypeId', vehicle.vehicleType.Id);
+    this.formData.append('vehicleTypeId', vehicle.vehicleType);
     this.formData.append('model', vehicle.model);
     this.formData.append('manufactor', vehicle.manufactor);
     this.formData.append('yearMade', vehicle.yearMade)
@@ -39,7 +39,7 @@ export class VehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.post("http://localhost:51680/api/Vehicles", this.formData, { headers: headers });
+    let result = this.httpClient.post("http://localhost:51680/api/Vehicles/PostVehicle", this.formData, { headers: headers });
 
     this.formData = new FormData();
 
@@ -48,29 +48,30 @@ export class VehicleService {
   }
 
   getVehicles(): Observable<any> {
-    return this.httpClient.get("http://localhost:51680/api/Vehicles")
+    return this.httpClient.get("http://localhost:51680/api/Vehicles/GetVehicles")
+  }
+
+  getServiceVehicles(serviceId): Observable<any> {
+    return this.httpClient.get("http://localhost:51680/api/Services/GetVehicles?serviceId=" + serviceId);
   }
 
   getVehicle(vehicleId): Observable<any>{
-    return this.httpClient.get("http://localhost:51680/api/Vehicles/" + vehicleId);
+    return this.httpClient.get("http://localhost:51680/api/Vehicles/GetVehicle?id=" + vehicleId);
   }
 
   deleteVehicle(vehicleId): Observable<any> {
-    return this.httpClient.delete("http://localhost:51680/api/Vehicles/" + vehicleId);
+    return this.httpClient.delete("http://localhost:51680/api/Vehicles/DeleteVehicle?id=" + vehicleId);
   }
 
   editVehicle(vehicleId, vehicle, uploadedImages: FileList): Observable<any>{
-    console.log("eeee");
-    console.log(vehicle);
     this.formData.append('id', vehicleId);
-    this.formData.append('vehicleTypeId', vehicle.VehicleType);
-    this.formData.append('model', vehicle.Model);
-    this.formData.append('manufactor', vehicle.Manufactor);
-    this.formData.append('yearMade', vehicle.YearMade)
-    this.formData.append('description', vehicle.Description);
-    this.formData.append('pricePerHour', vehicle.PricePerHour);
-    this.formData.append('isAvailable', vehicle.IsAvailable);
-    
+    this.formData.append('vehicleTypeId', vehicle.vehicleType);
+    this.formData.append('model', vehicle.model);
+    this.formData.append('manufactor', vehicle.manufactor);
+    this.formData.append('yearMade', vehicle.yearMade)
+    this.formData.append('description', vehicle.description);
+    this.formData.append('pricePerHour', vehicle.pricePerHour);
+    this.formData.append('isAvailable', vehicle.isAvailable);
     Array.from(uploadedImages).forEach(uploadedImage => { 
       this.formData.append(uploadedImage.name, uploadedImage, uploadedImage.name);
     });
@@ -78,7 +79,7 @@ export class VehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.put("http://localhost:51680/api/Vehicles/" + vehicleId, this.formData, { headers: headers });
+    let result = this.httpClient.put("http://localhost:51680/api/Vehicles/PutVehicle?id=" + vehicleId, this.formData, { headers: headers });
 
     this.formData = new FormData();
 
