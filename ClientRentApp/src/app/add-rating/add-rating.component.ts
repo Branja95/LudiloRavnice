@@ -33,7 +33,7 @@ export class AddRatingComponent implements OnInit {
         console.log(error);
       });
 
-    this.location.back();
+      this.router.navigate(['/RentVehicle/']);
   }
 
 }

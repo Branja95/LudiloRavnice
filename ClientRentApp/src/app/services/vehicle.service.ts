@@ -57,6 +57,14 @@ export class VehicleService {
 
   getVehicle(vehicleId): Observable<any>{
     return this.httpClient.get("http://localhost:51680/api/Vehicles/GetVehicle?id=" + vehicleId);
+  } 
+  
+  getNumberOfVehicles(): Observable<any>{
+    return this.httpClient.get("http://localhost:51680/api/Vehicles/GetNumberOfVehicles");
+  }
+
+  getPagedVehicles(pageIndex, pageSize): Observable<any>{
+    return this.httpClient.get("http://localhost:51680/api/Vehicles/GetPagedVehicles?pageIndex=" + pageIndex + "&pageSize=" + pageSize);
   }
 
   deleteVehicle(vehicleId): Observable<any> {

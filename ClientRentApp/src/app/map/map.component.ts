@@ -28,7 +28,11 @@ export class MapComponent implements OnInit {
   branchOffices: BranchOffice[];
 
   ngOnInit() {
-    if(this.mapType == "edit")
+    if(this.mapType == "add")
+    {
+      this.mapInfo = new MapInfo(this.centerLatitude, this.centerLongitude, "", "" , "" , "");
+    }
+    else if(this.mapType == "edit")
     {
       this.getBranchOffice();
     }
@@ -41,7 +45,7 @@ export class MapComponent implements OnInit {
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService){ }
 
   isEdit():boolean{
-    if(this.mapType == "edit")
+    if(this.mapType == "edit" || this.mapType == "add")
     {
       return true;
     }

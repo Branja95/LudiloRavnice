@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { BranchOffice } from '../models/branch-office.model';
 import { BranchOfficeService } from '../services/branch-office.service';
+import { MapInfo } from '../models/map-info.model';
 
 @Component({
   selector: 'app-add-branch-office',
@@ -13,9 +14,12 @@ import { BranchOfficeService } from '../services/branch-office.service';
 })
 export class AddBranchOfficeComponent implements OnInit {
 
+  mapType = "add";
   ServiceId: string = "-1";
   url: string = '';
+
   file: File = null;
+  mapInfoCooridnates: MapInfo;
   
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService) {
     activatedRoute.params.subscribe(params => {this.ServiceId = params["ServiceId"]});
@@ -36,15 +40,19 @@ export class AddBranchOfficeComponent implements OnInit {
         this.url = reader.result;
       }
     }
+  }
 
+  receiveNewCoordinates($event) {
+    this.mapInfoCooridnates = $event;
   }
 
   onSubmit(form: NgForm, branchOffice: BranchOffice) {
 
     branchOffice.serviceId = this.ServiceId;
     
-    console.log(this.ServiceId);
-
+    branchOffice.latitude = this.mapInfoCooridnates.centerLat;
+    branchOffice.longitude = this.mapInfoCooridnates.centerLong;
+   
     this.branchOfficeService.postMethodCreateBranchOffice(this.ServiceId, branchOffice, this.file)
     .subscribe(
       res => {

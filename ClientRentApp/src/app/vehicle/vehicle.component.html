@@ -1,32 +1,58 @@
+<div>
+  <div class="container">
+      <div class="text-center">
+          <h1>Vehicles</h1>
 
-<div *ngFor='let vehicle of vehicles'>
-  <form #f="ngForm" (ngSubmit)="onDelete(f, vehicle.Id)">
-    <br/><br/>
-        <div id="banner">
-            &nbsp;&nbsp;&nbsp;
-          <div class="inline-block" *ngFor='let url of parseImages(vehicle.Images)'>
-            <img src='http://localhost:51680/api/Vehicles/LoadImage?imageId={{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
-          </div> 
+          <div *ngFor='let vehicle of pagedVehicles'>
+            <form #f="ngForm" (ngSubmit)="onDelete(f, vehicle.Id)">
+              <br/><br/>
+                  <div id="banner">
+                      &nbsp;&nbsp;&nbsp;
+                    <div class="inline-block" *ngFor='let url of parseImages(vehicle.Images)'>
+                      <img src='http://localhost:51680/api/Vehicles/LoadImage?imageId={{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
+                    </div> 
+                </div>
+                <br/><br/>
+                <div id="banner">
+                &nbsp;&nbsp;&nbsp;
+                <div class="inline-block">
+                  <label>Vehicle Type:</label> {{vehicle.VehicleType.TypeName}}<br/>
+                  <label>Manufactor:</label> {{vehicle.Manufactor}}<br/>
+                  <label>Model:</label> {{vehicle.Model}}<br/>
+                  <label>YearMade:</label> {{vehicle.YearMade}}<br/>
+                  <label>PricePerHour:</label> {{vehicle.PricePerHour}}<br/>
+                  <label>Description:</label> {{vehicle.Description}}<br/>
+                  <div *ngIf="vehicle.IsAvailable; else NotAvailable">
+                    <label><font color="green">Available</font></label><br/>   
+                  </div>
+                  <ng-template #NotAvailable>
+                    <label><font color="red">Not Available</font></label><br/>
+                  </ng-template>
+                </div>
+              </div>
+              <button type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;&nbsp;
+              <button [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>
+            </form>
+          </div>
+
+          <!-- pager -->
+          <ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+              <li [ngClass]="{disabled:pager.currentPage === 1}">
+                  <a (click)="setPage(1)">First</a>
+              </li>
+              <li [ngClass]="{disabled:pager.currentPage === 1}">
+                  <a (click)="setPage(pager.currentPage - 1)">Previous</a>
+              </li>
+              <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                  <a (click)="setPage(page)">{{page}}</a>
+              </li>
+              <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                  <a (click)="setPage(pager.currentPage + 1)">Next</a>
+              </li>
+              <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                  <a (click)="setPage(pager.totalPages)">Last</a>
+              </li>
+          </ul>
       </div>
-      <br/><br/>
-      <div id="banner">
-      &nbsp;&nbsp;&nbsp;
-      <div class="inline-block">
-        <label>Vehicle Type:</label> {{vehicle.VehicleType.TypeName}}<br/>
-        <label>Manufactor:</label> {{vehicle.Manufactor}}<br/>
-        <label>Model:</label> {{vehicle.Model}}<br/>
-        <label>YearMade:</label> {{vehicle.YearMade}}<br/>
-        <label>PricePerHour:</label> {{vehicle.PricePerHour}}<br/>
-        <label>Description:</label> {{vehicle.Description}}<br/>
-        <div *ngIf="vehicle.IsAvailable; else NotAvailable">
-          <label><font color="green">Available</font></label><br/>   
-        </div>
-        <ng-template #NotAvailable>
-          <label><font color="red">Not Available</font></label><br/>
-        </ng-template>
-      </div>
-    </div>
-    <button type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;&nbsp;
-    <button [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>
-  </form>
+  </div>
 </div>

@@ -12,12 +12,12 @@ import { Rating} from '../models/rating.model';
 export class RatingComponent implements OnInit {
 
   serviceId: string = "-1";
+  
+  userRated: boolean;
   ratings: Array<Rating>;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService) { 
     activatedRoute.params.subscribe(params => {this.serviceId = params["ServiceId"]});
-
-    console.log("ServiceId: " + this.serviceId);
   }
 
   ngOnInit() {
@@ -27,7 +27,25 @@ export class RatingComponent implements OnInit {
       }, 
       error =>{
         console.log(error);
+      });
+
+    this.rentVehicleService.getMethodHasUserRated(this.serviceId).subscribe(
+      res => {
+        this.userRated = res as boolean;
+      }, error =>{
+        console.log(error);
       }); 
+  }
+
+  hasUserRated(): boolean{
+    if(this.userRated)
+    {
+      return true;
+    }
+    else 
+    {
+      return false;
+    }
   }
 
 }

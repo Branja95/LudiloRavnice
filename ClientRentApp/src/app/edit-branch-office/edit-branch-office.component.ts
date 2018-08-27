@@ -19,6 +19,7 @@ export class EditBranchOfficeComponent implements OnInit  {
   serviceId : string = "-1";
   branchOfficeId: string = "-1";
   selecetdFileUrl: string = '';
+
   selectedFile: File = null;
   mapInfoCooridnates: MapInfo;
   branchOffice: BranchOffice;
@@ -59,8 +60,7 @@ export class EditBranchOfficeComponent implements OnInit  {
   }
 
   onSubmit(form: NgForm) {
-    console.log("x:" + this.mapInfoCooridnates.centerLat);
-    console.log("y:" + this.mapInfoCooridnates.centerLong);
+
     this.branchOffice.latitude = this.mapInfoCooridnates.centerLat;
     this.branchOffice.longitude = this.mapInfoCooridnates.centerLong;
 
@@ -69,7 +69,7 @@ export class EditBranchOfficeComponent implements OnInit  {
       res => {
         console.log(res);
       }, error => {
-        alert(error.error.Message);
+        console.log(error);
       });;
     
     this.location.back();

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { RentVehicleService } from '../services/rent-vehicle.service';
 import { Comment} from '../models/comment.model'
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-comment',
@@ -12,11 +13,12 @@ import { Comment} from '../models/comment.model'
 export class CommentComponent implements OnInit {
 
   serviceId: string = "-1";
+
+  userCommented: boolean;
   comments: Array<Comment>;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService) {
     activatedRoute.params.subscribe(params => {this.serviceId = params["ServiceId"]});
-    console.log("ServiceId: " + this.serviceId);
   }
 
   ngOnInit() {
@@ -27,7 +29,25 @@ export class CommentComponent implements OnInit {
       }, 
       error =>{
         console.log(error);
-      }); 
+      });
+
+    this.rentVehicleService.getMethodHasUserCommented(this.serviceId).subscribe(
+      res => {
+        this.userCommented = res as boolean;
+      }, error =>{
+        console.log(error);
+      });
+  }
+  
+  hasUserCommented() : boolean {
+    if(this.userCommented)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 
 }

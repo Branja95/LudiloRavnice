@@ -325,32 +325,41 @@ namespace RentApp.Controllers
         [Route("Register")]
         public async Task<IHttpActionResult> Register(RegisterBindingModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            if (UserManager.FindByEmail(model.Email) != null)
+                if (UserManager.FindByEmail(model.Email) != null)
+                {
+                    return BadRequest("Username already exists.");
+                }
+
+                var user = new RAIdentityUser() { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, DocumentImage = "", DateOfBirth = model.DateOfBirth, IsApproved = false };
+                user.PasswordHash = RAIdentityUser.HashPassword(model.Password);
+
+                IdentityResult addUserResult = await UserManager.CreateAsync(user, model.Password);
+
+                if (!addUserResult.Succeeded)
+                {
+                    return GetErrorResult(addUserResult);
+                }
+
+                IdentityResult addRoleResult = await UserManager.AddToRoleAsync(user.Id, "AppUser");
+
+                if (!addRoleResult.Succeeded)
+                {
+                    return GetErrorResult(addRoleResult);
+                }
+
+            }
+            catch(Exception e)
             {
-                return BadRequest("Username already exists.");
+
             }
-
-            var user = new RAIdentityUser() { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, DocumentImage = "", DateOfBirth = model.DateOfBirth, IsApproved = false };
-            user.PasswordHash = RAIdentityUser.HashPassword(model.Password);
-
-            IdentityResult addUserResult = await UserManager.CreateAsync(user, model.Password);
-
-            if (!addUserResult.Succeeded)
-            {
-                return GetErrorResult(addUserResult);
-            }
-
-            IdentityResult addRoleResult = await UserManager.AddToRoleAsync(user.Id, "AppUser");
-
-            if (!addRoleResult.Succeeded)
-            {
-                return GetErrorResult(addRoleResult);
-            }
+            
 
             return Ok("Account successfully created.");
         }
