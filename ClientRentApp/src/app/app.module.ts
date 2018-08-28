@@ -39,6 +39,8 @@ import { CommentComponent } from './comment/comment.component';
 import { AddRatingComponent } from './add-rating/add-rating.component';
 import { AddCommentComponent } from './add-comment/add-comment.component';
 import { ReserveAVehicleComponent } from './reserve-a-vehicle/reserve-a-vehicle.component';
+import { VehicleTypesComponent } from './vehicle-types/vehicle-types.component';
+import { EditVehicleTypesComponent } from './edit-vehicle-types/edit-vehicle-types.component';
 
 const Routes = [
   {
@@ -80,6 +82,14 @@ const Routes = [
   {
     path: "Vehicle",
     component: VehicleComponent
+  },
+  {
+    path: "VehicleTypes",
+    component: VehicleTypesComponent
+  },
+  {
+    path: "EditVehicleType/:VehicleTypeId",
+    component: EditVehicleTypesComponent
   },
   {
     path: "RentVehicle",
@@ -166,7 +176,9 @@ const Routes = [
     CommentComponent,
     AddRatingComponent,
     AddCommentComponent,
-    ReserveAVehicleComponent
+    ReserveAVehicleComponent,
+    VehicleTypesComponent,
+    EditVehicleTypesComponent
   ],
   imports: [
     BrowserModule,

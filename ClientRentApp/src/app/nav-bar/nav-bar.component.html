@@ -9,8 +9,9 @@
       <div *ngIf="isLogged(); then thenBlock; else elseBlock"></div>
         
       <ng-template #thenBlock>
-          <li><a *ngIf="isAdmin()" (click)="resetNotificationsService()" [routerLink]="['/ApproveServiceAdmin']">Approve service<span *ngIf="visibleNotificationsService()" class="badge badge-notify">{{serviceToApprove}}</span></a></li>  
-          <li><a *ngIf="isAdmin()" (click)="resetNotificationsAccount()" [routerLink]="['/ApproveAccountAdmin']">Approve user accounts<span *ngIf="visibleNotificationsAccount()" class="badge badge-notify">{{accountToApprove}}</span></a></li>
+          <li><a *ngIf="isAdmin()" [routerLink]="['/VehicleTypes']">Vehicle types</a></li>
+          <li><a *ngIf="isAdmin()" (click)="resetNotificationsService()" [routerLink]="['/ApproveServiceAdmin']">Approve services<span *ngIf="visibleNotificationsService()" class="badge badge-notify">{{serviceToApprove}}</span></a></li>  
+          <li><a *ngIf="isAdmin()" (click)="resetNotificationsAccount()" [routerLink]="['/ApproveAccountAdmin']">Approve accounts<span *ngIf="visibleNotificationsAccount()" class="badge badge-notify">{{accountToApprove}}</span></a></li>
           <li><a [routerLink]="['/UserAccount']"> {{username}}</a></li>
           <li><a (click)="logoutUser()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
       </ng-template>

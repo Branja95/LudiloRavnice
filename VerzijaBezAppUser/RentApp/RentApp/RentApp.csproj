@@ -342,6 +342,7 @@
     <Compile Include="Models\ReservationBindingModel.cs" />
     <Compile Include="Models\ServiceBindingModel.cs" />
     <Compile Include="Models\VehicleBindingModel.cs" />
+    <Compile Include="Models\VehicleTypeBindingModel.cs" />
     <Compile Include="Persistance\RADBContext.cs" />
     <Compile Include="Persistance\Repository\AccountForApproveRepository.cs" />
     <Compile Include="Persistance\Repository\BranchOfficeRepository.cs" />

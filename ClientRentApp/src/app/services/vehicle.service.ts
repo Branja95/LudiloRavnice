@@ -20,7 +20,7 @@ export class VehicleService {
   }
 
   getVehicleTypes(): Observable<any> {
-    return this.httpClient.get("http://localhost:51680/api/VehicleTypes")
+    return this.httpClient.get("http://localhost:51680/api/VehicleTypes/GetVehicleTypes")
   }
 
   createVehicle(vehicle, uploadedImages: FileList): Observable<any> {
