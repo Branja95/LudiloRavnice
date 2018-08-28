@@ -3,9 +3,10 @@
         <div class="inline-block">
             <label>Rating:</label><br/>
             <div class="inline-block">
-                <label >User:</label> {{rating.User}}<br/>
+                <label >User:</label> {{rating.UserId}}<br/>
                 <label>Value:</label> {{rating.Value}}<br/>
               </div>
+              <button type="button" *ngIf="canUserEditRating(rating.UserId)" [routerLink]="['/EditRating/' , rating.Id]" class="btn btn-default">Edit Rating</button> &nbsp;
               <br/><br/><br/>
         </div>
     </div>

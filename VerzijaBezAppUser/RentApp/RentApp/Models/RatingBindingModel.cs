@@ -19,6 +19,13 @@ namespace RentApp.Models
             public int Value { get; set; }
         }
 
+        public class EditRatingBindingModel
+        {
+            [Required]
+            [Display(Name = "Value")]
+            public int Value { get; set; }
+        }
+
         public class ClientRating
         {           
             public string User { get; set; }

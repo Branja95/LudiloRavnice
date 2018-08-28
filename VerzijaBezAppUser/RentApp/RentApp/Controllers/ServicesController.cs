@@ -133,26 +133,24 @@ namespace RentApp.Controllers
                 return NotFound();
             }
 
-            List<Comment> comments = new List<Comment>(service.Comments);
-
-            List<ClientComment> clientComments = new List<ClientComment>();
-
             RAIdentityUser user = null;
+            List<Comment> comments = new List<Comment>();
 
-            foreach (Comment comment in comments)
+            foreach (Comment comment in service.Comments)
             {
                 user = UserManager.FindById(comment.UserId);
-                clientComments.Add(new ClientComment()
+                comments.Add(new Comment()
                 {
-                    User = user.FirstName + " " + user.LastName,
+                    Id = comment.Id,
+                    UserId = user.Email,
                     Text = comment.Text,
                     DateTime = comment.DateTime
                 });
             }
 
-            return Ok(clientComments);
+            return Ok(comments);
         }
-        
+
         // GET: api/Services/GetRatings
         [HttpGet]
         [AllowAnonymous]
@@ -165,22 +163,21 @@ namespace RentApp.Controllers
                 return NotFound();
             }
 
-            List<Rating> ratings = new List<Rating>(service.Ratings);
-
-            List<ClientRating> clientRaitings = new List<ClientRating>();
+            List<Rating> ratings = new List<Rating>();
 
             RAIdentityUser user = null;
-
-            foreach (Rating rating in ratings)
+            foreach (Rating rating in service.Ratings)
             {
                 user = UserManager.FindById(rating.UserId);
-                clientRaitings.Add(new ClientRating()
+                ratings.Add(new Rating()
                 {
-                    User = user.FirstName + " " + user.LastName,
+                    Id = rating.Id,
+                    UserId = user.Email,
                     Value = rating.Value
                 });
             }
-            return Ok(clientRaitings);
+
+            return Ok(ratings);
         }
 
         // GET: api/Services/HasUserCommented

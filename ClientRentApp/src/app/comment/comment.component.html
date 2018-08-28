@@ -3,11 +3,14 @@
         <div class="inline-block">
             <label>Comment:</label><br/>
             <div class="inline-block">
-                <label >User:</label> {{comment.User}}<br/>
+                <label >User:</label> {{comment.UserId}}<br/>
                 <label>Text:</label> {{comment.Text}}<br/>
                 <label type="Date">Date:</label> {{comment.DateTime}}<br/>
-                </div>
-                <br/><br/><br/>
+            </div>
+            
+            <button type="button" *ngIf="canUserEditComment(comment.UserId)" [routerLink]="['/EditComment/' , comment.Id]" class="btn btn-default">Edit Comment</button> &nbsp;
+
+            <br/><br/>
         </div>
     </div>
 </div>  

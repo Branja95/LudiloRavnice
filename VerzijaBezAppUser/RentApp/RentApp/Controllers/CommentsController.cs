@@ -28,7 +28,10 @@ namespace RentApp.Controllers
             this.UserManager = applicationUserManager;
         }
 
-        // GET: api/Comments
+        // GET: api/Comments/GetComments
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("GetComments")]
         public IEnumerable<Comment> GetComments()
         {
             return unitOfWork.Comments.GetAll();
@@ -64,38 +67,30 @@ namespace RentApp.Controllers
             return Ok(user.Email);
         }
 
-        // PUT: api/Comments/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutComment(int id, Comment comment)
+        // PUT: api/Comments/PutComment
+        [HttpPut]
+        [Route("PutComment")]
+        [Authorize(Roles = "Admin, Manager, AppUser")]
+        public IHttpActionResult PutComment([FromUri] int commentId, EditCommentBindingModel comment)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != comment.Id)
+            Comment editComment = unitOfWork.Comments.Get(commentId);
+            if (editComment == null)
             {
-                return BadRequest();
+                return BadRequest("Comment doesn't exist.");
             }
 
-            try
-            {
-                unitOfWork.Comments.Update(comment);
-                unitOfWork.Complete();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CommentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            editComment.Text = comment.Text;
+            editComment.DateTime = DateTime.Now;
 
-            return StatusCode(HttpStatusCode.NoContent);
+            unitOfWork.Comments.Update(editComment);
+            unitOfWork.Complete();
+
+            return Ok(HttpStatusCode.OK);
         }
 
         // POST: api/Comments/PostComment
@@ -118,10 +113,10 @@ namespace RentApp.Controllers
 
             RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
-            if (!CanComment(user.Id, service))
-            {
-                return BadRequest("You can not commenting on the service until your first renting is completed.");
-            }
+            //if (!CanComment(user.Id, service))
+            //{
+            //    return BadRequest("You can not commenting on the service until your first renting is completed.");
+            //}
 
             Comment comment = new Comment
             {
