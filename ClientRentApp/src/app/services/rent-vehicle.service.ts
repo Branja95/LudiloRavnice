@@ -51,6 +51,14 @@ export class RentVehicleService {
     return this.httpClient.get("http://localhost:51680/api/Services/ServicesForApproves");
   }
 
+  getMethodHasUserCommented(serviceId : string){
+    return this.httpClient.get("http://localhost:51680/api/Services/HasUserCommented?serviceId=" + serviceId);
+  }
+  
+  getMethodHasUserRated(serviceId : string){
+    return this.httpClient.get("http://localhost:51680/api/Services/HasUserRated?serviceId=" + serviceId);
+  }
+  
   deleteService(serviceId): Observable<any>{
     return this.httpClient.delete("http://localhost:51680/api/Services/DeleteService?serviceId=" + serviceId);
   }

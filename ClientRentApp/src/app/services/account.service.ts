@@ -11,6 +11,10 @@ export class AccountService {
 
   constructor(private httpClient: HttpClient) { }
 
+  getMethodUserInfo(): Observable<any>{
+    return this.httpClient.get("http://localhost:51680/api/Account/UserInfo");
+  }
+
   getMethodUsersForApproves() : Observable<any> {
     return this.httpClient.get("http://localhost:51680/api/Account/AccountsForApproval");
   }

@@ -1,11 +1,15 @@
-<div *ngFor='let comment of comments'>
-    <div class="inline-block">
-        <label>Comment:</label><br/>
+<div class='parent'>
+    <div *ngFor='let comment of comments'>
         <div class="inline-block">
-            <label >User:</label> {{comment.UserId}}<br/>
-            <label>Text:</label> {{comment.Text}}<br/>
-            <label type="Date">Date:</label> {{comment.DateTime}}<br/>
-          </div>
-          <br/><br/><br/>
+            <label>Comment:</label><br/>
+            <div class="inline-block">
+                <label >User:</label> {{comment.UserId}}<br/>
+                <label>Text:</label> {{comment.Text}}<br/>
+                <label type="Date">Date:</label> {{comment.DateTime}}<br/>
+                </div>
+                <br/><br/><br/>
+        </div>
     </div>
-  </div>
+</div>  
+
+<button type="button" *ngIf="!hasUserCommented()" [routerLink]="['/AddComment/' , serviceId]" class="btn btn-default">Add Comment</button> &nbsp;

@@ -16,6 +16,8 @@ export class CommentService {
   constructor(private httpClient: HttpClient) { }
 
   postMethodCreateComment(comment):Observable<any>{
+    console.log("serviceId: " + comment.serviceId);
+    console.log("text", comment.text);
 
     this.formData.append('serviceId',comment.serviceId);
     this.formData.append('text', comment.text);
@@ -23,8 +25,11 @@ export class CommentService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.post("http://localhost:51680/api/Comments/PostComment", this.formData, { headers: headers });
+    let result =  this.httpClient.post("http://localhost:51680/api/Comments/PostComment", this.formData, { headers: headers }); 
     
+    this.formData = new FormData();
+
+    return result;
   }
 
 }

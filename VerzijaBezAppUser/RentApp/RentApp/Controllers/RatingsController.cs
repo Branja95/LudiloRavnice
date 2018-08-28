@@ -9,18 +9,22 @@ using RentApp.Persistance;
 using RentApp.Persistance.UnitOfWork;
 using System.Collections.Generic;
 using static RentApp.Models.RatingBindingModel;
+using Microsoft.AspNet.Identity;
+using System.Threading.Tasks;
 
 namespace RentApp.Controllers
 {
     public class RatingsController : ApiController
     {
         private readonly IUnitOfWork unitOfWork;
+        public ApplicationUserManager UserManager { get; private set; }
 
-        public RatingsController(IUnitOfWork unitOfWork)
+        public RatingsController(IUnitOfWork unitOfWork, ApplicationUserManager applicationUserManager)
         {
             this.unitOfWork = unitOfWork;
+            this.UserManager = applicationUserManager;
         }
-
+        
         // GET: api/Ratings
         public IEnumerable<Rating> GetRatings()
         {
@@ -76,16 +80,18 @@ namespace RentApp.Controllers
 
         // POST: api/Ratings
         [ResponseType(typeof(Rating))]
-        public IHttpActionResult PostRating(CreateRatingBindingModel model)
+        public async Task<IHttpActionResult> PostRating(CreateRatingBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
             Rating rating = new Rating
             {
-                UserId = "David",
+                UserId = user.Id,
                 Value = model.Value
             };
 
@@ -101,22 +107,6 @@ namespace RentApp.Controllers
             unitOfWork.Complete();
 
             return Ok(HttpStatusCode.OK);
-        }
-
-        // DELETE: api/Ratings/5
-        [ResponseType(typeof(Rating))]
-        public IHttpActionResult DeleteRating(int id)
-        {
-            Rating rating = unitOfWork.Ratings.Get(id);
-            if (rating == null)
-            {
-                return NotFound();
-            }
-
-            unitOfWork.Ratings.Remove(rating);
-            unitOfWork.Complete();
-
-            return Ok(rating);
         }
 
         private bool RatingExists(int id)

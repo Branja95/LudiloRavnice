@@ -36,6 +36,7 @@ namespace RentApp.Controllers
         private string validationErrorMessage;
         private readonly IUnitOfWork unitOfWork;
         private readonly ISMTPService SMTPService;
+        public ApplicationUserManager UserManager { get; private set; }
 
         public ServicesController() { }
 
@@ -47,10 +48,7 @@ namespace RentApp.Controllers
             this.unitOfWork = unitOfWork;
             this.SMTPService = SMTPService;
         }
-
-        public ApplicationUserManager UserManager { get; private set; }
-
-
+        
         // GET: api/Services/GetServices
         [HttpGet]
         [AllowAnonymous]
@@ -155,6 +153,64 @@ namespace RentApp.Controllers
             return Ok(ratings);
         }
 
+        // GET: api/Services/HasUserCommented
+        [HttpGet]
+        [AllowAnonymous] // Fix this
+        [Route("HasUserCommented")]
+        public async Task<IHttpActionResult> HasUserCommented([FromUri] long serviceId)
+        {
+            bool hasUserCommented = false;
+
+            Service service = unitOfWork.Services.Get(serviceId);
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            Comment comment = service.Comments.Find(comm => comm.UserId == user.Id);
+            if (comment == null)
+            {
+                hasUserCommented = false;
+            }
+            else
+            {
+                hasUserCommented = true;
+            }
+
+            return Ok(hasUserCommented);
+        }
+
+        // GET: api/Services/HasUserRated
+        [HttpGet]
+        [AllowAnonymous] // Fix this
+        [Route("HasUserRated")]
+        public async Task<IHttpActionResult> HasUserRated([FromUri] long serviceId)
+        {
+            bool hasUserRated = false;
+
+            Service service = unitOfWork.Services.Get(serviceId);
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            Rating rating = service.Ratings.Find(rate => rate.UserId == user.Id);
+            if (rating == null)
+            {
+                hasUserRated = false;
+            }
+            else
+            {
+                hasUserRated = true;
+            }
+
+            return Ok(hasUserRated);
+        }
+
         // PUT: api/Services/PutService/5
         [HttpPut]
         [Route("PutService")]
@@ -209,8 +265,7 @@ namespace RentApp.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
-
+        
         // GET: api/Services/ServicesForApproves
         [HttpGet]
         [Route("ServicesForApproves")]
@@ -386,6 +441,5 @@ namespace RentApp.Controllers
             return unitOfWork.Services.Get(id) != null;
         }
 
-      
     }
 }

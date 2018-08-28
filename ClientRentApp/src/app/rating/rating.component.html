@@ -1,10 +1,14 @@
-<div *ngFor='let rating of ratings'>
-    <div class="inline-block">
-        <label>Rating:</label><br/>
+<div class='parent'>
+    <div *ngFor='let rating of ratings'>
         <div class="inline-block">
-            <label >User:</label> {{rating.UserId}}<br/>
-            <label>Value:</label> {{rating.Value}}<br/>
-          </div>
-          <br/><br/><br/>
+            <label>Rating:</label><br/>
+            <div class="inline-block">
+                <label >User:</label> {{rating.UserId}}<br/>
+                <label>Value:</label> {{rating.Value}}<br/>
+              </div>
+              <br/><br/><br/>
+        </div>
     </div>
-  </div>
+</div>
+
+<button type="button" *ngIf="!hasUserRated()" [routerLink]="['/AddRating/' , serviceId]" class="btn btn-default">Add Rating</button> &nbsp;

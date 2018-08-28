@@ -11,16 +11,19 @@ using System.Collections.Generic;
 using System;
 using static RentApp.Models.CommentBindingModel;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 
 namespace RentApp.Controllers
 {
     public class CommentsController : ApiController
     {
         private readonly IUnitOfWork unitOfWork;
+        public ApplicationUserManager UserManager { get; private set; }
 
-        public CommentsController(IUnitOfWork unitOfWork)
+        public CommentsController(IUnitOfWork unitOfWork, ApplicationUserManager applicationUserManager)
         {
             this.unitOfWork = unitOfWork;
+            this.UserManager = applicationUserManager;
         }
 
         // GET: api/Comments
@@ -40,6 +43,23 @@ namespace RentApp.Controllers
             }
 
             return Ok(comment);
+        }
+
+        // GET: api/Comments/UserName
+        [HttpGet]
+        [Route("UserName")]
+        [AllowAnonymous]
+        public async Task<IHttpActionResult> UserName([FromUri] int commentId)
+        {
+            Comment comment = unitOfWork.Comments.Get(commentId);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            RAIdentityUser user = await UserManager.FindByIdAsync(comment.UserId);
+            
+            return Ok(user.Email);
         }
 
         // PUT: api/Comments/5
@@ -77,20 +97,22 @@ namespace RentApp.Controllers
         }
 
         // POST: api/Comments/PostComment
-        public IHttpActionResult PostComment(CreateCommentBindingModel model)
+        public async Task<IHttpActionResult> PostComment(CreateCommentBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            
+            RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
             Comment comment = new Comment
             {
                 Text = model.Text,
                 DateTime = DateTime.Now,
-                UserId = "David"
+                UserId = user.Id
             };
-            
+
             Service service = unitOfWork.Services.Get(model.ServiceId);
             if (service == null)
             {
@@ -101,7 +123,7 @@ namespace RentApp.Controllers
 
             unitOfWork.Comments.Add(comment);
             unitOfWork.Complete();
-
+            
             return Ok(HttpStatusCode.OK);
         }
 

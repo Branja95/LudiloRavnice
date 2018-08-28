@@ -16,6 +16,7 @@ using System.Drawing.Imaging;
 using System.Net.Http.Headers;
 using RentApp.Helpers;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace RentApp.Controllers
 {
@@ -54,6 +55,57 @@ namespace RentApp.Controllers
             return Ok(vehicle);
         }
 
+        // GET: api/Vehicles/GetNumberOfVehicles
+        [HttpGet]
+        [Route("GetNumberOfVehicles")]
+        [AllowAnonymous]
+        public IHttpActionResult GetNumberOfVehicles()
+        {
+            IEnumerable<Vehicle> vehicles = unitOfWork.Vehicles.GetAll();
+            if (vehicles == null)
+            {
+                return NotFound();
+            }
+
+            List<Vehicle> vehiclesList = new List<Vehicle>(vehicles);
+
+            return Ok(vehiclesList.Count);
+        }
+        
+        // GET: api/Vehicles/GetPagedVehicles
+        [HttpGet]
+        [Route("GetPagedVehicles")]
+        [AllowAnonymous]
+        public IHttpActionResult GetPagedVehicles([FromUri] int pageIndex, [FromUri] int pageSize)
+        {
+            IEnumerable<Vehicle> vehicles = unitOfWork.Vehicles.GetAll(pageIndex, pageSize);
+            if (vehicles == null)
+            {
+                return NotFound();
+            }
+
+            List<Vehicle> vehiclesList = new List<Vehicle>(vehicles);
+
+            return Ok(vehiclesList);
+        }
+
+        // GET: api/Vehicles/FilterVehicles
+        [HttpGet]
+        [Route("GetNumberOfVehicles")]
+        [AllowAnonymous]
+        public IHttpActionResult GetNumberOfVehicles([FromUri] int pageIndex, [FromUri] int pageSize)
+        {
+            IEnumerable<Vehicle> vehicles = unitOfWork.Vehicles.GetAll();
+            if (vehicles == null)
+            {
+                return NotFound();
+            }
+
+            List<Vehicle> vehiclesList = new List<Vehicle>(vehicles);
+
+            return Ok(vehiclesList.Count);
+        }
+        
         // GET: api/Vehicles/LoadImage
         [HttpGet]
         [Route("LoadImage")]
