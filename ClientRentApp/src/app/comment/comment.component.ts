@@ -4,6 +4,8 @@ import { RentVehicleService } from '../services/rent-vehicle.service';
 import { Comment} from '../models/comment.model'
 import { Observable } from 'rxjs';
 
+import { CommentService } from '../services/comment.service';
+
 @Component({
   selector: 'app-comment',
   templateUrl: './comment.component.html',
@@ -14,10 +16,10 @@ export class CommentComponent implements OnInit {
 
   serviceId: string = "-1";
 
-  userCommented: boolean;
+  userCommented: boolean = true;
   comments: Array<Comment>;
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService) {
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService, private commentService: CommentService) {
     activatedRoute.params.subscribe(params => {this.serviceId = params["ServiceId"]});
   }
 
@@ -38,7 +40,7 @@ export class CommentComponent implements OnInit {
         console.log(error);
       });
   }
-  
+
   hasUserCommented() : boolean {
     if(this.userCommented)
     {
@@ -48,6 +50,16 @@ export class CommentComponent implements OnInit {
     {
       return false;
     }
+  }
+
+  getUsername(id){
+    this.commentService.getMethodUsername(id)
+    .subscribe(
+      res => {
+        return res;
+      }, error =>{
+        console.log(error);
+      });;
   }
 
 }

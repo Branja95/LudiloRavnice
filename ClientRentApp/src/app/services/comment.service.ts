@@ -15,7 +15,7 @@ export class CommentService {
 
   constructor(private httpClient: HttpClient) { }
 
-  postMethodCreateComment(comment):Observable<any>{
+  postMethodCreateComment(comment): Observable<any>{
     console.log("serviceId: " + comment.serviceId);
     console.log("text", comment.text);
 
@@ -29,6 +29,13 @@ export class CommentService {
     
     this.formData = new FormData();
 
+    return result;
+  }
+
+  getMethodUsername(commentId): Observable<any>{
+    console.log(commentId);
+    let result = this.httpClient.get("http://localhost:51680/api/Comments/UserName?commentId=" + commentId); 
+    console.log(result);
     return result;
   }
 

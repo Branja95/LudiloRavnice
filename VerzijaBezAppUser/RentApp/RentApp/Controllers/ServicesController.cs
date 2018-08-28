@@ -26,6 +26,8 @@ using RentApp.Services;
 using System.Web.Http.Description;
 using System.Net;
 using System.Data.Entity.Infrastructure;
+using static RentApp.Models.CommentBindingModel;
+using static RentApp.Models.RatingBindingModel;
 
 namespace RentApp.Controllers
 {
@@ -133,7 +135,22 @@ namespace RentApp.Controllers
 
             List<Comment> comments = new List<Comment>(service.Comments);
 
-            return Ok(comments);
+            List<ClientComment> clientComments = new List<ClientComment>();
+
+            RAIdentityUser user = null;
+
+            foreach (Comment comment in comments)
+            {
+                user = UserManager.FindById(comment.UserId);
+                clientComments.Add(new ClientComment()
+                {
+                    User = user.FirstName + " " + user.LastName,
+                    Text = comment.Text,
+                    DateTime = comment.DateTime
+                });
+            }
+
+            return Ok(clientComments);
         }
         
         // GET: api/Services/GetRatings
@@ -150,12 +167,25 @@ namespace RentApp.Controllers
 
             List<Rating> ratings = new List<Rating>(service.Ratings);
 
-            return Ok(ratings);
+            List<ClientRating> clientRaitings = new List<ClientRating>();
+
+            RAIdentityUser user = null;
+
+            foreach (Rating rating in ratings)
+            {
+                user = UserManager.FindById(rating.UserId);
+                clientRaitings.Add(new ClientRating()
+                {
+                    User = user.FirstName + " " + user.LastName,
+                    Value = rating.Value
+                });
+            }
+            return Ok(clientRaitings);
         }
 
         // GET: api/Services/HasUserCommented
         [HttpGet]
-        [AllowAnonymous] // Fix this
+        [AllowAnonymous]
         [Route("HasUserCommented")]
         public async Task<IHttpActionResult> HasUserCommented([FromUri] long serviceId)
         {
@@ -168,6 +198,11 @@ namespace RentApp.Controllers
             }
 
             RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            if(user == null)
+            {
+                return Ok(true);
+            }
 
             Comment comment = service.Comments.Find(comm => comm.UserId == user.Id);
             if (comment == null)
@@ -184,7 +219,7 @@ namespace RentApp.Controllers
 
         // GET: api/Services/HasUserRated
         [HttpGet]
-        [AllowAnonymous] // Fix this
+        [AllowAnonymous]
         [Route("HasUserRated")]
         public async Task<IHttpActionResult> HasUserRated([FromUri] long serviceId)
         {
@@ -197,6 +232,11 @@ namespace RentApp.Controllers
             }
 
             RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            if (user == null)
+            {
+                return Ok(true);
+            }
 
             Rating rating = service.Ratings.Find(rate => rate.UserId == user.Id);
             if (rating == null)

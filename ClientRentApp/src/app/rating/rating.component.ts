@@ -13,7 +13,7 @@ export class RatingComponent implements OnInit {
 
   serviceId: string = "-1";
   
-  userRated: boolean;
+  userRated: boolean = true;
   ratings: Array<Rating>;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService) { 

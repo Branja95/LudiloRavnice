@@ -18,5 +18,12 @@ namespace RentApp.Models
             [Display(Name = "Value")]
             public int Value { get; set; }
         }
+
+        public class ClientRating
+        {           
+            public string User { get; set; }
+
+            public int Value { get; set; }
+        }
     }
 }

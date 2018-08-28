@@ -30,9 +30,9 @@
                   </ng-template>
                 </div>
               </div>
-                <button [routerLink]="['/ReserveAVehicle/', vehicle.Id]" class="btn btn-default">Reserve a vehicle</button>&nbsp;
-                <button [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>&nbsp;
-                <button type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;
+                <button *ngIf="isLogged()" [routerLink]="['/ReserveAVehicle/', vehicle.Id]" class="btn btn-default">Reserve a vehicle</button>&nbsp;
+                <button *ngIf="isManagerOrAdmin()" [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>&nbsp;
+                <button *ngIf="isManagerOrAdmin()" type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;
             </form>
           </div>
 

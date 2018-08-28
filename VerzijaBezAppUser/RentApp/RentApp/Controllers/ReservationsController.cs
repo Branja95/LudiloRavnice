@@ -108,6 +108,11 @@ namespace RentApp.Controllers
                 return BadRequest(ModelState);
             }
 
+            if(unitOfWork.AccountsForApprove.Find(a => a.UserId == UserManager.FindById(User.Identity.GetUserId()).Id).Count() > 0)
+            {
+                return BadRequest("Your account is not approved.");
+            }
+
             Vehicle vehicle = unitOfWork.Vehicles.Get(model.VehicleId);
 
             if(vehicle == null)

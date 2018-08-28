@@ -15,6 +15,8 @@ using Microsoft.AspNet.Identity;
 
 namespace RentApp.Controllers
 {
+    [Authorize]
+    [RoutePrefix("api/Comments")]
     public class CommentsController : ApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -97,14 +99,29 @@ namespace RentApp.Controllers
         }
 
         // POST: api/Comments/PostComment
+        [HttpPost]
+        [Route("PostComment")]
+        [Authorize(Roles = "Admin, Manager, AppUser")]
         public async Task<IHttpActionResult> PostComment(CreateCommentBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+
+            Service service = unitOfWork.Services.Get(model.ServiceId);
+
+            if (service == null)
+            {
+                return NotFound();
+            }
+
             RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            if (!CanComment(user.Id, service))
+            {
+                return BadRequest("You can not commenting on the service until your first renting is completed.");
+            }
 
             Comment comment = new Comment
             {
@@ -113,18 +130,12 @@ namespace RentApp.Controllers
                 UserId = user.Id
             };
 
-            Service service = unitOfWork.Services.Get(model.ServiceId);
-            if (service == null)
-            {
-                return NotFound();
-            }
-
             service.Comments.Add(comment);
 
             unitOfWork.Comments.Add(comment);
             unitOfWork.Complete();
             
-            return Ok(HttpStatusCode.OK);
+            return Ok("Service successfully commented.");
         }
 
         // DELETE: api/Comments/5
@@ -146,6 +157,23 @@ namespace RentApp.Controllers
         private bool CommentExists(int id)
         {
             return unitOfWork.Comments.Get(id) != null;
+        }
+
+        private bool CanComment(string userId, Service service)
+        {
+            IEnumerable<Reservation> reservations = null;
+
+            foreach (Vehicle vehicle in service.Vehicles)
+            {
+                reservations = unitOfWork.Reservations.Find(r => r.Vehicle.Id == vehicle.Id && r.UserId == userId && r.ReservationEnd < DateTime.Now);
+
+                if (reservations.Count() > 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -71,4 +71,30 @@ export class ServiceVehiclesComponent implements OnInit {
       }
     )
   }
+
+  isManagerOrAdmin(){
+
+    if(!localStorage.role)
+    {
+      return false;
+    }
+    else
+    {
+      if(localStorage.role == "Manager" || localStorage.role == "Admin")
+      {
+        return true;
+      }
+      return false;
+    }
+  }
+
+  isLogged() : boolean
+  {
+    if(!localStorage.jwt)
+    {
+      return false;
+    }
+    
+    return true;
+  }
 }

@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { RentVehicle } from '../models/rent-vehicle.model';
 import { RentVehicleService } from '../services/rent-vehicle.service';
+import { Vehicle } from '../models/vehicle.model';
 
 @Component({
   selector: 'app-view-rent-vehicle',
@@ -14,7 +15,7 @@ import { RentVehicleService } from '../services/rent-vehicle.service';
 export class ViewRentVehicleComponent implements OnInit {
 
   ServiceId: string = "-1";
-  rentVehicle: any;
+  rentVehicle: Vehicle;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService) {
     activatedRoute.params.subscribe(params => {
@@ -26,7 +27,7 @@ export class ViewRentVehicleComponent implements OnInit {
   ngOnInit() {
     this.rentVehicleService.getService(this.ServiceId).subscribe(
       res => {
-        this.rentVehicle = res;
+        this.rentVehicle = res as Vehicle;
         console.log(this.rentVehicle);
       },error => {
         alert(error.error.Message);

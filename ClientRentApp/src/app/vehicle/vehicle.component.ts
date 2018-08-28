@@ -26,7 +26,7 @@ export class VehicleComponent implements OnInit {
   // paged items
   pagedVehicles: Array<Vehicle>;
 
-  pageSize = 5;
+  pageSize = 2;
   totalVehicles;
 
   vehicleTypes = Array<VehicleType>();
@@ -36,7 +36,7 @@ export class VehicleComponent implements OnInit {
   constructor(private vehicleService: VehicleService, private pagerService: PagerService) { }
 
   ngOnInit() {
-    this.getVehicles();   
+    this.getVehicles()
     this.getTotalVehiclesCount();
   }
 
@@ -98,6 +98,7 @@ export class VehicleComponent implements OnInit {
     .subscribe(
       res => {
         this.pagedVehicles = res as Array<Vehicle>;
+        console.log(this.pagedVehicles);
       },
       error=> {
         console.log(error);
@@ -111,4 +112,29 @@ export class VehicleComponent implements OnInit {
     this.getPagedVehciles(this.pager.currentPage);
   }
 
+  isManagerOrAdmin(){
+
+    if(!localStorage.role)
+    {
+      return false;
+    }
+    else
+    {
+      if(localStorage.role == "Manager" || localStorage.role == "Admin")
+      {
+        return true;
+      }
+      return false;
+    }
+  }
+
+  isLogged() : boolean
+  {
+    if(!localStorage.jwt)
+    {
+      return false;
+    }
+    
+    return true;
+  }
 }

@@ -1,30 +1,40 @@
-<div *ngFor='let vehicle of vehicles'>
-    <br/><br/>
-        <div id="banner">
+<div>
+  <div class="container">
+    <div class="text-center">
+        <h1>Vehicles</h1>
+
+      <div *ngFor='let vehicle of vehicles'>
+        <form #f="ngForm" (ngSubmit)="onDelete(f, vehicle.Id)">
+          <br/><br/>
+              <div id="banner">
+                  &nbsp;&nbsp;&nbsp;
+                <div class="inline-block" *ngFor='let url of parseImages(vehicle.Images)'>
+                  <img src='http://localhost:51680/api/Vehicles/LoadImage?imageId={{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
+                </div> 
+            </div>
+            <br/><br/>
+            <div id="banner">
             &nbsp;&nbsp;&nbsp;
-          <div class="inline-block" *ngFor='let url of parseImages(vehicle.Images)'>
-            <img src='http://localhost:51680/api/Vehicles/LoadImage?imageId={{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
-          </div> 
-      </div>
-      <br/><br/>
-      <div id="banner">
-      &nbsp;&nbsp;&nbsp;
-      <div class="inline-block">
-        <label>Vehicle Type:</label> {{vehicle.VehicleType.TypeName}}<br/>
-        <label>Manufactor:</label> {{vehicle.Manufactor}}<br/>
-        <label>Model:</label> {{vehicle.Model}}<br/>
-        <label>YearMade:</label> {{vehicle.YearMade}}<br/>
-        <label>PricePerHour:</label> {{vehicle.PricePerHour}}<br/>
-        <label>Description:</label> {{vehicle.Description}}<br/>
-        <div *ngIf="vehicle.IsAvailable; else NotAvailable">
-            <label><font color="green">Available</font></label><br/>   
-        </div>
-        <ng-template #NotAvailable>
-          <label><font color="red">Not Available</font></label><br/>
-        </ng-template>
+            <div class="inline-block">
+              <label>Vehicle Type:</label> {{vehicle.VehicleType.TypeName}}<br/>
+              <label>Manufactor:</label> {{vehicle.Manufactor}}<br/>
+              <label>Model:</label> {{vehicle.Model}}<br/>
+              <label>YearMade:</label> {{vehicle.YearMade}}<br/>
+              <label>PricePerHour:</label> {{vehicle.PricePerHour}}<br/>
+              <label>Description:</label> {{vehicle.Description}}<br/>
+              <div *ngIf="vehicle.IsAvailable; else NotAvailable">
+                <label><font color="green">Available</font></label><br/>   
+              </div>
+              <ng-template #NotAvailable>
+                <label><font color="red">Not Available</font></label><br/>
+              </ng-template>
+            </div>
+          </div>
+            <button *ngIf="isLogged()" [routerLink]="['/ReserveAVehicle/', vehicle.Id]" class="btn btn-default">Reserve a vehicle</button>&nbsp;
+            <button *ngIf="isManagerOrAdmin()" [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>&nbsp;
+            <button *ngIf="isManagerOrAdmin()" type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;
+        </form>
       </div>
     </div>
-    <button [routerLink]="['/ReserveAVehicle/', vehicle.Id]" class="btn btn-default">Reserve a vehicle</button>&nbsp;
-    <button [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>&nbsp;
-    <button type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;
+  </div>
 </div>

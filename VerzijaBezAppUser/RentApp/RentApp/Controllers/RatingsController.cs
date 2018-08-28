@@ -11,9 +11,12 @@ using System.Collections.Generic;
 using static RentApp.Models.RatingBindingModel;
 using Microsoft.AspNet.Identity;
 using System.Threading.Tasks;
+using System;
 
 namespace RentApp.Controllers
 {
+    [Authorize]
+    [RoutePrefix("api/Ratings")]
     public class RatingsController : ApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -78,8 +81,10 @@ namespace RentApp.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Ratings
-        [ResponseType(typeof(Rating))]
+        // POST: api/Ratings/PostRating
+        [HttpPost]
+        [Route("PostRating")]
+        [Authorize(Roles = "Admin, Manager, AppUser")]
         public async Task<IHttpActionResult> PostRating(CreateRatingBindingModel model)
         {
             if (!ModelState.IsValid)
@@ -87,7 +92,19 @@ namespace RentApp.Controllers
                 return BadRequest(ModelState);
             }
 
+            Service service = unitOfWork.Services.Get(model.ServiceId);
+
+            if (service == null)
+            {
+                return NotFound();
+            }
+
             RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            if(!CanRating(user.Id, service))
+            {
+                return BadRequest("You can not rating on the service until your first renting is completed.");
+            }
 
             Rating rating = new Rating
             {
@@ -95,23 +112,33 @@ namespace RentApp.Controllers
                 Value = model.Value
             };
 
-            Service service = unitOfWork.Services.Get(model.ServiceId);
-            if (service == null)
-            {
-                return NotFound();
-            }
-
             service.Ratings.Add(rating);
 
             unitOfWork.Ratings.Add(rating);
             unitOfWork.Complete();
 
-            return Ok(HttpStatusCode.OK);
+            return Ok("Service successfully rated.");
         }
 
         private bool RatingExists(int id)
         {
             return unitOfWork.Ratings.Get(id) != null;
+        }
+
+        private bool CanRating(string userId, Service service)
+        {
+            IEnumerable<Reservation> reservations = null;
+
+            foreach (Vehicle vehicle in service.Vehicles)
+            {
+                reservations = unitOfWork.Reservations.Find(r => r.Vehicle.Id == vehicle.Id && r.UserId == userId && r.ReservationEnd < DateTime.Now);
+                if (reservations.Count() > 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
