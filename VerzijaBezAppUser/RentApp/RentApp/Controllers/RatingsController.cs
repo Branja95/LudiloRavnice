@@ -27,8 +27,11 @@ namespace RentApp.Controllers
             this.unitOfWork = unitOfWork;
             this.UserManager = applicationUserManager;
         }
-        
-        // GET: api/Ratings
+
+        // GET: api/Ratings/GetRatings
+        [HttpGet]
+        [Route("GetRatings")]
+        [AllowAnonymous]
         public IEnumerable<Rating> GetRatings()
         {
             return unitOfWork.Ratings.GetAll();
@@ -47,38 +50,29 @@ namespace RentApp.Controllers
             return Ok(rating);
         }
 
-        // PUT: api/Ratings/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutRating(int id, Rating rating)
+        // PUT: api/Ratings/PutRating
+        [HttpPut]
+        [Route("PutRating")]
+        [Authorize(Roles = "Admin, Manager, AppUser")]
+        public IHttpActionResult PutRating([FromUri] int ratingId, EditRatingBindingModel rating)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != rating.Id)
+            Rating editRating = unitOfWork.Ratings.Get(ratingId);
+            if (editRating == null)
             {
-                return BadRequest();
+                return BadRequest("Rating doesn't exist.");
             }
 
-            try
-            {
-                unitOfWork.Ratings.Update(rating);
-                unitOfWork.Complete();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RatingExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            editRating.Value = rating.Value;
 
-            return StatusCode(HttpStatusCode.NoContent);
+            unitOfWork.Ratings.Update(editRating);
+            unitOfWork.Complete();
+
+            return Ok(HttpStatusCode.OK);
         }
 
         // POST: api/Ratings/PostRating
@@ -101,10 +95,10 @@ namespace RentApp.Controllers
 
             RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
-            if(!CanRating(user.Id, service))
-            {
-                return BadRequest("You can not rating on the service until your first renting is completed.");
-            }
+            //if(!CanRating(user.Id, service))
+            //{
+            //    return BadRequest("You can not rating on the service until your first renting is completed.");
+            //}
 
             Rating rating = new Rating
             {

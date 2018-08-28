@@ -26,7 +26,7 @@ export class AddRatingComponent implements OnInit {
 
     rating.serviceId = this.serviceId;
 
-    this.ratingService.createRating(rating).subscribe(
+    this.ratingService.postMethodCreateRating(rating).subscribe(
       res =>{
         console.log(res);
       }, error =>{

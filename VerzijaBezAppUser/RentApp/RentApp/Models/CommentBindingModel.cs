@@ -20,6 +20,13 @@ namespace RentApp.Models
             public string Text { get; set; }
             
         }
+        public class EditCommentBindingModel
+        {
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Text")]
+            public string Text { get; set; }
+        }
 
         public class ClientComment
         {         

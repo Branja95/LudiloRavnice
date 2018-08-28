@@ -49,6 +49,7 @@ export class LoginComponent implements OnInit {
 
     let role = decodedJwtData.role
     let uniqueName = decodedJwtData.unique_name
+    let nameid = decodedJwtData.nameid;
 
     console.log(decodedJwtData)
     //console.log('jwtData: ' + jwtData)
@@ -59,6 +60,7 @@ export class LoginComponent implements OnInit {
     localStorage.setItem('jwt', jwt)
     localStorage.setItem('role', role);
     localStorage.setItem('username', uniqueName);
+    localStorage.setItem('nameid', nameid);
   
   }
 
