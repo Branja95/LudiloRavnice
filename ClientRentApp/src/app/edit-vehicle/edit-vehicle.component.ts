@@ -64,7 +64,7 @@ export class EditVehicleComponent implements OnInit {
         alert(data);
       }, error => {
         console.log(error);
-      });;
+      });
     
       form.reset();
       this.urls = new Array<string>();

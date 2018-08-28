@@ -1,24 +1,48 @@
-﻿using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Web.Http;
-using System.Web.Http.Description;
-using RentApp.Models.Entities;
-using RentApp.Persistance;
-using RentApp.Persistance.UnitOfWork;
+﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.OAuth;
+using RentApp.Models;
+using RentApp.Models.Entities;
+using RentApp.Providers;
+using RentApp.Results;
+using RentApp.Persistance.UnitOfWork;
+using RentApp.Hubs;
+using System.Linq;
+using System.Collections;
+using RentApp.Helpers;
+using System.Runtime.Remoting.Messaging;
+using RentApp.Services;
+using System.Web.Http.Description;
+using System.Net;
+using System.Data.Entity.Infrastructure;
+using static RentApp.Models.ReservationBindingModel;
 
 namespace RentApp.Controllers
 {
+    [Authorize]
+    [RoutePrefix("api/Reservations")]
     public class ReservationsController : ApiController
     {
         private readonly IUnitOfWork unitOfWork;
 
-        public ReservationsController(IUnitOfWork unitOfWork)
+        public ReservationsController(ApplicationUserManager userManager, 
+            IUnitOfWork unitOfWork)
         {
+            UserManager = userManager;
             this.unitOfWork = unitOfWork;
         }
+
+        public ApplicationUserManager UserManager { get; private set; }
 
         // GET: api/Reservations
         public IEnumerable<Reservation> GetReservations()
@@ -73,19 +97,84 @@ namespace RentApp.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Reservations
-        [ResponseType(typeof(Reservation))]
-        public IHttpActionResult PostReservation(Reservation reservation)
+        // POST: api/Reservations/PostReservation
+        [HttpPost]
+        [Route("PostReservation")]
+        [Authorize(Roles = "Admin, Manager, AppUser")]
+        public IHttpActionResult PostReservation(CreateReservationBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            Vehicle vehicle = unitOfWork.Vehicles.Get(model.VehicleId);
+
+            if(vehicle == null)
+            {
+                return BadRequest("Non-existent vehicle.");
+            }
+
+            if (!vehicle.IsAvailable)
+            {
+                return BadRequest("Vehicle is unavailable.");
+            }
+
+            if (model.ReservationStart >= model.ReservationEnd)
+            {
+                BadRequest("Reservation start date and time must be greater than reservation end date and time.");
+            }
+
+            if (model.ReservationStart < DateTime.Now)
+            {
+                BadRequest("Reservation start date and time must be greater than current date and time.");
+            }
+
+            if (model.ReservationEnd < DateTime.Now)
+            {
+                BadRequest("Reservation end date and time must be greater than current date and time.");
+            }
+
+            IEnumerable<Reservation> vehicleReservations = unitOfWork.Reservations.Find(r => r.Id == vehicle.Id);
+
+            int numOfexcessiveReservations = vehicleReservations.Where(r => (r.ReservationStart <= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart <= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd)).Count();
+
+            if(numOfexcessiveReservations > 0)
+            {
+                BadRequest("The vehicle was rented in a given period.");
+            }
+
+            BranchOffice rentBranchOffice = unitOfWork.BranchOffices.Get(model.RentBranchOfficeId);
+
+            if (rentBranchOffice == null)
+            {
+                BadRequest("Non-existent rent branch office.");
+            }
+
+
+            BranchOffice returnBranchOffice = unitOfWork.BranchOffices.Get(model.ReturnBranchOfficeId);
+
+            if (returnBranchOffice == null)
+            {
+                BadRequest("Non-existent return branch office.");
+            }
+
+            RAIdentityUser user = UserManager.FindById(User.Identity.GetUserId());
+
+            Reservation reservation = new Reservation()
+            {
+                Vehicle = vehicle,
+                UserId = user.Id,
+                ReservationStart = model.ReservationStart,
+                ReservationEnd = model.ReservationEnd,
+                RentBranchOffice = rentBranchOffice,
+                ReturnBranchOffice = returnBranchOffice
+            };
+
             unitOfWork.Reservations.Add(reservation);
             unitOfWork.Complete();
 
-            return CreatedAtRoute("DefaultApi", new { id = reservation.Id }, reservation);
+            return Ok("Reservation successfully created.");
         }
 
         // DELETE: api/Reservations/5

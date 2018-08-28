@@ -105,6 +105,22 @@ namespace RentApp.Controllers
 
         }
 
+        // GET: /api/Services/GetVehicles/5
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("GetVehicles")]
+        public IHttpActionResult GetVehicles([FromUri] long serviceId)
+        {
+            Service service = unitOfWork.Services.Get(serviceId);
+
+            if (service == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(service.Vehicles);
+        }
+
         // GET: api/Services/GetComments
         [HttpGet]
         [AllowAnonymous]

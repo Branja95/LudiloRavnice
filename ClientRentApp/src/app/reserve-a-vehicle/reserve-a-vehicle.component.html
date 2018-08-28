@@ -1,0 +1,40 @@
+<form #f="ngForm" (ngSubmit)="onSubmit(f, f.value)">
+    <div class="container">
+      <div class="row">
+        <div class="col col-lg-4 col-lg-push-4">
+
+          <div class="form-group">  
+              <label for="reservationStart">Reservation start:</label>  
+              <input type="date" class="form-control" name="reservationStartDate" ngModel #reservationStartDate="ngModel">
+              <input type="time" class="form-control" name="reservationStartTime" ngModel #reservationStartTime="ngModel">
+          </div> 
+
+          <div class="form-group">  
+              <label for="reservationEnd">Reservation end:</label>  
+              <input type="date" class="form-control" name="reservationEndDate" ngModel #reservationEndDate="ngModel">
+              <input type="time" class="form-control" name="reservationEndTime" ngModel #reservationEndTime="ngModel">
+          </div>  
+
+          <div class="form-group">  
+            <label for="rentBranchOffice">Rent branch office:</label>  
+              <select class="form-control" name="rentBranchOfficeId" ngModel #rentBranchOfficeId="ngModel">
+                  <option *ngFor="let branchOffice of branchOffices" 
+                          [(ngValue)]="branchOffice.Id">
+                          {{branchOffice.Address}}
+              </select>  
+          </div> 
+
+          <div class="form-group">  
+              <label for="returnBranchOffice">Return branch office:</label>  
+                <select class="form-control" name="returnBranchOfficeId" ngModel #returnBranchOfficeId="ngModel">
+                    <option *ngFor="let branchOffice of branchOffices" 
+                            [(ngValue)]="branchOffice.Id">
+                            {{branchOffice.Address}}
+                </select>  
+          </div>
+
+          <button type="submit" class="btn btn-default">Rent a vehicle</button>
+        </div>
+      </div>
+    </div>
+</form>

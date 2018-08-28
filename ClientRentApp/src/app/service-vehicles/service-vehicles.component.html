@@ -17,13 +17,14 @@
         <label>PricePerHour:</label> {{vehicle.PricePerHour}}<br/>
         <label>Description:</label> {{vehicle.Description}}<br/>
         <div *ngIf="vehicle.IsAvailable; else NotAvailable">
-          <label>Available</label><br/>   
+            <label><font color="green">Available</font></label><br/>   
         </div>
         <ng-template #NotAvailable>
-          <label>Not Available</label><br/>
+          <label><font color="red">Not Available</font></label><br/>
         </ng-template>
       </div>
     </div>
-    <button type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;&nbsp;
+    <button [routerLink]="['/ReserveAVehicle/', vehicle.Id]" class="btn btn-default">Reserve a vehicle</button>&nbsp;
     <button [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>&nbsp;
+    <button type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;
 </div>

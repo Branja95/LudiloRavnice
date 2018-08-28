@@ -44,6 +44,10 @@ export class BranchOfficeService {
     return this.httpClient.get("http://localhost:51680/api/Services/GetBranchOffices?serviceId=" + serviceId);
    }
 
+   getVehicleServiceBranchOffices(vehicleId): Observable<any> {
+    return this.httpClient.get("http://localhost:51680/api/BranchOffices/GetVehicleBranchOffices?vehicleId=" + vehicleId);
+   }
+
    editBranchOffice(serviceId, branchOfficeId, branchOffice, uploadedImage: File): Observable<any> {
      
     this.formData.append('id', branchOfficeId);

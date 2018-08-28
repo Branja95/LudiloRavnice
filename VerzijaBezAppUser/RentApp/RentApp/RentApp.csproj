@@ -339,6 +339,7 @@
     <Compile Include="Models\Entities\Vehicle.cs" />
     <Compile Include="Models\Entities\VehicleType.cs" />
     <Compile Include="Models\RatingBindingModel.cs" />
+    <Compile Include="Models\ReservationBindingModel.cs" />
     <Compile Include="Models\ServiceBindingModel.cs" />
     <Compile Include="Models\VehicleBindingModel.cs" />
     <Compile Include="Persistance\RADBContext.cs" />

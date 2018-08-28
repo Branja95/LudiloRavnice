@@ -65,6 +65,41 @@ namespace RentApp.Controllers
 
         }
 
+        // GET: api/BranchOffices/GetBranchOffices/5
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("GetVehicleBranchOffices")]
+        public IHttpActionResult GetVehicleBranchOffices([FromUri] long vehicleId)
+        {
+            Vehicle vehicle = unitOfWork.Vehicles.Get(vehicleId);
+            if(vehicle == null)
+            {
+                return NotFound();
+            }
+
+            IEnumerable<Service> services = unitOfWork.Services.GetAll();
+
+            Service service = null;
+
+            foreach(Service s in services)
+            {
+                if(s.Vehicles.Contains(vehicle))
+                {
+                    service = s;
+                    break;
+                }
+            }
+
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(service.BranchOfficces);
+
+        }
+
+
         // GET: api/BranchOffices/GetBranchOffice
         [HttpGet]
         [AllowAnonymous]
@@ -157,12 +192,12 @@ namespace RentApp.Controllers
         public async Task<IHttpActionResult> PostBranchOffice(CreateBranchOfficeBindingModel model)
         {
 
-            HttpRequest httpRequest = HttpContext.Current.Request;
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            HttpRequest httpRequest = HttpContext.Current.Request;
 
             if (!ImageHelper.ValidateImage(httpRequest.Files[0], out validationErrorMessage))
             {
