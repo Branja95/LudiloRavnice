@@ -92,7 +92,7 @@ export class VehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return this.httpClient.put("http://localhost:51680/api/Vehicles/ChangeAvailability", this.formData, { headers: headers });
+    return this.httpClient.put("https://localhost:44365/api/Vehicles/ChangeAvailability", this.formData, { headers: headers });
   }
 
   editVehicle(vehicleId, vehicle, uploadedImages: FileList): Observable<any>{

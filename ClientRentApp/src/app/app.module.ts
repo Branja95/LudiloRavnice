@@ -46,126 +46,161 @@ import { EditRatingComponent } from './edit-rating/edit-rating.component';
 import { ChangeRolesComponent } from './change-roles/change-roles.component';
 import { BanManagersComponent } from './ban-managers/ban-managers.component';
 
+import { AdminGuard } from './guard/admin.guard';
+import { AuthGuard } from './guard/auth.guard';
+import { AMGuard } from './guard/am.guard';
+
 const Routes = [
   {
     path: "Login",
-    component: LoginComponent
+    component: LoginComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "UserAccount",
-    component: UserAccountComponent
+    component: UserAccountComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "ApproveAccount",
-    component: ApproveAccountComponent
+    component: ApproveAccountComponent,
+    canActivate: [AuthGuard]
+
   },
   {
     path: "ApproveAccountAdmin",
-    component: ApproveAccountAdminComponent
+    component: ApproveAccountAdminComponent,
+    canActivate: [AdminGuard]
   },
   {
     path: "ApproveServiceAdmin",
-    component: ApproveServiceAdminComponent
+    component: ApproveServiceAdminComponent,
+    canActivate: [AdminGuard]
   },
   {
     path: "Registration",
-    component: RegistrationComponent
+    component: RegistrationComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "BranchOffice/:ServiceId",
-    component: BranchOfficeComponent
+    component: BranchOfficeComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "Vehicles/:ServiceId",
-    component: ServiceVehiclesComponent
+    component: ServiceVehiclesComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "BranchOffice",
-    component: BranchOfficeComponent
+    component: BranchOfficeComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "Vehicle",
-    component: VehicleComponent
+    component: VehicleComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "VehicleTypes",
-    component: VehicleTypesComponent
+    component: VehicleTypesComponent,
+    canActivate: [AdminGuard]
   },
   {
     path: "EditVehicleType/:VehicleTypeId",
-    component: EditVehicleTypesComponent
+    component: EditVehicleTypesComponent,
+    canActivate: [AdminGuard]
   },
   {
     path: "RentVehicle",
-    component: RentVehicleComponent
+    component: RentVehicleComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "AddBranchOffice/:ServiceId",
-    component: AddBranchOfficeComponent
+    component: AddBranchOfficeComponent,
+    canActivate: [AMGuard]
   }, 
   {
     path: "EditBranchOffice/:ServiceId/:BranchOfficeId",
-    component: EditBranchOfficeComponent
+    component: EditBranchOfficeComponent,
+    canActivate: [AMGuard]
   },
   {
     path: "AddVehicle/:ServiceId",
-    component: AddVehicleComponent
+    component: AddVehicleComponent,
+    canActivate: [AMGuard]
   }, 
   {
     path: "EditVehicle/:VehicleId",
-    component: EditVehicleComponent
+    component: EditVehicleComponent,
+    canActivate: [AMGuard]
   },
   {
     path: "ReserveAVehicle/:VehicleId",
-    component: ReserveAVehicleComponent
+    component: ReserveAVehicleComponent,
+    canActivate: [AuthGuard] 
   },
   {
     path: "AddService",
-    component: AddRentVehicleComponent
+    component: AddRentVehicleComponent,
+    canActivate: [AMGuard]
   },
   {
     path: "EditService/:ServiceId",
-    component: EditRentVehicleComponent
+    component: EditRentVehicleComponent,
+    canActivate: [AMGuard]
   },
   {
     path: "ViewService/:ServiceId",
-    component: ViewRentVehicleComponent
+    component: ViewRentVehicleComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "Map/:BranchOfficeId",
-    component: MapComponent
+    component: MapComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "Comment/:ServiceId",
-    component: CommentComponent
+    component: CommentComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "Rating/:ServiceId",
-    component: RatingComponent
+    component: RatingComponent,
+    canActivate: ['CanAlwaysActivateGuard']
   },
   {
     path: "AddComment/:ServiceId",
-    component: AddCommentComponent
+    component: AddCommentComponent,
+    canActivate: [AuthGuard] 
   },
   {
     path: "AddRating/:ServiceId",
-    component: AddRatingComponent
+    component: AddRatingComponent,
+    canActivate: [AuthGuard] 
   },
   {
     path: "EditComment/:commentId",
-    component: EditCommentComponent
+    component: EditCommentComponent,
+    canActivate: [AuthGuard] 
   },
   {
     path: "EditRating/:ratingId",
-    component: EditRatingComponent
+    component: EditRatingComponent,
+    canActivate: [AuthGuard] 
   },
   {
     path: "ChangeRoles",
-    component: ChangeRolesComponent 
+    component: ChangeRolesComponent,
+    canActivate: [AdminGuard] 
   },
   {
     path: "BanManagers",
-    component: BanManagersComponent 
+    component: BanManagersComponent,
+    canActivate: [AdminGuard] 
   }
 ]
 
@@ -221,7 +256,16 @@ const Routes = [
       useClass: TokenInterceptor,
       multi: true
     },
-    NotificationService
+    NotificationService,
+    {
+      provide: 'CanAlwaysActivateGuard',
+      useValue: () => {
+        return true;
+      } 
+    },
+    AdminGuard,
+    AuthGuard,
+    AMGuard
   ],
   bootstrap: [AppComponent]
 })
