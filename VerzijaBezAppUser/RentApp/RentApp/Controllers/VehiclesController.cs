@@ -55,6 +55,28 @@ namespace RentApp.Controllers
             return Ok(vehicle);
         }
 
+        // GET: api/Vehicles/SearchVehicles
+        [HttpGet]
+        [Route("SearchVehicles")]
+        [AllowAnonymous]
+        public IHttpActionResult SearchVehicles([FromUri] int vehicleTypeId, [FromUri] double vehiclePriceFrom, [FromUri] double vehiclePriceTo, [FromUri] string vehicleManufactor, [FromUri] string vehicleModel)
+        {
+            List<Vehicle> vehicles = FilterSearch(vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel);
+
+            return Ok(vehicles);
+        }
+
+        // GET: api/Vehicles/SearchNumberOfVehicles
+        [HttpGet]
+        [Route("SearchNumberOfVehicles")]
+        [AllowAnonymous]
+        public IHttpActionResult SearchNumberOfVehicles([FromUri] int vehicleTypeId, [FromUri] double vehiclePriceFrom, [FromUri] double vehiclePriceTo, [FromUri] string vehicleManufactor, [FromUri] string vehicleModel)
+        {
+            List<Vehicle> vehicles = FilterSearch(vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel);
+            
+            return Ok(vehicles.Count);
+        }
+
         // GET: api/Vehicles/GetNumberOfVehicles
         [HttpGet]
         [Route("GetNumberOfVehicles")]
@@ -71,7 +93,25 @@ namespace RentApp.Controllers
 
             return Ok(vehiclesList.Count);
         }
-        
+
+
+        // GET: api/Vehicles/GetSearchPagedVehicles
+        [HttpGet]
+        [Route("GetSearchPagedVehicles")]
+        [AllowAnonymous]
+        public IHttpActionResult GetSearchPagedVehicles([FromUri] int pageIndex, [FromUri] int pageSize, [FromUri] int vehicleTypeId, [FromUri] double vehiclePriceFrom, [FromUri] double vehiclePriceTo, [FromUri] string vehicleManufactor, [FromUri] string vehicleModel)
+        {
+            List<Vehicle> vehicles = FilterSearch(vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel);
+            if (vehicles == null)
+            {
+                return NotFound();
+            }
+
+            List<Vehicle> vehiclesList = vehicles.OrderBy(vehicle => vehicle.Id).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+            
+            return Ok(vehiclesList);
+        }
+
         // GET: api/Vehicles/GetPagedVehicles
         [HttpGet]
         [Route("GetPagedVehicles")]
@@ -317,6 +357,190 @@ namespace RentApp.Controllers
             };
 
             return vehicle;
+        }
+
+        private List<Vehicle> FilterSearch(int vehicleTypeId, double vehiclePriceFrom, double vehiclePriceTo, string vehicleManufactor, string vehicleModel)
+        {
+            List<Vehicle> vehicles;
+
+            if (vehicleTypeId != -1 && vehiclePriceFrom != -1 && vehiclePriceTo != -1 && vehicleManufactor != "-1" && vehicleModel != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                                vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                                vehicle.PricePerHour <= vehiclePriceTo &&
+                                                                vehicle.Manufactor == vehicleManufactor &&
+                                                                vehicle.Model == vehicleModel
+                                                                ).ToList();
+            }
+            else if (vehicleTypeId != -1 && vehiclePriceFrom  != -1 && vehiclePriceTo != -1 && vehicleManufactor != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                                vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                                vehicle.PricePerHour <= vehiclePriceTo &&
+                                                                vehicle.Manufactor == vehicleManufactor
+                                                                ).ToList();
+            }
+            else if (vehicleTypeId != -1 && vehiclePriceFrom != -1 && vehiclePriceTo != -1 && vehicleManufactor != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                                vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                                vehicle.PricePerHour <= vehiclePriceTo &&
+                                                                vehicle.Manufactor == vehicleManufactor
+                                                                ).ToList();
+            }
+            else if (vehiclePriceFrom != -1 && vehiclePriceTo != -1 && vehicleModel != "-1" && vehicleManufactor != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                                vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                                vehicle.PricePerHour <= vehiclePriceTo &&
+                                                                vehicle.Model == vehicleModel
+                                                                ).ToList();
+            }
+            else if (vehicleTypeId != -1 && vehicleManufactor != "-1" && vehicleModel != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                                vehicle.Manufactor == vehicleManufactor &&
+                                                                vehicle.Model == vehicleModel
+                                                                ).ToList();
+            }
+            else if (vehiclePriceFrom != -1 && vehiclePriceTo != -1 && vehicleManufactor != "-1" && vehicleModel != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                                vehicle.PricePerHour <= vehiclePriceTo &&
+                                                                vehicle.Manufactor == vehicleManufactor &&
+                                                                vehicle.Model == vehicleModel
+                                                                ).ToList();
+            }
+            else if (vehicleTypeId != -1 && vehiclePriceFrom != -1 && vehiclePriceTo != -1)
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                                vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                                vehicle.PricePerHour <= vehiclePriceTo 
+                                                                ).ToList();
+            }
+            else if (vehicleTypeId != -1 && vehicleManufactor != "-1" && vehiclePriceTo != -1)
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                                vehicle.Manufactor == vehicleManufactor &&
+                                                                vehicle.PricePerHour <= vehiclePriceTo
+                                                                ).ToList();
+            }
+            else if (vehicleTypeId != -1 && vehicleModel != "-1" && vehiclePriceTo != -1)
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                               vehicle.Model == vehicleModel &&
+                                                               vehicle.PricePerHour <= vehiclePriceTo
+                                                               ).ToList();
+            }
+            else if (vehiclePriceFrom != -1 && vehiclePriceTo != -1 && vehicleManufactor != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                               vehicle.PricePerHour <= vehiclePriceTo &&
+                                                                vehicle.Manufactor == vehicleManufactor
+                                                                ).ToList();
+            }
+            else if (vehiclePriceFrom != -1 && vehiclePriceTo != -1 && vehicleModel != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                                vehicle.PricePerHour <= vehiclePriceTo &&
+                                                                vehicle.Model == vehicleModel
+                                                                ).ToList();
+            }
+            else if (vehicleManufactor != "-1" && vehicleModel != "-1" && vehiclePriceTo != -1)
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.Manufactor == vehicleManufactor &&
+                                                                vehicle.PricePerHour <= vehiclePriceTo &&
+                                                                vehicle.Model == vehicleModel
+                                                                ).ToList();
+            }
+            else if (vehicleTypeId != -1 && vehiclePriceFrom != -1)
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                               vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                               vehicle.Model == vehicleModel
+                                                               ).ToList();
+            }
+            else if (vehicleTypeId != -1 && vehiclePriceTo != -1)
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                               vehicle.PricePerHour <= vehiclePriceTo 
+                                                               ).ToList();
+            }
+            else if (vehicleTypeId != -1 && vehicleManufactor != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                               vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                               vehicle.Model == vehicleModel
+                                                               ).ToList();
+            }
+            else if (vehicleTypeId != -1 && vehicleModel != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId &&
+                                                               vehicle.Model == vehicleModel
+                                                               ).ToList();
+            }
+            else if (vehiclePriceFrom != -1 && vehiclePriceTo != -1)
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                               vehicle.PricePerHour <= vehiclePriceTo 
+                                                               ).ToList();
+            }
+            else if (vehiclePriceFrom != -1 && vehicleManufactor != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                               vehicle.Manufactor == vehicleManufactor
+                                                               ).ToList();
+            }
+            else if (vehiclePriceFrom != -1 && vehicleModel != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.PricePerHour >= vehiclePriceFrom &&
+                                                               vehicle.Model == vehicleModel
+                                                               ).ToList();
+            }
+            else if (vehiclePriceTo != -1 && vehicleManufactor != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.PricePerHour <= vehiclePriceTo &&
+                                                               vehicle.Manufactor == vehicleManufactor
+                                                               ).ToList();
+            }
+            else if (vehiclePriceTo != -1 && vehicleModel != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.PricePerHour <= vehiclePriceTo &&
+                                                               vehicle.Model == vehicleModel
+                                                               ).ToList();
+            }
+            else if (vehicleManufactor != "-1" && vehicleModel != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.Manufactor == vehicleManufactor &&
+                                                               vehicle.Model == vehicleModel
+                                                               ).ToList();
+            }
+            else if (vehicleTypeId != -1)
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.VehicleType.Id == vehicleTypeId).ToList();
+            }
+            else if (vehiclePriceFrom != -1)
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.PricePerHour >= vehiclePriceFrom).ToList();
+            }
+            else if (vehiclePriceTo != -1)
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.PricePerHour <= vehiclePriceTo).ToList();
+            }
+            else if (vehicleManufactor != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.Manufactor == vehicleManufactor).ToList();
+            }
+            else if (vehicleModel != "-1")
+            {
+                vehicles = unitOfWork.Vehicles.Find(vehicle => vehicle.Model == vehicleModel).ToList();
+            }
+            else
+            {
+                vehicles = unitOfWork.Vehicles.GetAll().ToList();
+            }
+
+            return vehicles;
         }
     }
 }
