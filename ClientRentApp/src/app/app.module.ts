@@ -187,10 +187,10 @@ const Routes = [
     AddRatingComponent,
     AddCommentComponent,
     ReserveAVehicleComponent,
-    VehicleTypesComponent,
-    EditVehicleTypesComponent,
     EditCommentComponent,
     EditRatingComponent
+    VehicleTypesComponent,
+    EditVehicleTypesComponent
   ],
   imports: [
     BrowserModule,
