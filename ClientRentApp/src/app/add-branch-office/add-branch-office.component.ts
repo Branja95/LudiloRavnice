@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-
 import { BranchOffice } from '../models/branch-office.model';
 import { BranchOfficeService } from '../services/branch-office.service';
 import { MapInfo } from '../models/map-info.model';
@@ -35,9 +34,8 @@ export class AddBranchOfficeComponent implements OnInit {
       var reader = new FileReader();
 
       reader.readAsDataURL(event.target.files[0]); 
-
       reader.onload = (event) => { 
-        this.url = reader.result;
+        this.url = reader.result as string;
       }
     }
   }
@@ -49,20 +47,20 @@ export class AddBranchOfficeComponent implements OnInit {
   onSubmit(form: NgForm, branchOffice: BranchOffice) {
 
     branchOffice.serviceId = this.ServiceId;
-    
     branchOffice.latitude = this.mapInfoCooridnates.centerLat;
     branchOffice.longitude = this.mapInfoCooridnates.centerLong;
    
     this.branchOfficeService.postMethodCreateBranchOffice(this.ServiceId, branchOffice, this.file)
     .subscribe(
       res => {
-        console.log(res);
+        alert(res);
       }, error => {
-        alert(error.error.Message);
+        alert(error.Message);
       });;
 
     form.reset();
     this.url = '';
     this.file = null;
   }
+  
 }

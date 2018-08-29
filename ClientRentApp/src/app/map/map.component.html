@@ -1,39 +1,34 @@
-<div class="container">
-    <div class="row">
-        <div *ngIf="isEdit(); then thenBlock; else elseBlock"></div>
+<div *ngIf="isEdit(); then thenBlock; else elseBlock"></div>
 
-        <ng-template #thenBlock>
-            <agm-map  [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" [zoom]="12" [usePanning]="true"  (mapClick)="placeMarker($event)">
-                <agm-marker [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" [title]="mapInfo.title" [label]="mapInfo.label">
-                    <agm-info-window [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" >
-                        <br/>
-                        <span style="font-size: 16px;font-family:'Times New Roman'">Address: {{branchOffice.Address}}</span>
-                        <br/>
-                        <br/>
-                        <span style="font-family:'Times New Roman'; color:gray;">Latitude: {{branchOffice.Latitude}}</span>
-                        <br/>
-                        <span style="font-family:'Times New Roman'; color:gray;">Longitude: {{branchOffice.Longitude}}</span>
-                    </agm-info-window>
-                </agm-marker>
-            </agm-map>
-        </ng-template>
+<ng-template #thenBlock>
+    <agm-map  [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" [zoom]="12" [usePanning]="true"  (mapClick)="placeMarker($event)">
+        <agm-marker [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" [title]="mapInfo.title" [label]="mapInfo.label">
+            <agm-info-window [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" >
+                <br/>
+                <span style="font-size: 16px;font-family:'Times New Roman'">Address: {{branchOffice.Address}}</span>
+                <br/>
+                <br/>
+                <span style="font-family:'Times New Roman'; color:gray;">Latitude: {{branchOffice.Latitude}}</span>
+                <br/>
+                <span style="font-family:'Times New Roman'; color:gray;">Longitude: {{branchOffice.Longitude}}</span>
+            </agm-info-window>
+        </agm-marker>
+    </agm-map>
+</ng-template>
 
-        <ng-template #elseBlock>
-            <agm-map [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" [zoom]="6" [usePanning]="true"  (mapClick)="placeMarker($event)">
-                <agm-marker   *ngFor="let branchOffice of branchOffices" [latitude]="branchOffice.Latitude" [longitude]="branchOffice.Longitude" (markerClick)="markerClicked(branchOffice.Id, infowindow)">
-                    <agm-info-window #infowindow [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" >
-                        <br/>
-                        <span style="font-size: 16px;font-family:'Times New Roman'">Address: {{branchOffice.Address}}</span>
-                        <br/>
-                        <br/>
-                        <span style="font-family:'Times New Roman'; color:gray;">Latitude: {{branchOffice.Latitude}}</span>
-                        <br/>
-                        <span style="font-family:'Times New Roman'; color:gray;">Longitude: {{branchOffice.Longitude}}</span>
-                    </agm-info-window>
-                </agm-marker>
-            </agm-map>
-        </ng-template>
-
-    </div>
-</div>
+<ng-template #elseBlock>
+    <agm-map [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" [zoom]="6" [usePanning]="true"  (mapClick)="placeMarker($event)">
+        <agm-marker   *ngFor="let branchOffice of branchOffices" [latitude]="branchOffice.Latitude" [longitude]="branchOffice.Longitude" (markerClick)="markerClicked(branchOffice.Id, infowindow)">
+            <agm-info-window #infowindow [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" >
+                <br/>
+                <span style="font-size: 16px;font-family:'Times New Roman'">Address: {{branchOffice.Address}}</span>
+                <br/>
+                <br/>
+                <span style="font-family:'Times New Roman'; color:gray;">Latitude: {{branchOffice.Latitude}}</span>
+                <br/>
+                <span style="font-family:'Times New Roman'; color:gray;">Longitude: {{branchOffice.Longitude}}</span>
+            </agm-info-window>
+        </agm-marker>
+    </agm-map>
+</ng-template>
 

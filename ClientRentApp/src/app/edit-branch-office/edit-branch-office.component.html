@@ -4,12 +4,12 @@
         <form #f="ngForm" (ngSubmit)="onSubmit(f)">
           <div class="form-group">
             <label for="address">Address:</label>
-            <input type="text" class="form-control" [(ngModel)]="branchOffice.Address" value="{{branchOffice.Address}}" name="address">
+            <input type="text" required class="form-control" [(ngModel)]="branchOffice.Address" value="{{branchOffice.Address}}" name="address" >
           </div>
           <app-map [mapType]="mapType" [branchOfficeId]= "branchOfficeId"  [serviceId]="serviceId" (newCoordinates)="receiveNewCoordinates($event)"></app-map>
           <label for="file">Old Image:</label>
           <div class="form-group">
-            <img src='http://localhost:51680/api/BranchOffices/LoadImage?imageId={{branchOffice.Image}}' height="300px" weight="300px"/><br/><br/>
+            <img src='https://localhost:44365/api/BranchOffices/LoadImage?imageId={{branchOffice.Image}}' height="300px" weight="300px"/><br/><br/>
           </div>
           <div class="form-group">
             <label for="file">New Image:</label>

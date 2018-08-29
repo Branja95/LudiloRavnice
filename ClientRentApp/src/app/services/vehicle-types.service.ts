@@ -9,8 +9,6 @@ import { Observable } from 'rxjs/Observable';
 })
 export class VehicleTypesService {
 
-  formData: FormData = new FormData();
-
   constructor(private httpClient: HttpClient) { }
 
   getMethodVehicleType(vehicleTypeId): Observable<any>{
@@ -28,4 +26,5 @@ export class VehicleTypesService {
   postMethodVehicleTypes(vehicleTypeName): Observable<any>{
     return this.httpClient.post("https://localhost:44365/api/VehicleTypes/PostVehicleType", vehicleTypeName);
   }
+  
 }

@@ -1,10 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
-import {
-  Router,
-  ActivatedRoute
-} from '@angular/router';
-
+import { Router, ActivatedRoute } from '@angular/router';
 import { Vehicle } from '../models/vehicle.model';
 import { VehicleType } from '../models/vehicle-type.model';
 import { VehicleService } from '../services/vehicle.service';

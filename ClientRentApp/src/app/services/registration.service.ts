@@ -20,18 +20,14 @@ export class RegistrationService {
   }
 
   postMethodApproveAccount(uploadedImage: File): Observable<any> {
+    this.formData = new FormData();
     
     this.formData.append('image', uploadedImage, uploadedImage.name);
 
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.post("https://localhost:44365/api/Account/FinishAccount", this.formData, { headers: headers });
-    
-    this.formData = new FormData();
-
-    return result;
-    
+    return this.httpClient.post("https://localhost:44365/api/Account/FinishAccount", this.formData, { headers: headers });
   }
 
 }

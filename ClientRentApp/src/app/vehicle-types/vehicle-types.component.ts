@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
-import { NgForm, FormsModule } from '@angular/forms';
-
-import { Router, ActivatedRoute } from '@angular/router';
-
+import { Router } from '@angular/router';
 import { VehicleTypesService } from '../services/vehicle-types.service';
-
 import { VehicleType } from '../models/vehicle-type.model'
 
 @Component({
@@ -31,17 +26,14 @@ export class VehicleTypesComponent implements OnInit {
   }
 
   onAdd(VehicleType){
-    console.log(VehicleType);
-    this.vehicleTypesService.postMethodVehicleTypes(VehicleType)
-    .subscribe(
-      data => {
-        alert(data);
+    this.vehicleTypesService.postMethodVehicleTypes(VehicleType).subscribe(
+      res => {
+        alert(res);
         this.router.navigateByUrl("/VehicleTypes");
       },
       error => {
-        alert(error.error.Message);
-      }
-    );
+        alert(error);
+      });
   }
 
 }

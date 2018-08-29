@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
-import { Router, ActivatedRoute } from '@angular/router';
-
+import { Router } from '@angular/router';
 import { RentVehicleService } from '../services/rent-vehicle.service';
 
 @Component({

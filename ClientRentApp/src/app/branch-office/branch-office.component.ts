@@ -40,9 +40,8 @@ export class BranchOfficeComponent implements OnInit {
       var reader = new FileReader();
 
       reader.readAsDataURL(event.target.files[0]); 
-
       reader.onload = (event) => { 
-        this.url = reader.result;
+        this.url = reader.result as string;
       }
     }
 
@@ -52,7 +51,7 @@ export class BranchOfficeComponent implements OnInit {
     this.branchOfficeService.deleteBranchOffice(this.serviceId, branchOfficeId)
     .subscribe(
       res => {
-        console.log(res);
+        alert(res);
       },
       error => {
         alert(error);

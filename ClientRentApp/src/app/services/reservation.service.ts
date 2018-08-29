@@ -18,8 +18,7 @@ export class ReservationService {
   constructor(private httpClient: HttpClient) { }
 
   createReservation(reservation: Reservation, vehicleId): Observable<any> {
-    
-    console.log(reservation);
+    this.formData = new FormData();
 
     this.formData.append('VehicleId', vehicleId);
     this.formData.append('ReservationStart', reservation.reservationStartDate + 'T' + reservation.reservationStartTime);
@@ -30,11 +29,7 @@ export class ReservationService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.post("https://localhost:44365/api/Reservations/PostReservation", this.formData, { headers: headers });
-
-    this.formData = new FormData();
-
-    return result;
-
+    return this.httpClient.post("https://localhost:44365/api/Reservations/PostReservation", this.formData, { headers: headers });
   }
+
 }

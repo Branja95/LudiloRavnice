@@ -28,12 +28,13 @@ export class AddRatingComponent implements OnInit {
 
     this.ratingService.postMethodCreateRating(rating).subscribe(
       res =>{
-        console.log(res);
-      }, error =>{
-        console.log(error);
+        alert(res);
+      }, 
+      error =>{
+        alert(error);
       });
 
-      this.router.navigate(['/RentVehicle/']);
+    this.router.navigate(['/RentVehicle/']);
   }
 
 }

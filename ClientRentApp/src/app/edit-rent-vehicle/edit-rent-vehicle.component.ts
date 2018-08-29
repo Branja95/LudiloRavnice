@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
-
 import {Router, ActivatedRoute } from '@angular/router';
-
-import { RentVehicle } from '../models/rent-vehicle.model';
 import { RentVehicleService } from '../services/rent-vehicle.service';
 
 @Component({
@@ -35,19 +32,16 @@ export class EditRentVehicleComponent implements OnInit {
   }
 
   handleFileInput(event) {
-
     this.selectedFile = event.target.files[0];
     
     if (event.target.files && event.target.files[0]) {
       var reader = new FileReader();
 
       reader.readAsDataURL(event.target.files[0]); 
-
       reader.onload = (event) => { 
-        this.selecetdFileUrl = reader.result;
+        this.selecetdFileUrl = reader.result as string;
       }
     }
-
   }
 
   onSubmit(form: NgForm) {

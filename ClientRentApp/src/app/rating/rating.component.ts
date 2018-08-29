@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { RentVehicleService } from '../services/rent-vehicle.service';
-import { Rating} from '../models/rating.model';
+import { Rating } from '../models/rating.model';
 
 @Component({
   selector: 'app-rating',
@@ -11,9 +11,8 @@ import { Rating} from '../models/rating.model';
 
 export class RatingComponent implements OnInit {
 
-  serviceId: string = "-1";
-  
   userRated: boolean = true;
+  serviceId: string = "-1";
   ratings: Array<Rating>;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService) { 
@@ -27,14 +26,14 @@ export class RatingComponent implements OnInit {
       }, 
       error =>{
         console.log(error);
-      });
+    });
 
     this.rentVehicleService.getMethodHasUserRated(this.serviceId).subscribe(
       res => {
         this.userRated = res as boolean;
       }, error =>{
         console.log(error);
-      }); 
+    }); 
   }
 
   hasUserRated(): boolean{

@@ -12,12 +12,11 @@ import { SearchVehicle } from '../models/searchVehicle.model';
   styleUrls: ['./vehicle.component.css'],
   providers: [VehicleService]
 })
-
 export class VehicleComponent implements OnInit {
 
   pager: any = {};
   pagedVehicles: Array<Vehicle>;
-  pageSize = 5;
+  pageSize = 2;
   
   isSearch: boolean = false;
 

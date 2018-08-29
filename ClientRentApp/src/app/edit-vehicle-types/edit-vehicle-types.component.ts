@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
-import { VehicleService } from '../services/vehicle.service';
-
 import { VehicleType } from '../models/vehicle-type.model';
-
 import { Router, ActivatedRoute } from '@angular/router';
-
 import { VehicleTypesService } from '../services/vehicle-types.service';
 
 @Component({
@@ -35,17 +30,15 @@ export class EditVehicleTypesComponent implements OnInit {
 
   onEdit(vehicleType: VehicleType){
     vehicleType.id = this.VehicleTypeId;
-    console.log(vehicleType);
-    this.vehicleTypesService.putMethodVehicleTypes(vehicleType)
-    .subscribe(
-      data => {
-        alert(data);
+
+    this.vehicleTypesService.putMethodVehicleTypes(vehicleType).subscribe(
+      res => {
+        alert(res);
         this.router.navigateByUrl("/VehicleTypes");
       },
       error => {
         alert(error.error.Message);
-      }
-    );
+    });
   }
 
 }

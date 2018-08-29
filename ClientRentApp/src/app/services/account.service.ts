@@ -46,8 +46,8 @@ export class AccountService {
   }
 
   putMethodManagers(managerId){
-    
     this.formData = new FormData();
+    
     this.formData.append('managerId', managerId);
 
     let headers = new HttpHeaders();

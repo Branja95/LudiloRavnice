@@ -1,15 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Router, ActivatedRoute, Params } from '@angular/router';
-
-import { NgForm } from '@angular/forms';
-
 import { VehicleType } from '../models/vehicle-type.model';
-
 import { VehicleService } from '../services/vehicle.service';
-import { BranchOffice } from '../models/branch-office.model';
 import { Vehicle } from '../models/vehicle.model';
-import { element } from 'protractor';
 
 @Component({
   selector: 'app-service-vehicles',
@@ -40,7 +33,6 @@ export class ServiceVehiclesComponent implements OnInit {
     .subscribe(
       res => { 
           this.vehicles = res as Array<Vehicle>;
-          console.log(this.vehicles);
       }, error => {
         alert(error);
       }); 
@@ -63,13 +55,10 @@ export class ServiceVehiclesComponent implements OnInit {
   }
 
   getVehicleTypeName(vehicleTypeId){
-    this.vehicleService.getVehicleType(vehicleTypeId)
-    .subscribe(
-      data => {
-        this.vehicleType = data as string
-        console.log(this.vehicleType);
-      }
-    )
+    this.vehicleService.getVehicleType(vehicleTypeId).subscribe(
+      res => {
+        this.vehicleType = res as string;
+      });
   }
 
   isManagerOrAdmin(){

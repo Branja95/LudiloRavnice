@@ -1,14 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-
-import { NgForm, FormsModule } from '@angular/forms';
-import {
-  Router,
-  ActivatedRoute
-} from '@angular/router';
-
+import { NgForm } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BranchOfficeService } from '../services/branch-office.service';
 import { ReservationService } from '../services/reservation.service';
-
 import { BranchOffice } from '../models/branch-office.model';
 import { Reservation } from '../models/reservation.model';
 
@@ -20,7 +14,6 @@ import { Reservation } from '../models/reservation.model';
 export class ReserveAVehicleComponent implements OnInit {
 
   VehicleId: string = "-1";
-
   branchOffices = Array<BranchOffice>()
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService, private reservationService: ReservationService) { 
@@ -29,22 +22,20 @@ export class ReserveAVehicleComponent implements OnInit {
 
   ngOnInit() {
     this.branchOfficeService.getVehicleServiceBranchOffices(this.VehicleId).subscribe(
-      data => {
-        this.branchOffices = data as Array<BranchOffice>;
+      res => {
+        this.branchOffices = res as Array<BranchOffice>;
       },error => {
-        alert(error.error.Message);
-      });
+        alert(error);
+    });
   }
 
   onSubmit(form: NgForm, reservation: Reservation) {
-    this.reservationService.createReservation(reservation, this.VehicleId)
-    .subscribe(
-      data => {
-        alert(data);
+    this.reservationService.createReservation(reservation, this.VehicleId).subscribe(
+      res => {
+        alert(res);
       }, error => {
         console.log(error);
-      }
-    );
+      });
 
     this.router.navigateByUrl("/Vehicle");
   }

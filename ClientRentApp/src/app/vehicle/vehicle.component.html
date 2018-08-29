@@ -1,98 +1,90 @@
 <div class="container">
     <div class="row">
-      <div class="col col-lg-4 col-lg-push-4">
-        <form #f="ngForm" (ngSubmit)="onSubmit(f, f.value)">
-          
-          <div class="form-group">
+        <div class="col col-lg-4 col-lg-push-4">
+            <form #f="ngForm" (ngSubmit)="onSubmit(f, f.value)">
+            <div class="form-group">
                 <label for="searchPriceFrom">Price From: </label>
                 <input type="text" class="form-control" id="PriceFrom" name="PriceFrom" ngModel #PriceFrom="ngModel">
-          </div>
-          <div class="form-group">
+            </div>
+            <div class="form-group">
                 <label for="searchPriceTo">Price To: </label>
                 <input type="text" class="form-control" id="PriceTo" name="PriceTo" ngModel #PriceTo="ngModel">
-          </div>
-
-          <div class="form-group">
-            <label for="Manufactor">Manufactor: </label>
-            <input type="text" class="form-control" id="Manufactor" name="Manufactor" ngModel #Manufactor="ngModel">
-          </div>
-
-          <div class="form-group">
-            <label for="Model">Model: </label>
-            <input type="text" class="form-control" id="Model" name="Model" ngModel #Model="ngModel">
-          </div>
-
-          <div class="form-group">  
-            <label for="vehicleType">Vehicle Type:</label>  
-              <select class="form-control" [(ngModel)]="VehicleTypeId" name="VehicleTypeId">
-                  <option *ngFor="let vehicleType of vehicleTypesSearch" 
-                          [(ngValue)]="vehicleType.Id">
-                          {{vehicleType.TypeName}}
-              </select>  
-          </div>
-    
-          <button type="submit" class="btn btn-default">Search</button>
-      
-        </form>
-      </div>
+            </div>
+            <div class="form-group">
+                <label for="Manufactor">Manufactor: </label>
+                <input type="text" class="form-control" id="Manufactor" name="Manufactor" ngModel #Manufactor="ngModel">
+            </div>
+            <div class="form-group">
+                <label for="Model">Model: </label>
+                <input type="text" class="form-control" id="Model" name="Model" ngModel #Model="ngModel">
+            </div>
+            <div class="form-group">  
+                <label for="vehicleType">Vehicle Type:</label>  
+                <select class="form-control" [(ngModel)]="VehicleTypeId" name="VehicleTypeId">
+                <option *ngFor="let vehicleType of vehicleTypesSearch" 
+                [(ngValue)]="vehicleType.Id">
+                {{vehicleType.TypeName}}
+                </select>  
+            </div>
+            <button type="submit" class="btn btn-default">Search</button>
+            </form>
+        </div>
     </div>
-  </div>
+</div>
 <div>
-  <div class="container">
-      <div class="text-center">
-          <h1>Vehicles</h1>
-
-          <div *ngFor='let vehicle of pagedVehicles'>
-            <form #f="ngForm" (ngSubmit)="onDelete(f, vehicle.Id)">
-              <br/><br/>
-                  <div id="banner">
-                      &nbsp;&nbsp;&nbsp;
+    <div class="container">
+        <div class="text-center">
+            <h2>Vehicles</h2>
+            <div *ngFor='let vehicle of pagedVehicles'>
+                <form #f="ngForm" (ngSubmit)="onDelete(f, vehicle.Id)">
+                <br/><br/>
+                <div id="banner">
+                    &nbsp;&nbsp;&nbsp;
                     <div class="inline-block" *ngFor='let url of parseImages(vehicle.Images)'>
-                      <img src='http://localhost:51680/api/Vehicles/LoadImage?imageId={{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
-                    </div> 
+                        <img src='https://localhost:44365/api/Vehicles/LoadImage?imageId={{url}}' height="300" weight="300"/> &nbsp;&nbsp;&nbsp;
+                    </div>
                 </div>
                 <br/><br/>
                 <div id="banner">
-                &nbsp;&nbsp;&nbsp;
-                <div class="inline-block">
-                  <label>Vehicle Type:</label> {{vehicle.VehicleType.TypeName}}<br/>
-                  <label>Manufactor:</label> {{vehicle.Manufactor}}<br/>
-                  <label>Model:</label> {{vehicle.Model}}<br/>
-                  <label>YearMade:</label> {{vehicle.YearMade}}<br/>
-                  <label>PricePerHour:</label> {{vehicle.PricePerHour}}<br/>
-                  <label>Description:</label> {{vehicle.Description}}<br/>
-                  <div *ngIf="vehicle.IsAvailable; else NotAvailable">
-                    <label><font color="green">Available</font></label><br/>   
-                  </div>
-                  <ng-template #NotAvailable>
-                    <label><font color="red">Not Available</font></label><br/>
-                  </ng-template>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="inline-block">
+                        <label>Vehicle Type:</label> {{vehicle.VehicleType.TypeName}}<br/>
+                        <label>Manufactor:</label> {{vehicle.Manufactor}}<br/>
+                        <label>Model:</label> {{vehicle.Model}}<br/>
+                        <label>YearMade:</label> {{vehicle.YearMade}}<br/>
+                        <label>PricePerHour:</label> {{vehicle.PricePerHour}}<br/>
+                        <label>Description:</label> {{vehicle.Description}}<br/>
+                        <div *ngIf="vehicle.IsAvailable; else NotAvailable">
+                            <label><font color="green">Available</font></label><br/>   
+                        </div>
+                        <ng-template #NotAvailable>
+                            <label><font color="red">Not Available</font></label><br/>
+                        </ng-template>
+                    </div>
                 </div>
-              </div>
                 <button *ngIf="isLogged()" [routerLink]="['/ReserveAVehicle/', vehicle.Id]" class="btn btn-default">Reserve a vehicle</button>&nbsp;
-                <button *ngIf="isManagerOrAdmin()" [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>&nbsp;
-                <button *ngIf="isManagerOrAdmin()" type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;
-            </form>
-          </div>
-
-          <!-- pager -->
-          <ul *ngIf="pager.pages && pager.pages.length" class="pagination">
-              <li [ngClass]="{disabled:pager.currentPage === 1}">
-                  <a (click)="setShowPage(1)">First</a>
-              </li>
-              <li [ngClass]="{disabled:pager.currentPage === 1}">
-                  <a (click)="setShowPage(pager.currentPage - 1)">Previous</a>
-              </li>
-              <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
-                  <a (click)="setShowPage(page)">{{page}}</a>
-              </li>
-              <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
-                  <a (click)="setShowPage(pager.currentPage + 1)">Next</a>
-              </li>
-              <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
-                  <a (click)="setShowPage(pager.totalPages)">Last</a>
-              </li>
-          </ul>
-      </div>
-  </div>
+                <!--<button *ngIf="isManagerOrAdmin()" [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>&nbsp;
+                    <button *ngIf="isManagerOrAdmin()" type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;-->
+                </form>
+            </div>
+            <!-- pager -->
+            <ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+                <li [ngClass]="{disabled:pager.currentPage === 1}">
+                    <a (click)="setShowPage(1)">First</a>
+                </li>
+                <li [ngClass]="{disabled:pager.currentPage === 1}">
+                    <a (click)="setShowPage(pager.currentPage - 1)">Previous</a>
+                </li>
+                <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                <a (click)="setShowPage(page)">{{page}}</a>
+                </li>
+                <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                    <a (click)="setShowPage(pager.currentPage + 1)">Next</a>
+                </li>
+                <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                    <a (click)="setShowPage(pager.totalPages)">Last</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>

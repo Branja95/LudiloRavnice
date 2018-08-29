@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Router, ActivatedRoute } from '@angular/router';
-
-import { RentVehicle } from '../models/rent-vehicle.model';
 import { RentVehicleService } from '../services/rent-vehicle.service';
 import { Vehicle } from '../models/vehicle.model';
 
@@ -28,9 +25,8 @@ export class ViewRentVehicleComponent implements OnInit {
     this.rentVehicleService.getService(this.ServiceId).subscribe(
       res => {
         this.rentVehicle = res as Vehicle;
-        console.log(this.rentVehicle);
       },error => {
-        alert(error.error.Message);
+        alert(error);
       });
   }
 
@@ -57,6 +53,6 @@ export class ViewRentVehicleComponent implements OnInit {
     }, error => {
       alert(error);
     });
-    
   }
+
 }

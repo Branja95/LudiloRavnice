@@ -19,42 +19,35 @@ export class CommentService {
     return this.httpClient.get("https://localhost:44365/api/Comments/GetComment?id=" + commentId);
   }
 
+  getMethodUsername(commentId): Observable<any>{
+    return this.httpClient.get("https://localhost:44365/api/Comments/UserName?commentId=" + commentId);
+  }
+
   getMethodGetUserName(commentId : string){
     return this.httpClient.get("https://localhost:44365/api/Comments/GetUserName?commentId=" + commentId);
   }
 
   putMethodEditComment(comment): Observable<any> {
+    this.formData = new FormData();
+
     this.formData.append('Text', comment.Text)
 
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.put("https://localhost:44365/api/Comments/PutComment?commentId=" + comment.Id, this.formData, { headers: headers });
-
-    this.formData = new FormData();
-
-    return result;
+    return this.httpClient.put("https://localhost:44365/api/Comments/PutComment?commentId=" + comment.Id, this.formData, { headers: headers });
   }
 
   postMethodCreateComment(comment): Observable<any>{
+    this.formData = new FormData();
+
     this.formData.append('serviceId',comment.serviceId);
     this.formData.append('text', comment.text);
 
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result =  this.httpClient.post("https://localhost:44365/api/Comments/PostComment", this.formData, { headers: headers }); 
-    
-    this.formData = new FormData();
-
-    return result;
-  }
-
-  getMethodUsername(commentId): Observable<any>{
-    console.log(commentId);
-    let result = this.httpClient.get("https://localhost:44365/api/Comments/UserName?commentId=" + commentId); 
-    console.log(result);
-    return result;
+    return this.httpClient.post("https://localhost:44365/api/Comments/PostComment", this.formData, { headers: headers }); 
   }
 
 }

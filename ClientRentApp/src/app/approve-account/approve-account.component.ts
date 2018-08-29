@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
-import { Router, ActivatedRoute } from '@angular/router';
-
+import { Router } from '@angular/router';
 import { RegistrationService } from '../services/registration.service';
-
 import { NgForm } from '@angular/forms';
 
 @Component({
@@ -29,24 +26,22 @@ export class ApproveAccountComponent implements OnInit {
       var reader = new FileReader();
 
       reader.readAsDataURL(event.target.files[0]); 
-
       reader.onload = (event) => { 
-        this.url = reader.result;
+        this.url = reader.result as string;
       }
     }
   }
 
   onSubmit(form: NgForm) {
-    if(this.file != null)
-    {
-      this.registrationService.postMethodApproveAccount(this.file)
-      .subscribe(
-        data => {
-          console.log(data);
+    if(this.file != null){
+      this.registrationService.postMethodApproveAccount(this.file).subscribe(
+        res => {
+          alert(res);
           this.router.navigate(['/RentVehicle']);
-        }, error => {
-          alert(error.error.Message);
-        });;
+        }, 
+        error => {
+          alert(error);
+      });
 
       form.reset();
       this.url = '';

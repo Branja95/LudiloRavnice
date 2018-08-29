@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-
 import { NavBarService } from '../services/nav-bar.service';
 
 @Component({
@@ -15,16 +14,15 @@ export class UserAccountComponent implements OnInit {
   constructor(private navBarService: NavBarService) { }
 
   ngOnInit() {
-    this.navBarService.getMethodIsUserApproved()
-    .subscribe(
+    this.navBarService.getMethodIsUserApproved().subscribe(
       res => {
         this.approved = res;
       },
       error => {
         localStorage.clear();
-        console.log(error.error.Message);
+        console.log(error);
       })
-      this.approved = true;
+    this.approved = true;
   }
 
   isApproved() : boolean {

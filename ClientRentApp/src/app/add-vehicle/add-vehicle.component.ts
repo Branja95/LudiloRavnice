@@ -1,10 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import {
-  Router,
-  ActivatedRoute
-} from '@angular/router';
-
+import { Router, ActivatedRoute} from '@angular/router';
 import { Vehicle } from '../models/vehicle.model';
 import { VehicleService } from '../services/vehicle.service';
 import { VehicleType } from '../models/vehicle-type.model';
@@ -48,13 +44,13 @@ export class AddVehicleComponent implements OnInit {
   onSubmit(form: NgForm, vehicle: Vehicle) {
     vehicle.serviceId = this.ServiceId;
 
-    this.vehicleService.createVehicle(vehicle, this.uploadedFiles)
-    .subscribe(
-      data => {
-        alert(data);
-      }, error => {
+    this.vehicleService.createVehicle(vehicle, this.uploadedFiles).subscribe(
+      res => {
+        alert(res);
+      }, 
+      error => {
         alert(error.error.Message);
-      });;;
+    });
 
     form.resetForm();
     this.urls = new Array<string>();
@@ -64,4 +60,5 @@ export class AddVehicleComponent implements OnInit {
   getVehicleTypes() { 
     this.vehicleService.getVehicleTypes().subscribe(res => { this.vehicleTypes = res as Array<VehicleType> });  
   }
+  
 }

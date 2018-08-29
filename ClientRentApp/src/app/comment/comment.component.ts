@@ -3,7 +3,6 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { RentVehicleService } from '../services/rent-vehicle.service';
 import { CommentService } from '../services/comment.service';
 import { Comment} from '../models/comment.model'
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-comment',

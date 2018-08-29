@@ -34,11 +34,11 @@ export class EditBranchOfficeComponent implements OnInit  {
 
   ngOnInit() {
     this.branchOfficeService.getBranchOffice(this.branchOfficeId).subscribe(
-      data => {
-        this.branchOffice = data as BranchOffice;
+      res => {
+        this.branchOffice = res as BranchOffice;
       },error => {
         alert(error.error.Message);
-      });
+    });
   }
 
   handleFileInput(event) {
@@ -48,9 +48,8 @@ export class EditBranchOfficeComponent implements OnInit  {
       var reader = new FileReader();
 
       reader.readAsDataURL(event.target.files[0]); 
-
       reader.onload = (event) => { 
-        this.selecetdFileUrl = reader.result;
+        this.selecetdFileUrl = reader.result as string;
       }
     }
   }
@@ -60,7 +59,6 @@ export class EditBranchOfficeComponent implements OnInit  {
   }
 
   onSubmit(form: NgForm) {
-
     this.branchOffice.latitude = this.mapInfoCooridnates.centerLat;
     this.branchOffice.longitude = this.mapInfoCooridnates.centerLong;
 
@@ -69,7 +67,7 @@ export class EditBranchOfficeComponent implements OnInit  {
       res => {
         alert(res);
       }, error => {
-        alert(error.error.Message);
+        alert(error);
       });;
     
     this.location.back();

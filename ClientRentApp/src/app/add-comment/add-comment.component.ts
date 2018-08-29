@@ -27,9 +27,10 @@ export class AddCommentComponent implements OnInit {
     
     this.commentService.postMethodCreateComment(comment).subscribe(
       res =>{
-        console.log(res);
-      }, error =>{
-        console.log(error);
+        alert(res);
+      }, 
+      error =>{
+        alert(error);
       });
 
     this.router.navigate(['/RentVehicle/']);

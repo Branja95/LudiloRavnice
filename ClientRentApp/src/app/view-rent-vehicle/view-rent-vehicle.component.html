@@ -1,10 +1,12 @@
-<div id="banner" class="col col-lg-4 col-lg-push-4">
-  <div class="inline-block">
-      <img src='http://localhost:51680/api/Services/LoadImage?imageId={{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
+<div class="container">
+  <div class=text-center>
+     <h2>Rent-Vehicle Service</h2>
+     <br/><br/>
+      <img src='https://localhost:44365/api/Services/LoadImage?imageId={{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
       <label>Email Address:</label> {{rentVehicle.EmailAddress}}<br/>
       <label>Description:</label> {{rentVehicle.Description}}<br/>
-      
-      <button type="button" [routerLink]="['/BranchOffice/' , rentVehicle.Id]" class="btn btn-default">View Branch Offices</button> &nbsp;
+      <br/><br/>
+      <button type="button" [routerLink]="['/BranchOffice/' , rentVehicle.Id]" class="btn btn-default">Branch-Offices</button> &nbsp;
       <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/AddBranchOffice/' , rentVehicle.Id]" class="btn btn-default">Add Branch Office</button> &nbsp;
       <button type="button" [routerLink]="['/Vehicles/' , rentVehicle.Id]" class="btn btn-default">View vehicles</button> &nbsp;
       <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/AddVehicle/' , rentVehicle.Id]" class="btn btn-default">Add Vehicle</button> &nbsp;

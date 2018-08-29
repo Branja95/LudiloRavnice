@@ -1,9 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-
-import { Router, ActivatedRoute } from '@angular/router';
-
+import { Router } from '@angular/router';
 import { NotificationService } from '../services/notification.service';  
-
 import { NavBarService } from '../services/nav-bar.service';
 
 @Component({

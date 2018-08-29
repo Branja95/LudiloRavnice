@@ -1,13 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import {
-  Router,
-  ActivatedRoute
-} from '@angular/router';
-
-
+import { Router, ActivatedRoute} from '@angular/router';
 import { RentVehicle } from '../models/rent-vehicle.model';
-
 import { RentVehicleService } from '../services/rent-vehicle.service';
 
 @Component({
@@ -29,14 +23,12 @@ export class AddRentVehicleComponent implements OnInit {
     this.file = event.target.files[0];
     
     if (event.target.files && event.target.files[0]) {
-    var reader = new FileReader();
+      var reader = new FileReader();
 
-    reader.readAsDataURL(event.target.files[0]); 
-
-    reader.onload = (event) => { 
-      this.url = reader.result;
-    }
-
+      reader.readAsDataURL(event.target.files[0]); 
+      reader.onload = (event) => { 
+        this.url = reader.result as string;
+      }
     }
   }
 
@@ -45,9 +37,9 @@ export class AddRentVehicleComponent implements OnInit {
     this.rentVehicleService.postMethodCreateRentVehicleService(rentVehicle, this.file)
     .subscribe(
       res => {
-        console.log(res);
+        alert(res);
       }, error => {
-        alert(error.error.Message);
+        alert(error);
       });;
     
     form.reset();

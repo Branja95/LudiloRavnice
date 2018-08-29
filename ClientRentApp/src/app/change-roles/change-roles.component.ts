@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Router, ActivatedRoute } from '@angular/router';
-
 import { AccountService } from '../services/account.service';
 
 @Component({
@@ -17,31 +15,24 @@ export class ChangeRolesComponent implements OnInit {
   roles: Array<String> = ["Admin", "Manager", "AppUser"];
 
   ngOnInit() {
-    this.accountService.getMethodUsers()
-    .subscribe(
+    this.accountService.getMethodUsers().subscribe(
       res => {
         this.users = res;
-        console.log(res);
       },
       error => {
         alert(error.error.Message);
-      }
-    );
+    });
   }
 
   onChangeRole(userId, role){
-    console.log(userId);
-    console.log(role);
-    this.accountService.putMethodChangeRole(userId, role)
-    .subscribe(
+    this.accountService.putMethodChangeRole(userId, role).subscribe(
       res => {
         alert(res);
         this.router.navigateByUrl("/Vehicles");
       },
       error => {
         alert(error.error.Message);
-      }
-    );
+    });
   }
 
 }

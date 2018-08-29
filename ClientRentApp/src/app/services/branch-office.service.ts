@@ -13,43 +13,29 @@ import { BranchOffice } from '../models/branch-office.model';
 })
 export class BranchOfficeService {
 
-  url: string;
   formData: FormData = new FormData();
   
   constructor(private httpClient: HttpClient) { }
 
-  postMethodCreateBranchOffice(serviceId, branchOffice, uploadedImage: File): Observable<any> {
-    
-    this.formData.append('serviceId',serviceId);
-    this.formData.append('address', branchOffice.address)
-    this.formData.append('latitude', branchOffice.latitude);
-    this.formData.append('longitude', branchOffice.longitude);
-    this.formData.append('image', uploadedImage, uploadedImage.name);
+  getBranchOffice(branchOfficeId): Observable<any> {
+    return this.httpClient.get("https://localhost:44365/api/BranchOffices/GetBranchOffice?branchOfficeId=" + branchOfficeId);
+  }
 
-    let headers = new HttpHeaders();
-    headers.append('Content-Type', 'application/json')
+  getBranchOffices(serviceId): Observable<any> {
+    return this.httpClient.get("https://localhost:44365/api/Services/GetBranchOffices?serviceId=" + serviceId);
+  }
 
-    let result = this.httpClient.post("https://localhost:44365/api/BranchOffices/PostBranchOffice",this.formData, { headers: headers });
+  getVehicleServiceBranchOffices(vehicleId): Observable<any> {
+    return this.httpClient.get("https://localhost:44365/api/BranchOffices/GetVehicleBranchOffices?vehicleId=" + vehicleId);
+  }
 
+  deleteBranchOffice(serviceId, branchOfficeId): Observable<any> {
+    return this.httpClient.delete("https://localhost:44365/api/BranchOffices/DeleteBranchOffice?serviceId=" + serviceId + "&branchOfficeId=" + branchOfficeId);
+  }
+
+  editBranchOffice(serviceId, branchOfficeId, branchOffice, uploadedImage: File): Observable<any> {
     this.formData = new FormData();
 
-    return result;
-   }
-
-   getBranchOffice(branchOfficeId): Observable<any> {
-    return this.httpClient.get("https://localhost:44365/api/BranchOffices/GetBranchOffice?branchOfficeId=" + branchOfficeId);
-   }
-
-   getBranchOffices(serviceId): Observable<any> {
-    return this.httpClient.get("https://localhost:44365/api/Services/GetBranchOffices?serviceId=" + serviceId);
-   }
-
-   getVehicleServiceBranchOffices(vehicleId): Observable<any> {
-    return this.httpClient.get("https://localhost:44365/api/BranchOffices/GetVehicleBranchOffices?vehicleId=" + vehicleId);
-   }
-
-   editBranchOffice(serviceId, branchOfficeId, branchOffice, uploadedImage: File): Observable<any> {
-     
     this.formData.append('id', branchOfficeId);
     this.formData.append('address', branchOffice.Address)
     this.formData.append('latitude', branchOffice.latitude);
@@ -59,16 +45,23 @@ export class BranchOfficeService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.put("https://localhost:44365/api/BranchOffices/PutBranchOffice?serviceId=" + serviceId, this.formData, { headers: headers });
-
+    return this.httpClient.put("https://localhost:44365/api/BranchOffices/PutBranchOffice?serviceId=" + serviceId, this.formData, { headers: headers });
+  }
+  
+  postMethodCreateBranchOffice(serviceId, branchOffice, uploadedImage: File): Observable<any> {
     this.formData = new FormData();
 
-    return result;
-   }
+    this.formData.append('serviceId',serviceId);
+    this.formData.append('address', branchOffice.address)
+    this.formData.append('latitude', branchOffice.latitude);
+    this.formData.append('longitude', branchOffice.longitude);
+    this.formData.append('image', uploadedImage, uploadedImage.name);
 
-   deleteBranchOffice(serviceId, branchOfficeId): Observable<any> {
-     return this.httpClient.delete("https://localhost:44365/api/BranchOffices/DeleteBranchOffice?serviceId=" + serviceId + "&branchOfficeId=" + branchOfficeId);
-   }
+    let headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/json')
 
+    return this.httpClient.post("https://localhost:44365/api/BranchOffices/PostBranchOffice",this.formData, { headers: headers });
+  }
+  
 }
 

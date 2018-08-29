@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
-
 import { RentVehicle } from '../models/rent-vehicle.model';
-
 import { RentVehicleService } from '../services/rent-vehicle.service';
 
 @Component({

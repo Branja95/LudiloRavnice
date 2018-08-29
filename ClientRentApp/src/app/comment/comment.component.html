@@ -8,11 +8,9 @@
                 <label type="Date">Date:</label> {{comment.DateTime}}<br/>
             </div>
             
-            <button type="button" *ngIf="canUserEditComment(comment.UserId)" [routerLink]="['/EditComment/' , comment.Id]" class="btn btn-default">Edit Comment</button> &nbsp;
-
-            <br/><br/>
+            <button type="button" *ngIf="canUserEditComment(comment.UserId)" [routerLink]="['/EditComment/' , comment.Id]" class="btn btn-default">Edit Comment</button> 
+            <br/>
         </div>
     </div>
 </div>  
-
-<button type="button" *ngIf="!hasUserCommented()" [routerLink]="['/AddComment/' , serviceId]" class="btn btn-default">Add Comment</button> &nbsp;
+<button type="button" *ngIf="!hasUserCommented()" [routerLink]="['/AddComment/' , serviceId]" class="btn btn-default">Add Comment</button>

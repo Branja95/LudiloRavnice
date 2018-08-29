@@ -1,9 +1,9 @@
-<div class='parent'>
+
   <div *ngIf="isMarkerClicked(); then thenBlock; else elseBlock"></div>
 
   <ng-template #thenBlock>
       <div class='child inline-block-child'>
-        <img src='http://localhost:51680/api/BranchOffices/LoadImage?imageId={{branchOffice.Image}}' height="300px" weight="300px"/>
+        <img src='https://localhost:44365/api/BranchOffices/LoadImage?imageId={{branchOffice.Image}}' height="300px" weight="300px"/>
         <br/><br/>
         <label>Address:</label> {{branchOffice.Address}}
         <br/><br/>
@@ -11,14 +11,13 @@
          &nbsp; 
         <button type="button" *ngIf="isManagerOrAdmin()" (click)="onEdit(branchOffice.Id)" class="btn btn-default">Edit</button>
       </div> 
-      <div class='child inline-block-child'>
+      <div class="container">
+        <div class="text-center">
           <app-map  [serviceId]="serviceId" (messageEvent)="receiveMessage($event)"></app-map>
+        </div>
       </div>
   </ng-template>
   
   <ng-template #elseBlock>
-      <div class='child inline-block-child'>
         <app-map  [serviceId]="serviceId" (messageEvent)="receiveMessage($event)"></app-map>
-      </div>
   </ng-template>
-</div>
