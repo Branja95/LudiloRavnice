@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-
 import { VehicleType } from '../models/vehicle-type.model';
-
 import { VehicleService } from '../services/vehicle.service';
 import { PagerService } from '../services/pager.service';
-import { BranchOffice } from '../models/branch-office.model';
 import { Vehicle } from '../models/vehicle.model';
-import { element } from 'protractor';
+import { SearchVehicle } from '../models/searchVehicle.model';
 
 @Component({
   selector: 'app-vehicle',
@@ -15,41 +12,35 @@ import { element } from 'protractor';
   styleUrls: ['./vehicle.component.css'],
   providers: [VehicleService]
 })
+
 export class VehicleComponent implements OnInit {
 
-  // array of all items to be paged
-  private allItems: any[];
-  
-  // pager object
   pager: any = {};
-
-  // paged items
   pagedVehicles: Array<Vehicle>;
+  pageSize = 5;
+  
+  isSearch: boolean = false;
 
-  pageSize = 2;
-  totalVehicles;
-
-  vehicleTypes = Array<VehicleType>();
-  vehicles = Array<Vehicle>()
+  VehicleId: string = "-1";
   vehicleType: string;
 
+  searchVehicle: SearchVehicle;
+  search: SearchVehicle;
+
+  totalVehicles;
+  vehicleTypeId;
+  searchPrice;
+
+  vehicleTypesSearch = Array<VehicleType>();
+  vehicleTypes = Array<VehicleType>();
+  vehicles = Array<Vehicle>()
+  
   constructor(private vehicleService: VehicleService, private pagerService: PagerService) { }
 
   ngOnInit() {
     this.getVehicles()
     this.getTotalVehiclesCount();
-  }
-
-  getVehicles() { 
-    this.vehicleService.getVehicles()
-    .subscribe(
-      res => { 
-          this.vehicles = res as Array<Vehicle>;
-          this.setPage(1);
-          console.log(this.vehicles);
-      }, error => {
-        alert(error);
-      }); 
+    this.getVehicleTypes();
   }
 
   getTotalVehiclesCount(){
@@ -65,8 +56,96 @@ export class VehicleComponent implements OnInit {
     );
   }
 
-  parseImages(imageId){
+  getSearchNumberOfVehicles(searchVehicle: SearchVehicle){
+    this.vehicleService.searchNumberOfVehicles(searchVehicle.VehicleTypeId, searchVehicle.PriceFrom, searchVehicle.PriceTo, searchVehicle.Manufactor, searchVehicle.Model).subscribe(
+      res => {
+        this.totalVehicles = res as number;
+        this.pager.totalItems = this.totalVehicles;
+      },
+      error => {
+        console.log(error);
+      });
+  }
+
+  getVehicles() { 
+    this.vehicleService.getVehicles()
+    .subscribe(
+      res => { 
+          this.vehicles = res as Array<Vehicle>;
+          this.setShowPage(1);
+      }, error => {
+        console.log(error);
+      }); 
+  }
+
+  getSearchVehicles(searchVehicle: SearchVehicle){
+    this.vehicleService.searchVehicles(searchVehicle.VehicleTypeId, searchVehicle.PriceFrom, searchVehicle.PriceTo, searchVehicle.Manufactor, searchVehicle.Model).subscribe(
+      res => {
+        this.vehicles = res as Array<Vehicle>;
+        this.setShowPage(1);
+      },
+      error => {
+        console.log(error);
+      });
+  }
+
+  setShowPage(page: number) {
+    this.pager = this.pagerService.getPager(this.vehicles.length, page);
+    this.getPagedVehciles(this.pager.currentPage, this.search);
+  }
+
+  getPagedVehciles(pageIndex, searchVehicle: SearchVehicle){
+    if(!this.isSearch){
+      console.log("Show: ");
+      this.vehicleService.getPagedVehicles(pageIndex, this.pageSize)
+      .subscribe(
+        res => {
+          this.pagedVehicles = res as Array<Vehicle>;
+          console.log(this.pagedVehicles);
+        },
+        error=> {
+          console.log(error);
+        });
+    }else{
+      this.vehicleService.getSearchPagedVehicles(pageIndex, this.pageSize, searchVehicle.VehicleTypeId, searchVehicle.PriceFrom, searchVehicle.PriceTo, searchVehicle.Manufactor, searchVehicle.Model)
+      .subscribe(
+        res => {
+          this.pagedVehicles = res as Array<Vehicle>;
+          console.log(this.pagedVehicles);
+        },
+        error=> {
+          console.log(error);
+        });
+    }
     
+  }
+  
+  getSearchVehciles(pageIndex, searchVehicle: SearchVehicle){
+    
+  }
+
+  getVehicleTypes(){
+    this.vehicleService.getVehicleTypes()
+    .subscribe(
+      res => { 
+          this.vehicleTypesSearch = res as Array<VehicleType>;
+      }, error => {
+        console.log(error);
+      }); 
+  }
+
+  getVehicleTypeName(vehicleTypeId){
+    this.vehicleService.getVehicleType(vehicleTypeId)
+    .subscribe(
+      res => {
+        this.vehicleType = res as string
+      },
+      error => {
+        console.log(error);
+      });
+  }
+
+  parseImages(imageId){
     return imageId.split(";_;");
   }
 
@@ -78,42 +157,41 @@ export class VehicleComponent implements OnInit {
       },
       error => {
         alert(error);
-      })
+      });
   }
 
-  getVehicleTypeName(vehicleTypeId){
-    this.vehicleService.getVehicleType(vehicleTypeId)
-    .subscribe(
-      data => {
-        this.vehicleType = data as string
-      },
-      error => {
-        console.log(error);
-      }
-    )
+  onSubmit(form: NgForm, searchVehicle: SearchVehicle){
+    if(searchVehicle.VehicleTypeId == undefined || searchVehicle.VehicleTypeId == null)
+    {
+      searchVehicle.VehicleTypeId = "-1";
+    }
+    if(searchVehicle.PriceFrom == "" || searchVehicle.PriceFrom == null)
+    {
+      searchVehicle.PriceFrom = "-1";
+    }
+    if(searchVehicle.PriceTo == "" || searchVehicle.PriceTo == null)
+    {
+      searchVehicle.PriceTo = "-1";
+    }
+    if(searchVehicle.Manufactor == "" || searchVehicle.Manufactor == null)
+    {
+      searchVehicle.Manufactor = "-1";
+    }
+    if(searchVehicle.Model == "" || searchVehicle.Model == null)
+    {
+      searchVehicle.Model = "-1";
+    }
+
+    this.getSearchVehicles(searchVehicle);
+    this.getSearchNumberOfVehicles(searchVehicle);
+
+    this.search = searchVehicle;
+    this.isSearch = true;
+
+    form.reset();
   }
-
-  getPagedVehciles(pageIndex){
-    this.vehicleService.getPagedVehicles(pageIndex, this.pageSize)
-    .subscribe(
-      res => {
-        this.pagedVehicles = res as Array<Vehicle>;
-        console.log(this.pagedVehicles);
-      },
-      error=> {
-        console.log(error);
-      }
-    )
-  }
-
-  setPage(page: number) {
-    this.pager = this.pagerService.getPager(this.vehicles.length, page);
-
-    this.getPagedVehciles(this.pager.currentPage);
-  }
-
+  
   isManagerOrAdmin(){
-
     if(!localStorage.role)
     {
       return false;
@@ -128,8 +206,7 @@ export class VehicleComponent implements OnInit {
     }
   }
 
-  isLogged() : boolean
-  {
+  isLogged() : boolean{
     if(!localStorage.jwt)
     {
       return false;
@@ -137,4 +214,5 @@ export class VehicleComponent implements OnInit {
     
     return true;
   }
+ 
 }

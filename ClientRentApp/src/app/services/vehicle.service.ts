@@ -68,6 +68,18 @@ export class VehicleService {
     return this.httpClient.get("http://localhost:51680/api/Vehicles/GetPagedVehicles?pageIndex=" + pageIndex + "&pageSize=" + pageSize);
   }
 
+  getSearchPagedVehicles(pageIndex, pageSize, vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel): Observable<any>{
+    return this.httpClient.get("http://localhost:51680/api/Vehicles/GetSearchPagedVehicles?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&vehicleTypeId=" + vehicleTypeId + "&vehiclePriceFrom=" + vehiclePriceFrom + "&vehiclePriceTo=" + vehiclePriceTo + "&vehicleManufactor=" + vehicleManufactor + "&vehicleModel=" + vehicleModel);
+  }
+
+  searchNumberOfVehicles(vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel): Observable<any>{
+    return this.httpClient.get("http://localhost:51680/api/Vehicles/SearchNumberOfVehicles?vehicleTypeId=" + vehicleTypeId + "&vehiclePriceFrom=" + vehiclePriceFrom + "&vehiclePriceTo=" + vehiclePriceTo + "&vehicleManufactor=" + vehicleManufactor + "&vehicleModel=" + vehicleModel);   
+  }
+
+  searchVehicles(vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel): Observable<any>{
+    return this.httpClient.get("http://localhost:51680/api/Vehicles/SearchVehicles?vehicleTypeId=" + vehicleTypeId + "&vehiclePriceFrom=" + vehiclePriceFrom + "&vehiclePriceTo=" + vehiclePriceTo + "&vehicleManufactor=" + vehicleManufactor + "&vehicleModel=" + vehicleModel);   
+  }
+
   deleteVehicle(vehicleId): Observable<any> {
     return this.httpClient.delete("http://localhost:51680/api/Vehicles/DeleteVehicle?id=" + vehicleId);
   }
