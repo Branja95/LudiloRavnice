@@ -16,6 +16,8 @@ namespace RentApp.Controllers
     [RoutePrefix("api/VehicleTypes")]
     public class VehicleTypesController : ApiController
     {
+        private static object lockObjectForVehicleTypes = new object();
+
         private readonly IUnitOfWork unitOfWork;
 
         public VehicleTypesController(IUnitOfWork unitOfWork)
@@ -69,8 +71,11 @@ namespace RentApp.Controllers
 
             try
             {
-                unitOfWork.VehicleTypes.Update(vehicleType);
-                unitOfWork.Complete();
+                lock (lockObjectForVehicleTypes)
+                {
+                    unitOfWork.VehicleTypes.Update(vehicleType);
+                    unitOfWork.Complete();
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -103,8 +108,25 @@ namespace RentApp.Controllers
                 TypeName = model.TypeName
             };
 
-            unitOfWork.VehicleTypes.Add(vehicleType);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForVehicleTypes)
+                {
+                    unitOfWork.VehicleTypes.Add(vehicleType);
+                    unitOfWork.Complete();
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!VehicleTypeExists(vehicleType.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return Ok("Vehicle type successfully created.");
         }
@@ -119,8 +141,25 @@ namespace RentApp.Controllers
                 return NotFound();
             }
 
-            unitOfWork.VehicleTypes.Remove(vehicleType);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForVehicleTypes)
+                {
+                    unitOfWork.VehicleTypes.Remove(vehicleType);
+                    unitOfWork.Complete();
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!VehicleTypeExists(vehicleType.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return Ok(vehicleType);
         }

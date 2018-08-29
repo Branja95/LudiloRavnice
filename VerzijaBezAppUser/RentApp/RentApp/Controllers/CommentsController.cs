@@ -12,6 +12,7 @@ using System;
 using static RentApp.Models.CommentBindingModel;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+using System.Data;
 
 namespace RentApp.Controllers
 {
@@ -19,6 +20,8 @@ namespace RentApp.Controllers
     [RoutePrefix("api/Comments")]
     public class CommentsController : ApiController
     {
+        private static object lockObjectForComments = new object();
+
         private readonly IUnitOfWork unitOfWork;
         public ApplicationUserManager UserManager { get; private set; }
 
@@ -87,8 +90,15 @@ namespace RentApp.Controllers
             editComment.Text = comment.Text;
             editComment.DateTime = DateTime.Now;
 
-            unitOfWork.Comments.Update(editComment);
-            unitOfWork.Complete();
+            try
+            {
+                unitOfWork.Comments.Update(editComment);
+                unitOfWork.Complete();
+            }
+            catch(DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok(HttpStatusCode.OK);
         }
@@ -125,11 +135,19 @@ namespace RentApp.Controllers
                 UserId = user.Id
             };
 
-            service.Comments.Add(comment);
-
-            unitOfWork.Comments.Add(comment);
-            unitOfWork.Complete();
-            
+            try
+            {
+                lock (lockObjectForComments)
+                {
+                    service.Comments.Add(comment);
+                    unitOfWork.Comments.Add(comment);
+                    unitOfWork.Complete();
+                }
+            }
+            catch(DBConcurrencyException)
+            {
+                return NotFound();
+            }
             return Ok("Service successfully commented.");
         }
 
