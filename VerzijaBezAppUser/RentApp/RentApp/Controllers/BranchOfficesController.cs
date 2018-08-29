@@ -131,6 +131,11 @@ namespace RentApp.Controllers
         public async Task<IHttpActionResult> PutBranchOffice([FromUri] long serviceId, EditBranchOfficeBindingModel model)
         {
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
             Service serviceForValidation = unitOfWork.Services.Get(serviceId);
@@ -146,11 +151,6 @@ namespace RentApp.Controllers
                 {
                     return BadRequest("Access denied.");
                 }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
             }
 
             BranchOffice branchOffice = unitOfWork.BranchOffices.Get(model.Id);

@@ -95,10 +95,10 @@ namespace RentApp.Controllers
 
             RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
-            //if(!CanRating(user.Id, service))
-            //{
-            //    return BadRequest("You can not rating on the service until your first renting is completed.");
-            //}
+            if (!CanRating(user.Id, service))
+            {
+                return BadRequest("You can not rating on the service until your first renting is completed.");
+            }
 
             Rating rating = new Rating
             {

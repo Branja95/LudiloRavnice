@@ -43,6 +43,8 @@ import { VehicleTypesComponent } from './vehicle-types/vehicle-types.component';
 import { EditVehicleTypesComponent } from './edit-vehicle-types/edit-vehicle-types.component';
 import { EditCommentComponent } from './edit-comment/edit-comment.component';
 import { EditRatingComponent } from './edit-rating/edit-rating.component';
+import { ChangeRolesComponent } from './change-roles/change-roles.component';
+import { BanManagersComponent } from './ban-managers/ban-managers.component';
 
 const Routes = [
   {
@@ -156,6 +158,14 @@ const Routes = [
   {
     path: "EditRating/:ratingId",
     component: EditRatingComponent
+  },
+  {
+    path: "ChangeRoles",
+    component: ChangeRolesComponent 
+  },
+  {
+    path: "BanManagers",
+    component: BanManagersComponent 
   }
 ]
 
@@ -188,9 +198,11 @@ const Routes = [
     AddCommentComponent,
     ReserveAVehicleComponent,
     EditCommentComponent,
-    EditRatingComponent
+    EditRatingComponent,
     VehicleTypesComponent,
-    EditVehicleTypesComponent
+    EditVehicleTypesComponent,
+    ChangeRolesComponent,
+    BanManagersComponent
   ],
   imports: [
     BrowserModule,

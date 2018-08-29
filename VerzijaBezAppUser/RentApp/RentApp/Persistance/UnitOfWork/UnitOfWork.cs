@@ -26,6 +26,8 @@ namespace RentApp.Persistance.UnitOfWork
         public IAccountForApproveRepository AccountsForApprove { get; set; }
         [Dependency]
         public IServiceForApproveRepository ServicesForApprove { get; set; }
+        [Dependency]
+        public IBanedManagersRepository BanedManagers { get; set; }
 
         public UnitOfWork(DbContext context)
         {

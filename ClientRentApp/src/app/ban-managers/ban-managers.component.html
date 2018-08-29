@@ -1,0 +1,30 @@
+<div class="container">
+    <div class="row">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Username</th>
+                <th scope="col">First name</th>
+                <th scope="col">Last name</th>
+                <th scope="col">Date of birth</th>
+                <th class="text-center">Baned</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let manager of managers">
+                <th scope="row">{{manager.Email}}</th>
+                <td>{{manager.FirstName}}</td>
+                <td>{{manager.LastName}}</td>
+                <td>{{manager.DateOfBirth}}</td>
+                <td class="text-center">
+                    <input
+                    class="form-check-input"
+                    type="checkbox"
+                    (change)="changeBan(manager.Id)"
+                    [checked]="manager.IsBaned" >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+  </div>

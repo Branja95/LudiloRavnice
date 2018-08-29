@@ -323,12 +323,17 @@
     <Compile Include="Migrations\201806211356297_RADataModel_v2.3.Designer.cs">
       <DependentUpon>201806211356297_RADataModel_v2.3.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808282037493_RADataModel_v2.4.cs" />
+    <Compile Include="Migrations\201808282037493_RADataModel_v2.4.Designer.cs">
+      <DependentUpon>201808282037493_RADataModel_v2.4.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\BranchOfficeBindingModel.cs" />
     <Compile Include="Models\CommentBindingModel.cs" />
     <Compile Include="Models\Entities\AccountForApprove.cs" />
+    <Compile Include="Models\Entities\BanedManager.cs" />
     <Compile Include="Models\Entities\BranchOffice.cs" />
     <Compile Include="Models\Entities\RAIdentityUser.cs" />
     <Compile Include="Models\Entities\Comment.cs" />
@@ -345,9 +350,11 @@
     <Compile Include="Models\VehicleTypeBindingModel.cs" />
     <Compile Include="Persistance\RADBContext.cs" />
     <Compile Include="Persistance\Repository\AccountForApproveRepository.cs" />
+    <Compile Include="Persistance\Repository\BanedManagersRepository.cs" />
     <Compile Include="Persistance\Repository\BranchOfficeRepository.cs" />
     <Compile Include="Persistance\Repository\CommentRepository.cs" />
     <Compile Include="Persistance\Repository\IAccountForApproveRepository.cs" />
+    <Compile Include="Persistance\Repository\IBanedManagersRepository.cs" />
     <Compile Include="Persistance\Repository\IBranchOfficeRepository.cs" />
     <Compile Include="Persistance\Repository\ICommentRepository.cs" />
     <Compile Include="Persistance\Repository\IRatingRepository.cs" />
@@ -473,6 +480,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806211356297_RADataModel_v2.3.resx">
       <DependentUpon>201806211356297_RADataModel_v2.3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808282037493_RADataModel_v2.4.resx">
+      <DependentUpon>201808282037493_RADataModel_v2.4.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

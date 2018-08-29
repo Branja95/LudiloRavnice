@@ -28,6 +28,7 @@ using System.Net;
 using System.Data.Entity.Infrastructure;
 using static RentApp.Models.CommentBindingModel;
 using static RentApp.Models.RatingBindingModel;
+using System.Data;
 
 namespace RentApp.Controllers
 {
@@ -35,6 +36,8 @@ namespace RentApp.Controllers
     [RoutePrefix("api/Services")]
     public class ServicesController : ApiController
     {
+        private static object lockObjectForServices = new object();
+
         private string validationErrorMessage;
         private readonly IUnitOfWork unitOfWork;
         private readonly ISMTPService SMTPService;
@@ -254,6 +257,16 @@ namespace RentApp.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IHttpActionResult> PutService([FromUri] long serviceId, EditRentVehicleServiceBindingModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (serviceId != model.Id)
+            {
+                return BadRequest();
+            }
+
             RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
             Service serviceForValidation = unitOfWork.Services.Get(serviceId);
@@ -269,16 +282,6 @@ namespace RentApp.Controllers
                 {
                     return BadRequest("Access denied.");
                 }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (serviceId != model.Id)
-            {
-                return BadRequest();
             }
 
             HttpRequest httpRequest = HttpContext.Current.Request;
@@ -297,10 +300,27 @@ namespace RentApp.Controllers
             oldService.Description = model.Description;
             oldService.LogoImage = ImageHelper.SaveImageToServer(httpRequest.Files[0]);
 
-            unitOfWork.Services.Update(oldService);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForServices)
+                {
+                    unitOfWork.Services.Update(oldService);
+                    unitOfWork.Complete();
+                }
+            }
+            catch(DBConcurrencyException)
+            {
+                if (!ServiceExists(oldService.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok("Service successfully updated.");
         }
         
         // GET: api/Services/ServicesForApproves
@@ -336,8 +356,18 @@ namespace RentApp.Controllers
 
             SMTPService.SendMail("Service approved", "Your service "+ serviceForApprove.Name + " is approved, now you can add branch offices and vehicles.", user.Email);
 
-            unitOfWork.Services.Update(serviceForApprove);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForServices)
+                {
+                    unitOfWork.Services.Update(serviceForApprove);
+                    unitOfWork.Complete();
+                }
+            }
+            catch(DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok("Service Successfully approved.");
         }
@@ -362,8 +392,18 @@ namespace RentApp.Controllers
 
             ImageHelper.DeleteImage(serviceForApprove.LogoImage);
 
-            unitOfWork.Services.Remove(serviceForApprove);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForServices)
+                {
+                    unitOfWork.Services.Remove(serviceForApprove);
+                    unitOfWork.Complete();
+                }
+            }
+            catch (DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok("Service Successfully rejected.");
         }
@@ -388,6 +428,14 @@ namespace RentApp.Controllers
 
             RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
+            if(UserManager.IsInRole(user.Id, "Manager"))
+            {
+                if(unitOfWork.BanedManagers.Find(bm => bm.User.Id == user.Id).Count() > 0)
+                {
+                    return BadRequest("You are baned for add service.");
+                }
+            }
+
             Service service = new Service()
             {
                 Creator = user.Id,
@@ -398,8 +446,18 @@ namespace RentApp.Controllers
                 IsApproved = false
             };
 
-            unitOfWork.Services.Add(service);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForServices)
+                {
+                    unitOfWork.Services.Add(service);
+                    unitOfWork.Complete();
+                }
+            }
+            catch(DBConcurrencyException)
+            {
+                return BadRequest();
+            }
 
             NotificationHub.NewRentVehicleServiceToApprove(unitOfWork.Services.Find(s => !s.IsApproved).Count());
 
@@ -436,16 +494,9 @@ namespace RentApp.Controllers
                 foreach (BranchOffice branchOffice in service.BranchOfficces)
                 {
                     branchOfficeIds.Add(branchOffice.Id);
+                    ImageHelper.DeleteImage(branchOffice.Image);
                 }
             }
-
-            foreach(long branchOfficeId in branchOfficeIds)
-            {
-                BranchOffice branchOffice = unitOfWork.BranchOffices.Get(branchOfficeId);
-                unitOfWork.BranchOffices.Remove(branchOffice);
-            }
-
-            unitOfWork.Complete();
 
             List<long> vehiclesIds = new List<long>();
 
@@ -454,23 +505,78 @@ namespace RentApp.Controllers
                 foreach (Vehicle vehicle in service.Vehicles)
                 {
                     vehiclesIds.Add(vehicle.Id);
+                    ImageHelper.DeleteImages(vehicle.Images);
                 }
             }
 
-            foreach (long vehicleId in vehiclesIds)
+            List<long> commentIds = new List<long>();
+
+            if (service.Comments != null)
             {
-                Vehicle vehicle = unitOfWork.Vehicles.Get(vehicleId);
-                unitOfWork.Vehicles.Remove(vehicle);
+                foreach (Comment comment in service.Comments)
+                {
+                    commentIds.Add(comment.Id);
+                }
             }
 
-            unitOfWork.Complete();
+            List<long> raitingIds = new List<long>();
+
+            if (service.Ratings != null)
+            {
+                foreach (Rating rating in service.Ratings)
+                {
+                    raitingIds.Add(rating.Id);
+                }
+            }
 
             ImageHelper.DeleteImage(service.LogoImage);
 
-            unitOfWork.Services.Remove(service);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForServices)
+                {
+                    foreach (long branchOfficeId in branchOfficeIds)
+                    {
+                        BranchOffice branchOffice = unitOfWork.BranchOffices.Get(branchOfficeId);
+                        unitOfWork.BranchOffices.Remove(branchOffice);
+                    }
 
-            return Ok(service);
+                    foreach (long vehicleId in vehiclesIds)
+                    {
+                        Vehicle vehicle = unitOfWork.Vehicles.Get(vehicleId);
+                        unitOfWork.Vehicles.Remove(vehicle);
+                    }
+
+                    foreach (long commentId in commentIds)
+                    {
+                        Comment comment = unitOfWork.Comments.Get(commentId);
+                        unitOfWork.Comments.Remove(comment);
+                    }
+
+                    foreach (long raitingId in raitingIds)
+                    {
+                        Rating raiting = unitOfWork.Ratings.Get(raitingId);
+                        unitOfWork.Ratings.Remove(raiting);
+                    }
+
+                    unitOfWork.Services.Remove(service);
+                    unitOfWork.Complete();
+
+                }
+            }
+            catch (DBConcurrencyException)
+            {
+                if (!ServiceExists(service.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok("Service successfully deleted.");
         }
 
         private bool ServiceExists(long id)

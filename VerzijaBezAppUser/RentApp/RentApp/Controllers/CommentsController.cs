@@ -113,10 +113,10 @@ namespace RentApp.Controllers
 
             RAIdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
 
-            //if (!CanComment(user.Id, service))
-            //{
-            //    return BadRequest("You can not commenting on the service until your first renting is completed.");
-            //}
+            if (!CanComment(user.Id, service))
+            {
+                return BadRequest("You can not commenting on the service until your first renting is completed.");
+            }
 
             Comment comment = new Comment
             {

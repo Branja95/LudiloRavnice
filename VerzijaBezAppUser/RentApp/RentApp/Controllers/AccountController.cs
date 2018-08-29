@@ -68,6 +68,127 @@ namespace RentApp.Controllers
             };
         }
 
+        // GET api/Account/GetUsers
+        [HttpGet]
+        [Route("GetUsers")]
+        [Authorize(Roles = "Admin")]
+        public IHttpActionResult GetUsers()
+        {
+            IEnumerable<RAIdentityUser> users = UserManager.Users;
+
+            List<UserRoleBindingModel> usersRoles = new List<UserRoleBindingModel>();
+
+            foreach(RAIdentityUser user in users)
+            {
+                usersRoles.Add(new UserRoleBindingModel() {
+                    Id = user.Id,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    DateOfBirth = user.DateOfBirth.Value,
+                });
+            }
+
+            foreach (UserRoleBindingModel userR in usersRoles)
+            {
+                userR.Role = UserManager.GetRoles(userR.Id).FirstOrDefault();
+            }
+
+            return Ok(usersRoles);
+        }
+
+        // GET api/Account/GetManagers
+        [HttpGet]
+        [Route("GetManagers")]
+        [Authorize(Roles = "Admin")]
+        public IHttpActionResult GetManagers()
+        {
+
+            IEnumerable<RAIdentityUser> users = UserManager.Users;
+
+            List<ManagerBindingModel> allUsers = new List<ManagerBindingModel>();
+
+            List<ManagerBindingModel> managers = new List<ManagerBindingModel>();
+
+            foreach (RAIdentityUser user in users)
+            {
+                allUsers.Add(new ManagerBindingModel()
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    DateOfBirth = user.DateOfBirth.Value,
+                });
+            }
+
+            foreach (ManagerBindingModel userM in allUsers)
+            {
+                if(UserManager.IsInRole(userM.Id, "Manager"))
+                {
+                    if(unitOfWork.BanedManagers.Find(bm => bm.User.Id == userM.Id).Count() > 0)
+                    {
+                        userM.IsBaned = true;
+                    }
+                    managers.Add(userM);
+                }
+            }
+
+            return Ok(managers);
+        }
+
+        // PUT api/Account/ChangeRole
+        [HttpPut]
+        [Route("ChangeRole")]
+        [Authorize(Roles = "Admin")]
+        public IHttpActionResult ChangeRole([FromUri] string userId, RoleBindingModel model)
+        {
+            if(!ModelState.IsValid)
+            {
+                BadRequest();
+            }
+
+            if (UserManager.IsInRole(userId, model.Role))
+            {
+                return Ok("User already have that role.");
+            }
+            else
+            {
+                string oldRole = UserManager.GetRoles(userId).FirstOrDefault();
+                UserManager.AddToRole(userId, model.Role);
+                UserManager.RemoveFromRole(userId, oldRole);
+            }
+
+            return Ok("Role successfully changed.");
+        }
+
+        // PUT api/Account/ChangeManagerBan
+        [HttpPut]
+        [Route("ChangeManagerBan")]
+        [Authorize(Roles = "Admin")]
+        public IHttpActionResult ChangeManagerBan(ManagerIdBindingModel model)
+        {
+            if(ModelState.IsValid)
+            {
+                BadRequest();
+            }
+
+            BanedManager banedManager = unitOfWork.BanedManagers.Find(bm => bm.User.Id == model.ManagerId).FirstOrDefault();
+
+            if (banedManager == null)
+            {
+                unitOfWork.BanedManagers.Add(new BanedManager() { User = UserManager.FindById(model.ManagerId) });
+            }
+            else
+            {
+                unitOfWork.BanedManagers.Remove(banedManager);
+            }
+
+            unitOfWork.Complete();
+
+            return Ok("Ban successfully changed.");
+        }
+
         // POST api/Account/Logout
         [Route("Logout")]
         public IHttpActionResult Logout()

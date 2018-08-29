@@ -14,6 +14,7 @@ namespace RentApp.Persistance.UnitOfWork
         IVehicleTypeRepository VehicleTypes { get; set; }
         IAccountForApproveRepository AccountsForApprove { get; set; }
         IServiceForApproveRepository ServicesForApprove { get; set; }
+        IBanedManagersRepository BanedManagers { get; set; }
 
         int Complete();
     }

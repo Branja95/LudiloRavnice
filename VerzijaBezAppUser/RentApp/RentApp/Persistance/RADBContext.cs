@@ -19,6 +19,7 @@ namespace RentApp.Persistance
         public DbSet<VehicleType> VehicleTypes { get; set; }
         public DbSet<AccountForApprove> AccountsForApprove { get; set; }
         public DbSet<ServiceForApprove> ServicesForApprove { get; set; }
+        public DbSet<BanedManager> BanedManagers { get; set; }
 
         public RADBContext() : base("name=RADB") { }
 

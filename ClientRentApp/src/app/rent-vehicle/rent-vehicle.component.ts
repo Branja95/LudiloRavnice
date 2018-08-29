@@ -40,9 +40,9 @@ export class RentVehicleComponent implements OnInit {
   deleteService(serviceId){
     this.rentVehicleService.deleteService(serviceId).subscribe(
       res => { 
-      console.log(res);
+      alert(res);
     }, error => {
-      alert(error);
+      alert(error.error.Message);
     });
     
   }
@@ -53,7 +53,7 @@ export class RentVehicleComponent implements OnInit {
       res => { 
           this.services = res as Array<RentVehicle>;
       }, error => {
-        alert(error);
+        alert(error.error.Message);
       });
   }
 }

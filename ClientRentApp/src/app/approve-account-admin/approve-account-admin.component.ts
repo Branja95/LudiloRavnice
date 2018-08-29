@@ -25,7 +25,8 @@ export class ApproveAccountAdminComponent implements OnInit {
       },
       error => {
         alert(error.error.Message);
-      })
+      }
+    );
   }
 
   approveUserAccount(id : number)
@@ -34,7 +35,7 @@ export class ApproveAccountAdminComponent implements OnInit {
     .subscribe(
       res => {
         console.log(res);
-        this.router.navigate(['/RentVehicle']);
+        this.router.navigate(['/Vehicle']);
       },
       error => {
         alert(error.error.Message);
@@ -47,7 +48,7 @@ export class ApproveAccountAdminComponent implements OnInit {
     .subscribe(
       res => {
         console.log(res);
-        this.router.navigate(['/RentVehicle']);
+        this.router.navigate(['/Vehicle']);
       },
       error => {
         alert(error.error.Message);

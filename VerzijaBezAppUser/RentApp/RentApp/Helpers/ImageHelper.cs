@@ -87,5 +87,19 @@ namespace RentApp.Helpers
                 File.Delete(filePath);
             }
         }
+
+        public static void DeleteImages(string images)
+        {
+            string[] imagesforDelete = images.Split(new string[] { ";_;" }, StringSplitOptions.None);
+
+            foreach (string imageId in imagesforDelete)
+            {
+                string filePath = HostingEnvironment.MapPath("~/App_Data/" + imageId);
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+            }
+        }
     }
 }
