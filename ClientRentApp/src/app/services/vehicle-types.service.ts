@@ -14,18 +14,18 @@ export class VehicleTypesService {
   constructor(private httpClient: HttpClient) { }
 
   getMethodVehicleType(vehicleTypeId): Observable<any>{
-    return this.httpClient.get("http://localhost:51680/api/VehicleTypes/GetVehicleType?vehicleTypeId=" + vehicleTypeId);
+    return this.httpClient.get("https://localhost:44365/api/VehicleTypes/GetVehicleType?vehicleTypeId=" + vehicleTypeId);
   }
 
   getMethodVehicleTypes(): Observable<any>{
-    return this.httpClient.get("http://localhost:51680/api/VehicleTypes/GetVehicleTypes");
+    return this.httpClient.get("https://localhost:44365/api/VehicleTypes/GetVehicleTypes");
   }
 
   putMethodVehicleTypes(vehicleType): Observable<any>{
-    return this.httpClient.put("http://localhost:51680/api/VehicleTypes/PutVehicleType", vehicleType);
+    return this.httpClient.put("https://localhost:44365/api/VehicleTypes/PutVehicleType", vehicleType);
   }
 
   postMethodVehicleTypes(vehicleTypeName): Observable<any>{
-    return this.httpClient.post("http://localhost:51680/api/VehicleTypes/PostVehicleType", vehicleTypeName);
+    return this.httpClient.post("https://localhost:44365/api/VehicleTypes/PostVehicleType", vehicleTypeName);
   }
 }

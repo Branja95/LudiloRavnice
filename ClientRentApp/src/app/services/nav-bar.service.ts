@@ -12,10 +12,10 @@ export class NavBarService {
   constructor(private httpClient: HttpClient) { }
 
   getMethodIsUserApproved() : Observable<any> {
-    return this.httpClient.get("http://localhost:51680/api/Account/IsUserApproved");
+    return this.httpClient.get("https://localhost:44365/api/Account/IsUserApproved");
   }
 
   postMethodLogout() {
-    return this.httpClient.post("http://localhost:51680/api/Account/Logout", "");
+    return this.httpClient.post("https://localhost:44365/api/Account/Logout", "");
   }
 }
