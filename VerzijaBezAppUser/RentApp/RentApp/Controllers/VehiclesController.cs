@@ -1,22 +1,32 @@
-﻿using System.Data.Entity.Infrastructure;
-using System.Net;
-using System.Web.Http;
-using System.Web.Http.Description;
-using RentApp.Models.Entities;
-using RentApp.Persistance.UnitOfWork;
+﻿using System;
 using System.Collections.Generic;
-using static RentApp.Models.VehicleBindingModel;
-using System.Web;
-using System;
 using System.Net.Http;
-using System.Web.Hosting;
-using System.IO;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Net.Http.Headers;
-using RentApp.Helpers;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.OAuth;
+using RentApp.Models;
+using RentApp.Models.Entities;
+using RentApp.Providers;
+using RentApp.Results;
+using RentApp.Persistance.UnitOfWork;
+using RentApp.Hubs;
 using System.Linq;
+using System.Collections;
+using RentApp.Helpers;
+using static RentApp.Models.ServiceBindingModel;
+using System.Runtime.Remoting.Messaging;
+using RentApp.Services;
+using System.Web.Http.Description;
+using System.Net;
+using System.Data.Entity.Infrastructure;
+using static RentApp.Models.VehicleBindingModel;
 using System.Data;
 
 namespace RentApp.Controllers
@@ -29,8 +39,13 @@ namespace RentApp.Controllers
 
         private readonly IUnitOfWork unitOfWork;
 
-        public VehiclesController(IUnitOfWork unitOfWork)
+        public ApplicationUserManager UserManager { get; private set; }
+
+
+        public VehiclesController(ApplicationUserManager userManager, 
+            IUnitOfWork unitOfWork)
         {
+            UserManager = userManager;
             this.unitOfWork = unitOfWork;
         }
 
@@ -158,6 +173,52 @@ namespace RentApp.Controllers
             return ImageHelper.LoadImage(imageId);
         }
 
+        // PUT: api/Vehicles/ChangeAvailability/5
+        [HttpPut]
+        [Route("ChangeAvailability")]
+        [Authorize(Roles = "Admin, Manager")]
+        public IHttpActionResult ChangeAvailability(VehicleIdBindingModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (UserManager.IsInRole(User.Identity.GetUserId(), "Manager") && !UserManager.IsInRole(User.Identity.GetUserId(), "Admin"))
+            {
+                IEnumerable<Service> services = unitOfWork.Services.GetAll();
+
+                foreach (Service service in services)
+                {
+                    if (service.Vehicles.Find(v => v.Id == model.VehicleId) != null)
+                    {
+                        if (service.Creator != User.Identity.GetUserId())
+                        {
+                            return BadRequest("U can't edit vehicle at this service.");
+                        }
+                    }
+                }
+            }
+
+            try
+            {
+                lock (lockObjectForVehicles)
+                {
+                    Vehicle vehicle = unitOfWork.Vehicles.Get(model.VehicleId);
+                    vehicle.IsAvailable = !vehicle.IsAvailable;
+                    unitOfWork.Vehicles.Update(vehicle);
+                    unitOfWork.Complete();
+                }
+            }
+            catch(DBConcurrencyException)
+            {
+                return NotFound();
+            }
+
+            return Ok("Availability changed successfully.");
+        }
+
+
         // PUT: api/Vehicles/PutVehicle/5
         [HttpPut]
         [Route("PutVehicle")]
@@ -196,6 +257,27 @@ namespace RentApp.Controllers
                 else
                 {
                     throw;
+                }
+            }
+
+            if(vehicle == null)
+            {
+                return BadRequest();
+            }
+
+            if (UserManager.IsInRole(User.Identity.GetUserId(), "Manager") && !UserManager.IsInRole(User.Identity.GetUserId(), "Admin"))
+            {
+                IEnumerable<Service> services = unitOfWork.Services.GetAll();
+
+                foreach (Service service in services)
+                {
+                    if (service.Vehicles.Find(v => v.Id == vehicle.Id) != null)
+                    {
+                        if (service.Creator != User.Identity.GetUserId())
+                        {
+                            return BadRequest("U can't edit vehicle at this service.");
+                        }
+                    }
                 }
             }
 
@@ -282,6 +364,16 @@ namespace RentApp.Controllers
                 return BadRequest("Images cannot be left blank\n");
             }
 
+            Service service = unitOfWork.Services.Get(model.ServiceId);
+
+            if (UserManager.IsInRole(User.Identity.GetUserId(), "Manager") && !UserManager.IsInRole(User.Identity.GetUserId(), "Admin"))
+            {
+                if (service.Creator != User.Identity.GetUserId())
+                {
+                    return BadRequest("U can't edit vehicle at this service.");
+                }
+            }
+
             string imageUris = string.Empty;
             int count = 0;
 
@@ -321,13 +413,12 @@ namespace RentApp.Controllers
                 VehicleType = vehicleType,
             };
 
-            Service service = unitOfWork.Services.Get(model.ServiceId);
-            service.Vehicles.Add(vehicle);
 
             try
             {
                 lock (lockObjectForVehicles)
                 {
+                    service.Vehicles.Add(vehicle);
                     unitOfWork.Services.Update(service);
                     unitOfWork.Vehicles.Add(vehicle);
                     unitOfWork.Complete();
@@ -348,10 +439,27 @@ namespace RentApp.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public IHttpActionResult DeleteVehicle([FromUri] int id)
         {
+
             Vehicle vehicle = unitOfWork.Vehicles.Get(id);
             if (vehicle == null)
             {
                 return NotFound();
+            }
+
+            if (UserManager.IsInRole(User.Identity.GetUserId(), "Manager") && !UserManager.IsInRole(User.Identity.GetUserId(), "Admin"))
+            {
+                IEnumerable<Service> services = unitOfWork.Services.GetAll();
+
+                foreach (Service service in services)
+                {
+                    if (service.Vehicles.Find(v => v.Id == vehicle.Id) != null)
+                    {
+                        if (service.Creator != User.Identity.GetUserId())
+                        {
+                            return BadRequest("U can't edit vehicle at this service.");
+                        }
+                    }
+                }
             }
 
             try
