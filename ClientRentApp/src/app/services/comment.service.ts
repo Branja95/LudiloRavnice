@@ -16,11 +16,11 @@ export class CommentService {
   constructor(private httpClient: HttpClient) { }
 
   getMethodGetComment(commentId : string){
-    return this.httpClient.get("http://localhost:51680/api/Comments/GetComment?id=" + commentId);
+    return this.httpClient.get("https://localhost:44365/api/Comments/GetComment?id=" + commentId);
   }
 
   getMethodGetUserName(commentId : string){
-    return this.httpClient.get("http://localhost:51680/api/Comments/GetUserName?commentId=" + commentId);
+    return this.httpClient.get("https://localhost:44365/api/Comments/GetUserName?commentId=" + commentId);
   }
 
   putMethodEditComment(comment): Observable<any> {
@@ -29,7 +29,7 @@ export class CommentService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.put("http://localhost:51680/api/Comments/PutComment?commentId=" + comment.Id, this.formData, { headers: headers });
+    let result = this.httpClient.put("https://localhost:44365/api/Comments/PutComment?commentId=" + comment.Id, this.formData, { headers: headers });
 
     this.formData = new FormData();
 
@@ -43,7 +43,7 @@ export class CommentService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result =  this.httpClient.post("http://localhost:51680/api/Comments/PostComment", this.formData, { headers: headers }); 
+    let result =  this.httpClient.post("https://localhost:44365/api/Comments/PostComment", this.formData, { headers: headers }); 
     
     this.formData = new FormData();
 
@@ -52,7 +52,7 @@ export class CommentService {
 
   getMethodUsername(commentId): Observable<any>{
     console.log(commentId);
-    let result = this.httpClient.get("http://localhost:51680/api/Comments/UserName?commentId=" + commentId); 
+    let result = this.httpClient.get("https://localhost:44365/api/Comments/UserName?commentId=" + commentId); 
     console.log(result);
     return result;
   }

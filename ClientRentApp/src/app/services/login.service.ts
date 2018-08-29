@@ -19,6 +19,6 @@ export class LoginService {
       
       headers = headers.append('Content-type', 'application/x-www-form-urlencoded');
       
-      return this.httpClient.post('http://localhost:51680/oauth/token',`username=${user.email}&password=${user.password}&grant_type=password`, {"headers": headers}) as Observable<any>
+      return this.httpClient.post('https://localhost:44365/oauth/token',`username=${user.email}&password=${user.password}&grant_type=password`, {"headers": headers}) as Observable<any>
   }
 }

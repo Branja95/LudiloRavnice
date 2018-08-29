@@ -24,7 +24,7 @@ export class RentVehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'multipart/form-data')
 
-    let result = this.httpClient.post("http://localhost:51680/api/Services/PostService",this.formData, { headers: headers });
+    let result = this.httpClient.post("https://localhost:44365/api/Services/PostService",this.formData, { headers: headers });
 
     this.formData = new FormData();
 
@@ -32,35 +32,35 @@ export class RentVehicleService {
   }
 
   getService(serviceId): Observable<any>{
-    return this.httpClient.get("http://localhost:51680/api/Services/GetService?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:44365/api/Services/GetService?serviceId=" + serviceId);
   }
 
   getMethodServices(): Observable<any> {
-    return this.httpClient.get("http://localhost:51680/api/Services/GetServices")
+    return this.httpClient.get("https://localhost:44365/api/Services/GetServices")
   }
 
   getMethodComments(serviceId : string){
-    return this.httpClient.get("http://localhost:51680/api/Services/GetComments?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:44365/api/Services/GetComments?serviceId=" + serviceId);
   }
 
   getMethodRatings(serviceId : string){
-    return this.httpClient.get("http://localhost:51680/api/Services/GetRatings?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:44365/api/Services/GetRatings?serviceId=" + serviceId);
   }
 
   getMethodServicesForApproves(): Observable<any> {
-    return this.httpClient.get("http://localhost:51680/api/Services/ServicesForApproves");
+    return this.httpClient.get("https://localhost:44365/api/Services/ServicesForApproves");
   }
 
   getMethodHasUserCommented(serviceId : string){
-    return this.httpClient.get("http://localhost:51680/api/Services/HasUserCommented?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:44365/api/Services/HasUserCommented?serviceId=" + serviceId);
   }
   
   getMethodHasUserRated(serviceId : string){
-    return this.httpClient.get("http://localhost:51680/api/Services/HasUserRated?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:44365/api/Services/HasUserRated?serviceId=" + serviceId);
   }
   
   deleteService(serviceId): Observable<any>{
-    return this.httpClient.delete("http://localhost:51680/api/Services/DeleteService?serviceId=" + serviceId);
+    return this.httpClient.delete("https://localhost:44365/api/Services/DeleteService?serviceId=" + serviceId);
   }
 
   editService(serviceId, service, uploadedImage: File): Observable<any>{
@@ -73,7 +73,7 @@ export class RentVehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.put("http://localhost:51680/api/Services/PutService?serviceId=" + serviceId, this.formData, { headers: headers });
+    let result = this.httpClient.put("https://localhost:44365/api/Services/PutService?serviceId=" + serviceId, this.formData, { headers: headers });
 
     this.formData = new FormData();
 
@@ -81,11 +81,11 @@ export class RentVehicleService {
   }
 
   postMethodApproveService(id : number) {
-    return this.httpClient.post("http://localhost:51680/api/Services/ApproveService", id);
+    return this.httpClient.post("https://localhost:44365/api/Services/ApproveService", id);
   }
 
   postMethodRejectService(id : number) {
-    return this.httpClient.post("http://localhost:51680/api/Services/RejectService", id);
+    return this.httpClient.post("https://localhost:44365/api/Services/RejectService", id);
   }
   
 }

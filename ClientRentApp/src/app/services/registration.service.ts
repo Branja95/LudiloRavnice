@@ -16,7 +16,7 @@ export class RegistrationService {
   constructor(private httpClient: HttpClient) { }
 
   postMethodRegistration(user): Observable<any> {
-    return this.httpClient.post("http://localhost:51680/api/Account/Register", user)
+    return this.httpClient.post("https://localhost:44365/api/Account/Register", user)
   }
 
   postMethodApproveAccount(uploadedImage: File): Observable<any> {
@@ -26,7 +26,7 @@ export class RegistrationService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.post("http://localhost:51680/api/Account/FinishAccount", this.formData, { headers: headers });
+    let result = this.httpClient.post("https://localhost:44365/api/Account/FinishAccount", this.formData, { headers: headers });
     
     this.formData = new FormData();
 
