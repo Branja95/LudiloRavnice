@@ -456,7 +456,7 @@ namespace RentApp.Controllers
             }
             catch(DBConcurrencyException)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             NotificationHub.NewRentVehicleServiceToApprove(unitOfWork.Services.Find(s => !s.IsApproved).Count());

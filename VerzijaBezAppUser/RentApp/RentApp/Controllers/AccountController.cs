@@ -21,6 +21,7 @@ using System.Linq;
 using System.Collections;
 using RentApp.Helpers;
 using RentApp.Services;
+using System.Data;
 
 namespace RentApp.Controllers
 {
@@ -28,6 +29,8 @@ namespace RentApp.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
+        private static object lockObjectForAccounts = new object();
+
         private const string LocalLoginProvider = "Local";
         private string validationErrorMessage = "";
 
@@ -154,9 +157,12 @@ namespace RentApp.Controllers
             }
             else
             {
-                string oldRole = UserManager.GetRoles(userId).FirstOrDefault();
-                UserManager.AddToRole(userId, model.Role);
-                UserManager.RemoveFromRole(userId, oldRole);
+                lock (lockObjectForAccounts)
+                {
+                    string oldRole = UserManager.GetRoles(userId).FirstOrDefault();
+                    UserManager.AddToRole(userId, model.Role);
+                    UserManager.RemoveFromRole(userId, oldRole);
+                }
             }
 
             return Ok("Role successfully changed.");
@@ -173,18 +179,21 @@ namespace RentApp.Controllers
                 BadRequest();
             }
 
-            BanedManager banedManager = unitOfWork.BanedManagers.Find(bm => bm.User.Id == model.ManagerId).FirstOrDefault();
-
-            if (banedManager == null)
+            lock (unitOfWork)
             {
-                unitOfWork.BanedManagers.Add(new BanedManager() { User = UserManager.FindById(model.ManagerId) });
-            }
-            else
-            {
-                unitOfWork.BanedManagers.Remove(banedManager);
-            }
+                BanedManager banedManager = unitOfWork.BanedManagers.Find(bm => bm.User.Id == model.ManagerId).FirstOrDefault();
+            
+                if (banedManager == null)
+                {
+                    unitOfWork.BanedManagers.Add(new BanedManager() { User = UserManager.FindById(model.ManagerId) });
+                }
+                else
+                {
+                    unitOfWork.BanedManagers.Remove(banedManager);
+                }
 
-            unitOfWork.Complete();
+                unitOfWork.Complete();
+            }
 
             return Ok("Ban successfully changed.");
         }
@@ -599,8 +608,18 @@ namespace RentApp.Controllers
                 return GetErrorResult(updateUserResult);
             }
 
-            unitOfWork.AccountsForApprove.Remove(accountForApprove);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForAccounts)
+                {
+                    unitOfWork.AccountsForApprove.Remove(accountForApprove);
+                    unitOfWork.Complete();
+                }
+            }
+            catch(DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok("Account Successfully approved.");
         }
@@ -634,8 +653,18 @@ namespace RentApp.Controllers
                 return GetErrorResult(updateUserResult);
             }
 
-            unitOfWork.AccountsForApprove.Remove(accountForApprove);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForAccounts)
+                {
+                    unitOfWork.AccountsForApprove.Remove(accountForApprove);
+                    unitOfWork.Complete();
+                }
+            }
+            catch (DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok("Account Successfully rejected.");
         }

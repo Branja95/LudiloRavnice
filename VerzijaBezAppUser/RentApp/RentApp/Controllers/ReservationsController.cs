@@ -26,6 +26,7 @@ using System.Web.Http.Description;
 using System.Net;
 using System.Data.Entity.Infrastructure;
 using static RentApp.Models.ReservationBindingModel;
+using System.Data;
 
 namespace RentApp.Controllers
 {
@@ -33,6 +34,8 @@ namespace RentApp.Controllers
     [RoutePrefix("api/Reservations")]
     public class ReservationsController : ApiController
     {
+        private static object lockObjectForReservations = new object();
+
         private readonly IUnitOfWork unitOfWork;
 
         public ReservationsController(ApplicationUserManager userManager, 
@@ -140,15 +143,6 @@ namespace RentApp.Controllers
                 BadRequest("Reservation end date and time must be greater than current date and time.");
             }
 
-            IEnumerable<Reservation> vehicleReservations = unitOfWork.Reservations.Find(r => r.Id == vehicle.Id);
-
-            int numOfexcessiveReservations = vehicleReservations.Where(r => (r.ReservationStart <= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart <= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd)).Count();
-
-            if(numOfexcessiveReservations > 0)
-            {
-                BadRequest("The vehicle was rented in a given period.");
-            }
-
             BranchOffice rentBranchOffice = unitOfWork.BranchOffices.Get(model.RentBranchOfficeId);
 
             if (rentBranchOffice == null)
@@ -164,20 +158,40 @@ namespace RentApp.Controllers
                 BadRequest("Non-existent return branch office.");
             }
 
-            RAIdentityUser user = UserManager.FindById(User.Identity.GetUserId());
-
-            Reservation reservation = new Reservation()
+            lock (lockObjectForReservations)
             {
-                Vehicle = vehicle,
-                UserId = user.Id,
-                ReservationStart = model.ReservationStart,
-                ReservationEnd = model.ReservationEnd,
-                RentBranchOffice = rentBranchOffice,
-                ReturnBranchOffice = returnBranchOffice
-            };
+                IEnumerable<Reservation> vehicleReservations = unitOfWork.Reservations.Find(r => r.Id == vehicle.Id);
 
-            unitOfWork.Reservations.Add(reservation);
-            unitOfWork.Complete();
+                int numOfexcessiveReservations = vehicleReservations.Where(r => (r.ReservationStart <= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart <= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd)).Count();
+
+                if (numOfexcessiveReservations > 0)
+                {
+                    BadRequest("The vehicle was rented in a given period.");
+                }
+
+                RAIdentityUser user = UserManager.FindById(User.Identity.GetUserId());
+
+                Reservation reservation = new Reservation()
+                {
+                    Vehicle = vehicle,
+                    UserId = user.Id,
+                    ReservationStart = model.ReservationStart,
+                    ReservationEnd = model.ReservationEnd,
+                    RentBranchOffice = rentBranchOffice,
+                    ReturnBranchOffice = returnBranchOffice
+                };
+
+                try
+                {
+                    unitOfWork.Reservations.Add(reservation);
+                    unitOfWork.Complete();
+                }
+                catch(DBConcurrencyException)
+                {
+                    return NotFound();
+                }
+
+            }
 
             return Ok("Reservation successfully created.");
         }

@@ -12,6 +12,7 @@ using static RentApp.Models.RatingBindingModel;
 using Microsoft.AspNet.Identity;
 using System.Threading.Tasks;
 using System;
+using System.Data;
 
 namespace RentApp.Controllers
 {
@@ -19,6 +20,8 @@ namespace RentApp.Controllers
     [RoutePrefix("api/Ratings")]
     public class RatingsController : ApiController
     {
+        private static object lockObjectForRaitings = new object();
+
         private readonly IUnitOfWork unitOfWork;
         public ApplicationUserManager UserManager { get; private set; }
 
@@ -69,8 +72,18 @@ namespace RentApp.Controllers
 
             editRating.Value = rating.Value;
 
-            unitOfWork.Ratings.Update(editRating);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForRaitings)
+                {
+                    unitOfWork.Ratings.Update(editRating);
+                    unitOfWork.Complete();
+                }
+            }
+            catch (DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok(HttpStatusCode.OK);
         }
@@ -106,10 +119,16 @@ namespace RentApp.Controllers
                 Value = model.Value
             };
 
-            service.Ratings.Add(rating);
-
-            unitOfWork.Ratings.Add(rating);
-            unitOfWork.Complete();
+            try
+            {
+                service.Ratings.Add(rating);
+                unitOfWork.Ratings.Add(rating);
+                unitOfWork.Complete();
+            }
+            catch(DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok("Service successfully rated.");
         }

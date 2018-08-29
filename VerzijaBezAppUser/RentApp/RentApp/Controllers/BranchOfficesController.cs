@@ -26,7 +26,7 @@ using System.Web.Http.Description;
 using System.Net;
 using System.Data.Entity.Infrastructure;
 using static RentApp.Models.BranchOfficeBindingModel;
-
+using System.Data;
 
 namespace RentApp.Controllers
 {
@@ -34,6 +34,8 @@ namespace RentApp.Controllers
     [RoutePrefix("api/BranchOffices")]
     public class BranchOfficesController : ApiController
     {
+        private static object lockObjectForBranchOffices = new object();
+
         private string validationErrorMessage;
         private readonly IUnitOfWork unitOfWork;
         private readonly ISMTPService SMTPService;
@@ -179,8 +181,18 @@ namespace RentApp.Controllers
             branchOffice.Longitude = model.Longitude;
             branchOffice.Image = ImageHelper.SaveImageToServer(httpRequest.Files[0]);
 
-            unitOfWork.BranchOffices.Update(branchOffice);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForBranchOffices)
+                {
+                    unitOfWork.BranchOffices.Update(branchOffice);
+                    unitOfWork.Complete();
+                }
+            }
+            catch(DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok("BranchOffice successfully edited");
         }
@@ -229,12 +241,22 @@ namespace RentApp.Controllers
                 Image = ImageHelper.SaveImageToServer(httpRequest.Files[0])
             };
 
-            service.BranchOfficces.Add(branchOffice);
+            try
+            {
+                lock (lockObjectForBranchOffices)
+                {
+                    service.BranchOfficces.Add(branchOffice);
 
-            unitOfWork.Services.Update(service);
+                    unitOfWork.Services.Update(service);
 
-            unitOfWork.BranchOffices.Add(branchOffice);
-            unitOfWork.Complete();
+                    unitOfWork.BranchOffices.Add(branchOffice);
+                    unitOfWork.Complete();
+                }
+            }
+            catch(DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok("Branch office successfully created");
         }
@@ -267,12 +289,21 @@ namespace RentApp.Controllers
                 }
             }
 
-            service.BranchOfficces.Remove(branchOffice);
-
             ImageHelper.DeleteImage(branchOffice.Image);
 
-            unitOfWork.BranchOffices.Remove(branchOffice);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForBranchOffices)
+                {
+                    service.BranchOfficces.Remove(branchOffice);
+                    unitOfWork.BranchOffices.Remove(branchOffice);
+                    unitOfWork.Complete();
+                }
+            }
+            catch(DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok("Branch office successfully deleted.");
         }

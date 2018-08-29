@@ -17,6 +17,7 @@ using System.Net.Http.Headers;
 using RentApp.Helpers;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Data;
 
 namespace RentApp.Controllers
 {
@@ -24,6 +25,8 @@ namespace RentApp.Controllers
     [RoutePrefix("api/Vehicles")]
     public class VehiclesController : ApiController
     {
+        private static object lockObjectForVehicles = new object();
+
         private readonly IUnitOfWork unitOfWork;
 
         public VehiclesController(IUnitOfWork unitOfWork)
@@ -241,8 +244,11 @@ namespace RentApp.Controllers
 
             try
             {
-                unitOfWork.Vehicles.Update(vehicle);
-                unitOfWork.Complete();
+                lock (lockObjectForVehicles)
+                {
+                    unitOfWork.Vehicles.Update(vehicle);
+                    unitOfWork.Complete();
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -318,9 +324,19 @@ namespace RentApp.Controllers
             Service service = unitOfWork.Services.Get(model.ServiceId);
             service.Vehicles.Add(vehicle);
 
-            unitOfWork.Services.Update(service);
-            unitOfWork.Vehicles.Add(vehicle);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForVehicles)
+                {
+                    unitOfWork.Services.Update(service);
+                    unitOfWork.Vehicles.Add(vehicle);
+                    unitOfWork.Complete();
+                }
+            }
+            catch(DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok("Vehicle successfully created.");
 
@@ -338,8 +354,18 @@ namespace RentApp.Controllers
                 return NotFound();
             }
 
-            unitOfWork.Vehicles.Remove(vehicle);
-            unitOfWork.Complete();
+            try
+            {
+                lock (lockObjectForVehicles)
+                {
+                    unitOfWork.Vehicles.Remove(vehicle);
+                    unitOfWork.Complete();
+                }
+            }
+            catch(DBConcurrencyException)
+            {
+                return NotFound();
+            }
 
             return Ok($"Vehicle with id { vehicle.Id } successfully deleted.");
         }
