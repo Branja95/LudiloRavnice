@@ -70,8 +70,8 @@ export class VehicleService {
     return this.httpClient.put("https://localhost:44365/api/Vehicles/ChangeAvailability", this.formData, { headers: headers });
   }
 
-  editVehicle(vehicleId, vehicle, uploadedImages: FileList): Observable<any>{
-    this.formData.append('id', vehicleId);
+  createVehicle(vehicle, uploadedImages: FileList): Observable<any> {
+    this.formData.append('serviceId', vehicle.serviceId);
     this.formData.append('vehicleTypeId', vehicle.vehicleType);
     this.formData.append('model', vehicle.model);
     this.formData.append('manufactor', vehicle.manufactor);
@@ -85,9 +85,13 @@ export class VehicleService {
     });
 
     let headers = new HttpHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.post("https://localhost:44365/api/Vehicles/PostVehicle", this.formData, { headers: headers });
+    let result = this.httpClient.post("https://localhost:44365/api/Vehicles/PostVehicle", this.formData, { headers: headers });
+
+    this.formData = new FormData();
+
+    return result;
   }
 
   editVehicle(vehicleId, vehicle, uploadedImages: FileList): Observable<any>{
