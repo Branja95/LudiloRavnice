@@ -47,6 +47,13 @@ namespace RentApp.Models
             public string IsAvailable { get; set; }
         }
 
+        public class VehicleIdBindingModel
+        {
+            [Required]
+            [Display(Name = "VehicleId")]
+            public long VehicleId { get; set; }
+        }
+
         public class EditVehicleBindingModel
         {
             [Required]

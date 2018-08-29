@@ -42,7 +42,7 @@ export class ServiceVehiclesComponent implements OnInit {
           this.vehicles = res as Array<Vehicle>;
           console.log(this.vehicles);
       }, error => {
-        alert(error);
+        alert(error.error.Message);
       }); 
   }
 
@@ -54,11 +54,22 @@ export class ServiceVehiclesComponent implements OnInit {
   onDelete(id){
     this.vehicleService.deleteVehicle(id)
     .subscribe(
-      data => {
-        alert(data);
+      res => {
+        alert(res);
       },
       error => {
-        alert(error);
+        alert(error.error.Message);
+      })
+  }
+
+  onChange(id){
+    this.vehicleService.changeAvailability(id)
+    .subscribe(
+      res => {
+        alert(res);
+      },
+      error => {
+        alert(error.error.Message);
       })
   }
 

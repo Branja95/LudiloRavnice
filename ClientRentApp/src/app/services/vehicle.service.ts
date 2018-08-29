@@ -84,6 +84,17 @@ export class VehicleService {
     return this.httpClient.delete("http://localhost:51680/api/Vehicles/DeleteVehicle?id=" + vehicleId);
   }
 
+  changeAvailability(vehicleId){
+
+    this.formData = new FormData();
+    this.formData.append('vehicleId', vehicleId);
+
+    let headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return this.httpClient.put("http://localhost:51680/api/Vehicles/ChangeAvailability", this.formData, { headers: headers });
+  }
+
   editVehicle(vehicleId, vehicle, uploadedImages: FileList): Observable<any>{
     this.formData.append('id', vehicleId);
     this.formData.append('vehicleTypeId', vehicle.vehicleType);
@@ -98,7 +109,7 @@ export class VehicleService {
     });
 
     let headers = new HttpHeaders();
-    headers.append('Content-Type', 'application/json')
+    headers.append('Content-Type', 'application/json');
 
     let result = this.httpClient.put("http://localhost:51680/api/Vehicles/PutVehicle?id=" + vehicleId, this.formData, { headers: headers });
 
