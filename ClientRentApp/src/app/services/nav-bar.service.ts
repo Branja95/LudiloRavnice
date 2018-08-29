@@ -18,4 +18,12 @@ export class NavBarService {
   postMethodLogout() {
     return this.httpClient.post("https://localhost:44365/api/Account/Logout", "");
   }
+
+  getMethodAccountForApproval(){
+    return this.httpClient.get("https://localhost:44365/api/Account/AccountForApproval");
+  }
+
+  getMethodServiceForApproval(){
+    return this.httpClient.get("https://localhost:44365/api/Account/ServiceForApproval");
+  }
 }

@@ -29,12 +29,14 @@ export class NavBarComponent implements OnInit {
   }
 
   ngOnInit() {
+
     this.username = null;
     this.role = null;
-    this.accountToApprove = 0;
-    this.showNotificationsAccount = false;
     this.serviceToApprove = 0;
     this.showNotificationsService = false;
+    this.accountToApprove = 0;
+    this.showNotificationsAccount = false;
+
   }
 
   private subscribeToAccountEvents(): void {  
@@ -94,7 +96,8 @@ export class NavBarComponent implements OnInit {
       if(!this.username)
       {
         this.username = localStorage.username;
-        this.startHubConnection();
+        this.startHubConnection();      
+        //this.getNumOfAccAndServiceForApproval();       
       }
       return true;
     }
@@ -108,6 +111,38 @@ export class NavBarComponent implements OnInit {
       this.subscribeToAccountEvents();  
       this.subscribeToServiceEvents();
       this.canSendMessage = this.notificationService.connectionExists;  
+    }
+  }
+
+  getNumOfAccAndServiceForApproval(){
+    if(localStorage.role == 'Admin'){
+      this.navBarService.getMethodAccountForApproval()
+      .subscribe(
+        res => {
+          console.log(res);
+          this.accountToApprove = res as number;
+          if(this.accountToApprove > 0){
+            this.showNotificationsAccount = true;
+          }
+        },
+        error => {
+          alert(error.error.Message);
+        }
+      );
+      
+      this.navBarService.getMethodServiceForApproval()
+      .subscribe(
+        res => {
+          console.log(res);
+          this.serviceToApprove = res as number;
+          if(this.serviceToApprove > 0){
+            this.showNotificationsService = true;
+          }
+        },
+        error => {
+          alert(error.error.Message);
+        }
+      );
     }
   }
 

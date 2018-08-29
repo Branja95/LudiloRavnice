@@ -100,6 +100,24 @@ namespace RentApp.Controllers
             return Ok(usersRoles);
         }
 
+        // GET api/Account/AccountForApproval
+        [HttpGet]
+        [Route("AccountForApproval")]
+        [Authorize(Roles = "Admin")]
+        public IHttpActionResult AccountForApproval()
+        {
+            return Ok(unitOfWork.AccountsForApprove.GetAll().Count());
+        }
+
+        // GET api/Account/ServiceForApproval
+        [HttpGet]
+        [Route("ServiceForApproval")]
+        [Authorize(Roles = "Admin")]
+        public IHttpActionResult ServiceForApproval()
+        {
+            return Ok(unitOfWork.ServicesForApprove.GetAll().Count());
+        }
+
         // GET api/Account/GetManagers
         [HttpGet]
         [Route("GetManagers")]
@@ -485,11 +503,12 @@ namespace RentApp.Controllers
                 }
 
             }
-            catch(Exception e)
+            catch(DBConcurrencyException)
             {
-
+                return BadRequest();
             }
-            
+
+            NotificationHub.NewUserAccountToApprove(unitOfWork.AccountsForApprove.GetAll().Count());
 
             return Ok("Account successfully created.");
         }
