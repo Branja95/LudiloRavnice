@@ -16,47 +16,47 @@ export class VehicleService {
   constructor(private httpClient: HttpClient) { }
 
   getVehicleType(vehhicleTypeId):Observable<any>{
-    return this.httpClient.get("https://localhost:44365/api/VehicleTypes/" + vehhicleTypeId);
+    return this.httpClient.get("https://localhost:5001/api/VehicleTypes/" + vehhicleTypeId);
   }
 
   getVehicleTypes(): Observable<any> {
-    return this.httpClient.get("https://localhost:44365/api/VehicleTypes/GetVehicleTypes")
+    return this.httpClient.get("https://localhost:5001/api/VehicleTypes/GetVehicleTypes")
   }
 
   getVehicles(): Observable<any> {
-    return this.httpClient.get("https://localhost:44365/api/Vehicles/GetVehicles")
+    return this.httpClient.get("https://localhost:5001/api/Vehicles/GetVehicles")
   }
 
   getServiceVehicles(serviceId): Observable<any> {
-    return this.httpClient.get("https://localhost:44365/api/Services/GetVehicles?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:5001/api/Services/GetVehicles?serviceId=" + serviceId);
   }
 
   getVehicle(vehicleId): Observable<any>{
-    return this.httpClient.get("https://localhost:44365/api/Vehicles/GetVehicle?id=" + vehicleId);
+    return this.httpClient.get("https://localhost:5001/api/Vehicles/GetVehicle?id=" + vehicleId);
   } 
   
   getNumberOfVehicles(): Observable<any>{
-    return this.httpClient.get("https://localhost:44365/api/Vehicles/GetNumberOfVehicles");
+    return this.httpClient.get("https://localhost:5001/api/Vehicles/GetNumberOfVehicles");
   }
 
   getPagedVehicles(pageIndex, pageSize): Observable<any>{
-    return this.httpClient.get("https://localhost:44365/api/Vehicles/GetPagedVehicles?pageIndex=" + pageIndex + "&pageSize=" + pageSize);
+    return this.httpClient.get("https://localhost:5001/api/Vehicles/GetPagedVehicles?pageIndex=" + pageIndex + "&pageSize=" + pageSize);
   }
 
   getSearchPagedVehicles(pageIndex, pageSize, vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel): Observable<any>{
-    return this.httpClient.get("https://localhost:44365/api/Vehicles/GetSearchPagedVehicles?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&vehicleTypeId=" + vehicleTypeId + "&vehiclePriceFrom=" + vehiclePriceFrom + "&vehiclePriceTo=" + vehiclePriceTo + "&vehicleManufactor=" + vehicleManufactor + "&vehicleModel=" + vehicleModel);
+    return this.httpClient.get("https://localhost:5001/api/Vehicles/GetSearchPagedVehicles?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&vehicleTypeId=" + vehicleTypeId + "&vehiclePriceFrom=" + vehiclePriceFrom + "&vehiclePriceTo=" + vehiclePriceTo + "&vehicleManufactor=" + vehicleManufactor + "&vehicleModel=" + vehicleModel);
   }
 
   searchNumberOfVehicles(vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel): Observable<any>{
-    return this.httpClient.get("https://localhost:44365/api/Vehicles/SearchNumberOfVehicles?vehicleTypeId=" + vehicleTypeId + "&vehiclePriceFrom=" + vehiclePriceFrom + "&vehiclePriceTo=" + vehiclePriceTo + "&vehicleManufactor=" + vehicleManufactor + "&vehicleModel=" + vehicleModel);   
+    return this.httpClient.get("https://localhost:5001/api/Vehicles/SearchNumberOfVehicles?vehicleTypeId=" + vehicleTypeId + "&vehiclePriceFrom=" + vehiclePriceFrom + "&vehiclePriceTo=" + vehiclePriceTo + "&vehicleManufactor=" + vehicleManufactor + "&vehicleModel=" + vehicleModel);   
   }
 
   searchVehicles(vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel): Observable<any>{
-    return this.httpClient.get("https://localhost:44365/api/Vehicles/SearchVehicles?vehicleTypeId=" + vehicleTypeId + "&vehiclePriceFrom=" + vehiclePriceFrom + "&vehiclePriceTo=" + vehiclePriceTo + "&vehicleManufactor=" + vehicleManufactor + "&vehicleModel=" + vehicleModel);   
+    return this.httpClient.get("https://localhost:5001/api/Vehicles/SearchVehicles?vehicleTypeId=" + vehicleTypeId + "&vehiclePriceFrom=" + vehiclePriceFrom + "&vehiclePriceTo=" + vehiclePriceTo + "&vehicleManufactor=" + vehicleManufactor + "&vehicleModel=" + vehicleModel);   
   }
 
   deleteVehicle(vehicleId): Observable<any> {
-    return this.httpClient.delete("https://localhost:44365/api/Vehicles/DeleteVehicle?id=" + vehicleId);
+    return this.httpClient.delete("https://localhost:5001/api/Vehicles/DeleteVehicle?id=" + vehicleId);
   }
 
   changeAvailability(vehicleId){
@@ -67,7 +67,7 @@ export class VehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return this.httpClient.put("https://localhost:44365/api/Vehicles/ChangeAvailability", this.formData, { headers: headers });
+    return this.httpClient.put("https://localhost:5001/api/Vehicles/ChangeAvailability", this.formData, { headers: headers });
   }
 
   createVehicle(vehicle, uploadedImages: FileList): Observable<any> {
@@ -87,7 +87,7 @@ export class VehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    let result = this.httpClient.post("https://localhost:44365/api/Vehicles/PostVehicle", this.formData, { headers: headers });
+    let result = this.httpClient.post("https://localhost:5001/api/Vehicles/PostVehicle", this.formData, { headers: headers });
 
     this.formData = new FormData();
 
@@ -112,7 +112,7 @@ export class VehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.put("https://localhost:44365/api/Vehicles/PutVehicle?id=" + vehicleId, this.formData, { headers: headers });
+    return this.httpClient.put("https://localhost:5001/api/Vehicles/PutVehicle?id=" + vehicleId, this.formData, { headers: headers });
   }
 
 }

@@ -18,7 +18,6 @@ export class BanManagersComponent implements OnInit {
     .subscribe(
       res => {
         this.managers = res;
-        console.log(res);
       },
       error => {
         alert(error.error.Message);
@@ -27,15 +26,13 @@ export class BanManagersComponent implements OnInit {
   }
 
   changeBan(managerId){
-    console.log(managerId);
     this.accountService.putMethodManagers(managerId)
     .subscribe(
       res => {
         this.managers = res;
-        console.log(res);
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       }
     );
   }

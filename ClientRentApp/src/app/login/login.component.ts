@@ -22,10 +22,12 @@ export class LoginComponent implements OnInit {
     {
       this.loginService.postMethodLogin(loginUser).subscribe(
         res => {
+          //console.log(res)
           this.saveToken(res);
           this.goToDefault();
         },
         err => {
+          console.log('1', err)
           alert("Invalid username or/and password.")
         }
       );
@@ -34,24 +36,14 @@ export class LoginComponent implements OnInit {
 
   saveToken(data) : void {
 
-    //console.log(res.access_token);
-
     let jwt = data.access_token;
-
     let jwtData = jwt.split('.')[1]
-
     let decodedJwtJsonData = window.atob(jwtData)
     let decodedJwtData = JSON.parse(decodedJwtJsonData)
-
+    
     let role = decodedJwtData.role
     let uniqueName = decodedJwtData.unique_name
     let nameid = decodedJwtData.nameid;
-
-    console.log(decodedJwtData)
-    //console.log('jwtData: ' + jwtData)
-    //console.log('decodedJwtJsonData: ' + decodedJwtJsonData)
-    //console.log('decodedJwtData: ' + decodedJwtData)
-    //console.log('Role ' + role)
 
     localStorage.setItem('jwt', jwt)
     localStorage.setItem('role', role);

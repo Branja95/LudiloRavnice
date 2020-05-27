@@ -7,6 +7,6 @@ export class AuthGuard implements CanActivate {
   constructor() {}
 
   canActivate() {
-    return localStorage.role == 'Admin' || localStorage.role == 'Manager' || localStorage.role == 'AppUser';
+    return localStorage.role == 'Administrator' || localStorage.role == 'Manager' || localStorage.role == 'Client';
   }
 }

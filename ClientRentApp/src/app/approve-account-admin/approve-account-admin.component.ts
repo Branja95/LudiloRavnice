@@ -19,7 +19,6 @@ export class ApproveAccountAdminComponent implements OnInit {
     .subscribe(
       res => {
         this.users = res;
-        console.log(res);
       },
       error => {
         alert(error.error.Message);

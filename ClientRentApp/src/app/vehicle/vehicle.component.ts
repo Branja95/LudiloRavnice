@@ -197,7 +197,7 @@ export class VehicleComponent implements OnInit {
     }
     else
     {
-      if(localStorage.role == "Manager" || localStorage.role == "Admin")
+      if(localStorage.role == "Manager" || localStorage.role == "Administrator")
       {
         return true;
       }

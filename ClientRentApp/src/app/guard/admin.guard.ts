@@ -7,6 +7,6 @@ export class AdminGuard implements CanActivate {
   constructor() {}
 
   canActivate() {
-    return localStorage.role == 'Admin';
+    return localStorage.role == 'Administrator';
   }
 }

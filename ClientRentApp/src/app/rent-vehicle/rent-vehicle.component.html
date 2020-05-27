@@ -6,7 +6,7 @@
         <br/>
           <div class="inline-block">
             <div *ngFor='let rentVehicle of services'>
-                <img src='https://localhost:44365/api/Services/LoadImage?imageId={{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
+                <img src='https://localhost:5001/api/Services/LoadImage?imageId={{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
                 <label>Email Address:</label> {{rentVehicle.EmailAddress}}<br/>
                 <label>Description:</label> {{rentVehicle.Description}}<br/>
                 <br/>

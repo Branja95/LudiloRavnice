@@ -29,7 +29,7 @@ export class ReservationService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.post("https://localhost:44365/api/Reservations/PostReservation", this.formData, { headers: headers });
+    return this.httpClient.post("https://localhost:5001/api/Reservations/PostReservation", this.formData, { headers: headers });
   }
 
 }

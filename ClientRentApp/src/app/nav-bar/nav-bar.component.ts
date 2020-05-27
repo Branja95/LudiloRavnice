@@ -93,15 +93,15 @@ export class NavBarComponent implements OnInit {
       if(!this.username)
       {
         this.username = localStorage.username;
-        this.startHubConnection();      
-        //this.getNumOfAccAndServiceForApproval();       
+        //this.startHubConnection();      
+        this.getNumOfAccAndServiceForApproval();       
       }
       return true;
     }
   }
 
   private startHubConnection() : void {
-    if(localStorage.role == 'Admin')
+    if(localStorage.role == 'Administrator')
     {
       this.notificationService.connection.qs = { "token" : `Bearer ${localStorage.jwt}` };
       this.notificationService.startConnection()
@@ -112,11 +112,10 @@ export class NavBarComponent implements OnInit {
   }
 
   getNumOfAccAndServiceForApproval(){
-    if(localStorage.role == 'Admin'){
+    if(localStorage.role == 'Administrator'){
       this.navBarService.getMethodAccountForApproval()
       .subscribe(
         res => {
-          console.log(res);
           this.accountToApprove = res as number;
           if(this.accountToApprove > 0){
             this.showNotificationsAccount = true;
@@ -130,7 +129,6 @@ export class NavBarComponent implements OnInit {
       this.navBarService.getMethodServiceForApproval()
       .subscribe(
         res => {
-          console.log(res);
           this.serviceToApprove = res as number;
           if(this.serviceToApprove > 0){
             this.showNotificationsService = true;
@@ -144,7 +142,7 @@ export class NavBarComponent implements OnInit {
   }
 
   isAdmin() : boolean{
-    if(localStorage.role == "Admin")
+    if(localStorage.role == "Administrator")
     {
       return true;
     }

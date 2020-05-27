@@ -7,6 +7,6 @@ export class AMGuard implements CanActivate {
   constructor() {}
 
   canActivate() {
-    return localStorage.role == 'Admin' || localStorage.role == 'Manager';
+    return localStorage.role == 'Administrator' || localStorage.role == 'Manager';
   }
 }

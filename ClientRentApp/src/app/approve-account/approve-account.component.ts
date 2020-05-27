@@ -36,11 +36,11 @@ export class ApproveAccountComponent implements OnInit {
     if(this.file != null){
       this.registrationService.postMethodApproveAccount(this.file).subscribe(
         res => {
-          alert(res);
           this.router.navigate(['/RentVehicle']);
         }, 
         error => {
-          alert(error);
+          console.log(error)
+          alert(error.message);
       });
 
       form.reset();

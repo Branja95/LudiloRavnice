@@ -18,19 +18,19 @@ export class BranchOfficeService {
   constructor(private httpClient: HttpClient) { }
 
   getBranchOffice(branchOfficeId): Observable<any> {
-    return this.httpClient.get("https://localhost:44365/api/BranchOffices/GetBranchOffice?branchOfficeId=" + branchOfficeId);
+    return this.httpClient.get("https://localhost:5001/api/BranchOffices/GetBranchOffice?branchOfficeId=" + branchOfficeId);
   }
 
   getBranchOffices(serviceId): Observable<any> {
-    return this.httpClient.get("https://localhost:44365/api/Services/GetBranchOffices?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:5001/api/Services/GetBranchOffices?serviceId=" + serviceId);
   }
 
   getVehicleServiceBranchOffices(vehicleId): Observable<any> {
-    return this.httpClient.get("https://localhost:44365/api/BranchOffices/GetVehicleBranchOffices?vehicleId=" + vehicleId);
+    return this.httpClient.get("https://localhost:5001/api/BranchOffices/GetVehicleBranchOffices?vehicleId=" + vehicleId);
   }
 
   deleteBranchOffice(serviceId, branchOfficeId): Observable<any> {
-    return this.httpClient.delete("https://localhost:44365/api/BranchOffices/DeleteBranchOffice?serviceId=" + serviceId + "&branchOfficeId=" + branchOfficeId);
+    return this.httpClient.delete("https://localhost:5001/api/BranchOffices/DeleteBranchOffice?serviceId=" + serviceId + "&branchOfficeId=" + branchOfficeId);
   }
 
   editBranchOffice(serviceId, branchOfficeId, branchOffice, uploadedImage: File): Observable<any> {
@@ -45,7 +45,7 @@ export class BranchOfficeService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.put("https://localhost:44365/api/BranchOffices/PutBranchOffice?serviceId=" + serviceId, this.formData, { headers: headers });
+    return this.httpClient.put("https://localhost:5001/api/BranchOffices/PutBranchOffice?serviceId=" + serviceId, this.formData, { headers: headers });
   }
   
   postMethodCreateBranchOffice(serviceId, branchOffice, uploadedImage: File): Observable<any> {
@@ -60,7 +60,7 @@ export class BranchOfficeService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.post("https://localhost:44365/api/BranchOffices/PostBranchOffice",this.formData, { headers: headers });
+    return this.httpClient.post("https://localhost:5001/api/BranchOffices/PostBranchOffice",this.formData, { headers: headers });
   }
   
 }

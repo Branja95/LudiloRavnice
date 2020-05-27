@@ -12,7 +12,7 @@ export class ChangeRolesComponent implements OnInit {
   constructor(private accountService: AccountService, private router: Router) { }
 
   users: any;
-  roles: Array<String> = ["Admin", "Manager", "AppUser"];
+  roles: Array<String> = ["Administrator", "Manager", "Client"];
 
   ngOnInit() {
     this.accountService.getMethodUsers().subscribe(
@@ -27,7 +27,6 @@ export class ChangeRolesComponent implements OnInit {
   onChangeRole(userId, role){
     this.accountService.putMethodChangeRole(userId, role).subscribe(
       res => {
-        alert(res);
         this.router.navigateByUrl("/Vehicles");
       },
       error => {
