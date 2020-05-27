@@ -1,0 +1,3 @@
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\RentACar\obj\Debug\netcoreapp2.1\RentACar.csproj.CoreCompileInputs.cache
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\RentACar\obj\Debug\netcoreapp2.1\RentACar.AssemblyInfoInputs.cache
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\RentACar\obj\Debug\netcoreapp2.1\RentACar.AssemblyInfo.cs

@@ -1,0 +1,15 @@
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\bin\Debug\netcoreapp2.1\Booking.deps.json
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\bin\Debug\netcoreapp2.1\Booking.runtimeconfig.json
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\bin\Debug\netcoreapp2.1\Booking.runtimeconfig.dev.json
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\bin\Debug\netcoreapp2.1\Booking.dll
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\bin\Debug\netcoreapp2.1\Booking.pdb
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\obj\Debug\netcoreapp2.1\Booking.csprojAssemblyReference.cache
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\obj\Debug\netcoreapp2.1\Booking.csproj.CoreCompileInputs.cache
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\obj\Debug\netcoreapp2.1\Booking.RazorAssemblyInfo.cache
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\obj\Debug\netcoreapp2.1\Booking.RazorAssemblyInfo.cs
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\obj\Debug\netcoreapp2.1\UserSecretsAssemblyInfo.cs
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\obj\Debug\netcoreapp2.1\Booking.AssemblyInfoInputs.cache
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\obj\Debug\netcoreapp2.1\Booking.AssemblyInfo.cs
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\obj\Debug\netcoreapp2.1\Booking.RazorTargetAssemblyInfo.cache
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\obj\Debug\netcoreapp2.1\Booking.dll
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\Booking\obj\Debug\netcoreapp2.1\Booking.pdb

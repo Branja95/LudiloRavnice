@@ -1,0 +1,15 @@
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\bin\Debug\netcoreapp2.1\AccountManaging.deps.json
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\bin\Debug\netcoreapp2.1\AccountManaging.runtimeconfig.json
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\bin\Debug\netcoreapp2.1\AccountManaging.runtimeconfig.dev.json
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\bin\Debug\netcoreapp2.1\AccountManaging.dll
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\bin\Debug\netcoreapp2.1\AccountManaging.pdb
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\obj\Debug\netcoreapp2.1\AccountManaging.csproj.CoreCompileInputs.cache
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\obj\Debug\netcoreapp2.1\AccountManaging.RazorAssemblyInfo.cache
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\obj\Debug\netcoreapp2.1\AccountManaging.RazorAssemblyInfo.cs
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\obj\Debug\netcoreapp2.1\UserSecretsAssemblyInfo.cs
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\obj\Debug\netcoreapp2.1\AccountManaging.AssemblyInfoInputs.cache
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\obj\Debug\netcoreapp2.1\AccountManaging.AssemblyInfo.cs
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\obj\Debug\netcoreapp2.1\AccountManaging.RazorTargetAssemblyInfo.cache
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\obj\Debug\netcoreapp2.1\AccountManaging.dll
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\obj\Debug\netcoreapp2.1\AccountManaging.pdb
+C:\Users\Exlrt-0115\Desktop\projekat\RentApplication\AccountManaging\obj\Debug\netcoreapp2.1\AccountManaging.csprojAssemblyReference.cache

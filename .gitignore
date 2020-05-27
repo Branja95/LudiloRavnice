@@ -1,7 +1,6 @@
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
-
 /VerzijaBezAppUser/RentApp/RentApp/App_Data/5b721b8e-584e-4cf8-a798-1ee8f417f8a0David za sajt.jpg
 /VerzijaBezAppUser/RentApp/RentApp/App_Data/8b04bb0b-e36e-4020-ad18-ccffab9be01fDavid za sajt.jpg
 /VerzijaBezAppUser/RentApp/RentApp/App_Data/ba0bf5f0-1ba3-44a5-8ca6-7d7281c8d872WIN_20180427_17_32_39_Pro.jpg
@@ -13,3 +12,5 @@
 
 /VerzijaBezAppUser/RentApp/RentApp/App_Data/e01706ce-aea1-49d0-a8dd-3007437f07f9dekstop.jpg
 /VerzijaBezAppUser/RentApp/RentApp/App_Data
+/RentApplication/AccountManaging/wwwroot/App_Data
+/RentApplication/.vs/RentApplication/v15
