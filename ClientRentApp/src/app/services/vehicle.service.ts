@@ -24,7 +24,8 @@ export class VehicleService {
   }
 
   getVehicles(): Observable<any> {
-    return this.httpClient.get("https://localhost:5001/api/Vehicles/GetVehicles")
+    console.log('1', "https://localhost:44367/api/Vehicle/GetVehicles")
+    return this.httpClient.get("https://localhost:44367/api/Vehicle/GetVehicles")
   }
 
   getServiceVehicles(serviceId): Observable<any> {

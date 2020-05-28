@@ -5,16 +5,16 @@ EXPOSE 443
 
 FROM microsoft/dotnet:2.1-sdk AS build
 WORKDIR /src
-COPY ["AccountManaging/AccountManaging.csproj", "AccountManaging/"]
-RUN dotnet restore "AccountManaging/AccountManaging.csproj"
+COPY ["Account/Account.csproj", "AccountManaging/"]
+RUN dotnet restore "Account/Account.csproj"
 COPY . .
-WORKDIR "/src/AccountManaging"
-RUN dotnet build "AccountManaging.csproj" -c Release -o /app
+WORKDIR "/src/Account"
+RUN dotnet build "Account.csproj" -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "AccountManaging.csproj" -c Release -o /app
+RUN dotnet publish "Account.csproj" -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "AccountManaging.dll"]
+ENTRYPOINT ["dotnet", "Account.dll"]

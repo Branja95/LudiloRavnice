@@ -22,7 +22,7 @@ export class BranchOfficeService {
   }
 
   getBranchOffices(serviceId): Observable<any> {
-    return this.httpClient.get("https://localhost:5001/api/Services/GetBranchOffices?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:5001/api/Service/GetBranchOffices?serviceId=" + serviceId);
   }
 
   getVehicleServiceBranchOffices(vehicleId): Observable<any> {
