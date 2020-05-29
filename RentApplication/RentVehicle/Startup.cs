@@ -41,6 +41,7 @@ namespace RentVehicle
                 options.AddPolicy("CorsPolicy",
                     builder => builder.WithOrigins("http://localhost:4200")
                     .AllowAnyMethod()
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
@@ -66,8 +67,8 @@ namespace RentVehicle
             services.AddScoped<IBranchOfficeRepository, BranchOfficeRepository>();
             services.AddScoped<IServiceForApprovalRepository, ServiceForApprovalRepository>();
             services.AddScoped<IServiceRepository, ServiceRepository>();
-            services.AddScoped<IVehicleRepository, VehicleRepository>();
             services.AddScoped<IVehicleTypeRepository, VehicleTypeRepository>();
+            services.AddScoped<IVehicleRepository, VehicleRepository>();
 
             services.AddScoped<SmtpClient>((serviceProvider) =>
             {
@@ -134,9 +135,8 @@ namespace RentVehicle
             {
                 routes.MapHub<NotificationHub>("/Notifications");
             });
-            app.UseMvc();
 
-            EntryData.Initialize(rentVehicleDbContext, userManager).Wait();
+            app.UseMvc();
         }
     }
 }

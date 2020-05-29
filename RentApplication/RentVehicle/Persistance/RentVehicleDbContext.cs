@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RentVehicle.Models.Entities;
+using RentVehicle.Models.IdentityUsers;
 
 namespace RentVehicle.Persistance
 {
-    public class RentVehicleDbContext : IdentityDbContext
+    public class RentVehicleDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
         public DbSet<BranchOffice> BranchOffices { get; set; }
         public DbSet<Service> Services { get; set; }

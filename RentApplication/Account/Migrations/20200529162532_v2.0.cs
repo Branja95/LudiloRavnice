@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace RentVehicle.Migrations
+namespace AccountManaging.Migrations
 {
-    public partial class v10 : Migration
+    public partial class v20 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

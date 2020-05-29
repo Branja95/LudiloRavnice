@@ -12,19 +12,19 @@ export class NavBarService {
   constructor(private httpClient: HttpClient) { }
 
   getMethodIsUserApproved() : Observable<any> {
-    return this.httpClient.get("https://localhost:5001/api/Account/IsUserApproved");
+    return this.httpClient.get("https://localhost:44366/api/Account/IsUserApproved");
   }
 
   postMethodLogout() {
-    return this.httpClient.post("https://localhost:5001/api/Auth/Logout", "");
+    return this.httpClient.post("https://localhost:44366/api/Auth/Logout", "");
   }
 
   getMethodAccountForApproval(){
     console.log('usao');
-    return this.httpClient.get("https://localhost:5001/api/Account/AccountForApproval");
+    return this.httpClient.get("https://localhost:44366/api/Account/AccountForApproval");
   }
 
   getMethodServiceForApproval(){
-    return this.httpClient.get("https://localhost:5001/api/Account/ServiceForApproval");
+    return this.httpClient.get("https://localhost:44367/api/Account/ServiceForApproval");
   }
 }

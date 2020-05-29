@@ -35,12 +35,13 @@ namespace Booking
                 options.AddPolicy("CorsPolicy",
                     builder => builder.WithOrigins("http://localhost:4200")
                     .AllowAnyMethod()
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
 
             services.AddDbContext<BookingDbContext>(options =>
-                     options.UseSqlServer(Configuration.GetConnectionString("RentVehicleDB")));
+                     options.UseSqlServer(Configuration.GetConnectionString("BookingDB")));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<DbContext, BookingDbContext>();
 

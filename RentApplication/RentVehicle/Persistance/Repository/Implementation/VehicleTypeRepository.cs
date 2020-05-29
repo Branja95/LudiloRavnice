@@ -9,8 +9,11 @@ namespace RentVehicle.Persistance.Repository.Implementation
 {
     public class VehicleTypeRepository : Repository<VehicleType, long>, IVehicleTypeRepository
     {
+        private readonly DbContext _context;
+
         public VehicleTypeRepository(DbContext context) : base(context)
         {
+            _context = context;
         }
 
         public IEnumerable<VehicleType> GetAll(int pageIndex, int pageSize)

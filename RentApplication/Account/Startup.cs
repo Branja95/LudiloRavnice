@@ -40,6 +40,7 @@ namespace AccountManaging
                 options.AddPolicy("CorsPolicy",
                     builder => builder.WithOrigins("http://localhost:4200")
                     .AllowAnyMethod()
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowCredentials());
             });

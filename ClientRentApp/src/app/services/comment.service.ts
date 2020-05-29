@@ -16,15 +16,15 @@ export class CommentService {
   constructor(private httpClient: HttpClient) { }
 
   getMethodGetComment(commentId : string){
-    return this.httpClient.get("https://localhost:5001/api/Comments/GetComment?id=" + commentId);
+    return this.httpClient.get("https://localhost:44383/api/Comment/GetComment?id=" + commentId);
   }
 
   getMethodUsername(commentId): Observable<any>{
-    return this.httpClient.get("https://localhost:5001/api/Comments/UserName?commentId=" + commentId);
+    return this.httpClient.get("https://localhost:44383/api/Comment/UserName?commentId=" + commentId);
   }
 
   getMethodGetUserName(commentId : string){
-    return this.httpClient.get("https://localhost:5001/api/Comments/GetUserName?commentId=" + commentId);
+    return this.httpClient.get("https://localhost:44383/api/Comment/GetUserName?commentId=" + commentId);
   }
 
   putMethodEditComment(comment): Observable<any> {
@@ -35,7 +35,7 @@ export class CommentService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.put("https://localhost:5001/api/Comments/PutComment?commentId=" + comment.Id, this.formData, { headers: headers });
+    return this.httpClient.put("https://localhost:44383/api/Comment/PutComment?commentId=" + comment.Id, this.formData, { headers: headers });
   }
 
   postMethodCreateComment(comment): Observable<any>{
@@ -47,7 +47,7 @@ export class CommentService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.post("https://localhost:5001/api/Comments/PostComment", this.formData, { headers: headers }); 
+    return this.httpClient.post("https://localhost:44383/api/Comment/PostComment", this.formData, { headers: headers }); 
   }
 
 }

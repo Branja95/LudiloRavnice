@@ -49,6 +49,7 @@ namespace RentVehicle.Controllers
         [AllowAnonymous]
         public IEnumerable<Vehicle> GetVehicles()
         {
+            List<Vehicle> a = _unitOfWork.Vehicles.GetAll().ToList();
             return _unitOfWork.Vehicles.GetAll();
         }
 
@@ -143,7 +144,7 @@ namespace RentVehicle.Controllers
         [HttpGet]
         [Route("GetPagedVehicles")]
         [AllowAnonymous]
-        public IActionResult GetPagedVehicles([FromForm] int pageIndex, [FromForm] int pageSize)
+        public IActionResult GetPagedVehicles([FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
             IEnumerable<Vehicle> vehicles = _unitOfWork.Vehicles.GetAll(pageIndex, pageSize);
             if (vehicles == null)

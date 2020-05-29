@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AccountManaging.Services;
@@ -44,7 +45,6 @@ namespace RentVehicle.Controllers
             _configuration = configuration;
         }
 
-        // GET: api/Services/GetServices
         [HttpGet]
         [AllowAnonymous]
         [Route("GetServices")]
@@ -52,9 +52,7 @@ namespace RentVehicle.Controllers
         {
             IEnumerable<Service> services = _unitOfWork.Services.Find(s => s.IsApproved);
 
-            List<Service> servicesList = new List<Service>(services);
-
-            return Ok(servicesList);
+            return Ok(services.ToList());
         }
 
         // GET: api/Services/LoadImage

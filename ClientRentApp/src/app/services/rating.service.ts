@@ -16,11 +16,11 @@ export class RatingService {
   constructor(private httpClient: HttpClient) { }
 
   getMethodGetRating(ratingId : string){
-    return this.httpClient.get("https://localhost:5001/api/Ratings/GetRating?id=" + ratingId);
+    return this.httpClient.get("https://localhost:44383/api/Ratings/GetRating?id=" + ratingId);
   }
   
   postMethodCreateRating(rating):Observable<any>{
-    return this.httpClient.post("https://localhost:5001/api/Ratings/PostRating", rating);
+    return this.httpClient.post("https://localhost:44383/api/Ratings/PostRating", rating);
   }
 
   putMethodEditRating(rating): Observable<any> {
@@ -31,7 +31,7 @@ export class RatingService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.put("https://localhost:5001/api/Ratings/PutRating?ratingId=" + rating.Id, this.formData, { headers: headers });
+    return this.httpClient.put("https://localhost:44383/api/Ratings/PutRating?ratingId=" + rating.Id, this.formData, { headers: headers });
   }
 
 }

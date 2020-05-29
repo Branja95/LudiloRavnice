@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace RentVehicle.Migrations
+namespace Booking.Migrations
 {
     public partial class Initial : Migration
     {
@@ -40,7 +40,12 @@ namespace RentVehicle.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    DocumentImage = table.Column<string>(nullable: true),
+                    DateOfBirth = table.Column<DateTime>(nullable: true),
+                    IsApproved = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -48,25 +53,51 @@ namespace RentVehicle.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Services",
+                name: "BranchOffice",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Creator = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    LogoImage = table.Column<string>(nullable: true),
-                    EmailAddress = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    IsApproved = table.Column<bool>(nullable: false)
+                    Address = table.Column<string>(nullable: true),
+                    Latitude = table.Column<double>(nullable: false),
+                    Longitude = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Services", x => x.Id);
+                    table.PrimaryKey("PK_BranchOffice", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "VehicleTypes",
+                name: "Comments",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(nullable: true),
+                    DateTime = table.Column<DateTime>(nullable: false),
+                    Text = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ratings",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(nullable: true),
+                    Value = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ratings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VehicleType",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
@@ -75,7 +106,7 @@ namespace RentVehicle.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VehicleTypes", x => x.Id);
+                    table.PrimaryKey("PK_VehicleType", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -185,92 +216,7 @@ namespace RentVehicle.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BranchOffices",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Image = table.Column<string>(nullable: true),
-                    Address = table.Column<string>(nullable: true),
-                    Latitude = table.Column<double>(nullable: false),
-                    Longitude = table.Column<double>(nullable: false),
-                    ServiceId = table.Column<long>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BranchOffices", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_BranchOffices_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Comment",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<string>(nullable: true),
-                    DateTime = table.Column<DateTime>(nullable: false),
-                    Text = table.Column<string>(nullable: true),
-                    ServiceId = table.Column<long>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Comment", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Comment_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Rating",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<string>(nullable: true),
-                    Value = table.Column<int>(nullable: false),
-                    ServiceId = table.Column<long>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Rating", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Rating_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ServicesForApproval",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ServiceId = table.Column<long>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ServicesForApproval", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ServicesForApproval_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Vehicles",
+                name: "Vehicle",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
@@ -282,22 +228,51 @@ namespace RentVehicle.Migrations
                     Description = table.Column<string>(nullable: true),
                     PricePerHour = table.Column<double>(nullable: false),
                     Images = table.Column<string>(nullable: true),
-                    IsAvailable = table.Column<bool>(nullable: false),
-                    ServiceId = table.Column<long>(nullable: true)
+                    IsAvailable = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vehicles", x => x.Id);
+                    table.PrimaryKey("PK_Vehicle", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vehicles_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
+                        name: "FK_Vehicle_VehicleType_VehicleTypeId",
+                        column: x => x.VehicleTypeId,
+                        principalTable: "VehicleType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reservations",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(nullable: true),
+                    ReservationStart = table.Column<DateTime>(nullable: false),
+                    ReservationEnd = table.Column<DateTime>(nullable: false),
+                    VehicleId = table.Column<long>(nullable: true),
+                    RentBranchOfficeId = table.Column<long>(nullable: true),
+                    ReturnBranchOfficeId = table.Column<long>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reservations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reservations_BranchOffice_RentBranchOfficeId",
+                        column: x => x.RentBranchOfficeId,
+                        principalTable: "BranchOffice",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Vehicles_VehicleTypes_VehicleTypeId",
-                        column: x => x.VehicleTypeId,
-                        principalTable: "VehicleTypes",
+                        name: "FK_Reservations_BranchOffice_ReturnBranchOfficeId",
+                        column: x => x.ReturnBranchOfficeId,
+                        principalTable: "BranchOffice",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Reservations_Vehicle_VehicleId",
+                        column: x => x.VehicleId,
+                        principalTable: "Vehicle",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -342,33 +317,23 @@ namespace RentVehicle.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BranchOffices_ServiceId",
-                table: "BranchOffices",
-                column: "ServiceId");
+                name: "IX_Reservations_RentBranchOfficeId",
+                table: "Reservations",
+                column: "RentBranchOfficeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comment_ServiceId",
-                table: "Comment",
-                column: "ServiceId");
+                name: "IX_Reservations_ReturnBranchOfficeId",
+                table: "Reservations",
+                column: "ReturnBranchOfficeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rating_ServiceId",
-                table: "Rating",
-                column: "ServiceId");
+                name: "IX_Reservations_VehicleId",
+                table: "Reservations",
+                column: "VehicleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ServicesForApproval_ServiceId",
-                table: "ServicesForApproval",
-                column: "ServiceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Vehicles_ServiceId",
-                table: "Vehicles",
-                column: "ServiceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Vehicles_VehicleTypeId",
-                table: "Vehicles",
+                name: "IX_Vehicle_VehicleTypeId",
+                table: "Vehicle",
                 column: "VehicleTypeId");
         }
 
@@ -390,19 +355,13 @@ namespace RentVehicle.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "BranchOffices");
+                name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "Comment");
+                name: "Ratings");
 
             migrationBuilder.DropTable(
-                name: "Rating");
-
-            migrationBuilder.DropTable(
-                name: "ServicesForApproval");
-
-            migrationBuilder.DropTable(
-                name: "Vehicles");
+                name: "Reservations");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -411,10 +370,13 @@ namespace RentVehicle.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Services");
+                name: "BranchOffice");
 
             migrationBuilder.DropTable(
-                name: "VehicleTypes");
+                name: "Vehicle");
+
+            migrationBuilder.DropTable(
+                name: "VehicleType");
         }
     }
 }

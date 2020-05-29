@@ -95,12 +95,10 @@ export class VehicleComponent implements OnInit {
 
   getPagedVehciles(pageIndex, searchVehicle: SearchVehicle){
     if(!this.isSearch){
-      console.log("Show: ");
       this.vehicleService.getPagedVehicles(pageIndex, this.pageSize)
       .subscribe(
         res => {
           this.pagedVehicles = res as Array<Vehicle>;
-          console.log(this.pagedVehicles);
         },
         error=> {
           console.log(error);
@@ -145,7 +143,8 @@ export class VehicleComponent implements OnInit {
   }
 
   parseImages(imageId){
-    return imageId.split(";_;");
+    if(imageId != null)
+      return imageId.split(";_;");
   }
 
   onDelete(id){
