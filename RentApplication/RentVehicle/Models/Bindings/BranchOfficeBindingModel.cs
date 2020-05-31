@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace RentVehicle.Models.Bindings
 {
@@ -23,12 +25,19 @@ namespace RentVehicle.Models.Bindings
             [RegularExpression(@"^[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$")]
             [Display(Name = "Longitude")]
             public double Longitude { get; set; }
+
+            [Required]
+            [Display(Name = "Image")]
+            public IFormFile Image { get; set; }
         }
 
         public class EditBranchOfficeBindingModel
         {
             [Display(Name = "Id")]
             public int Id { get; set; }
+
+            [Display(Name = "ServiceId")]
+            public int ServiceId { get; set; }
 
             [Required]
             [DataType(DataType.Text)]
@@ -44,6 +53,10 @@ namespace RentVehicle.Models.Bindings
             [RegularExpression(@"^[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$")]
             [Display(Name = "Longitude")]
             public double Longitude { get; set; }
+
+            [Required]
+            [Display(Name = "Image")]
+            public IFormFile Image { get; set; }
         }
     }
 }

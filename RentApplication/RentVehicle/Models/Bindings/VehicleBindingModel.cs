@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace RentVehicle.Models.Bindings
@@ -44,6 +46,10 @@ namespace RentVehicle.Models.Bindings
             [DataType(DataType.Text)]
             [Display(Name = "IsAvailable")]
             public string IsAvailable { get; set; }
+
+            [Required]
+            [Display(Name = "Images")]
+            public IEnumerable<IFormFile> Images { get; set; }
         }
 
         public class VehicleIdBindingModel
@@ -91,6 +97,10 @@ namespace RentVehicle.Models.Bindings
             [DataType(DataType.Text)]
             [Display(Name = "IsAvailable")]
             public string IsAvailable { get; set; }
+
+            [Required]
+            [Display(Name = "Images")]
+            public IEnumerable<IFormFile> Images { get; set; }
         }
     }
 }

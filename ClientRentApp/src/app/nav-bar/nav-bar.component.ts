@@ -135,7 +135,7 @@ export class NavBarComponent implements OnInit {
           }
         },
         error => {
-          alert(error.error.Message);
+          console.log(error);
         }
       );
     }

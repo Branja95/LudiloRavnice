@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,9 +27,10 @@ namespace RentVehicle.Controllers
     {
         private static object lockObjectForVehicles = new object();
 
+        private static readonly string folderPath = @"App_Data\vehicle\";
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUnitOfWork _unitOfWork;
 
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IHostingEnvironment _environment;
         private readonly IConfiguration _configuration;
 
@@ -39,7 +41,6 @@ namespace RentVehicle.Controllers
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
-
             _environment = environment;
             _configuration = configuration;
         }
@@ -49,7 +50,6 @@ namespace RentVehicle.Controllers
         [AllowAnonymous]
         public IEnumerable<Vehicle> GetVehicles()
         {
-            List<Vehicle> a = _unitOfWork.Vehicles.GetAll().ToList();
             return _unitOfWork.Vehicles.GetAll();
         }
 
@@ -57,7 +57,7 @@ namespace RentVehicle.Controllers
         [HttpGet]
         [Route("GetVehicle")]
         [AllowAnonymous]
-        public IActionResult GetVehicle([FromForm] int id)
+        public IActionResult GetVehicle([FromQuery] int id)
         {
             Vehicle vehicle = _unitOfWork.Vehicles.Get(id);
             if (vehicle == null)
@@ -74,7 +74,7 @@ namespace RentVehicle.Controllers
         [HttpGet]
         [Route("SearchVehicles")]
         [AllowAnonymous]
-        public IActionResult SearchVehicles([FromForm] int vehicleTypeId, [FromForm] double vehiclePriceFrom, [FromForm] double vehiclePriceTo, [FromForm] string vehicleManufactor, [FromForm] string vehicleModel)
+        public IActionResult SearchVehicles([FromQuery] int vehicleTypeId, [FromQuery] double vehiclePriceFrom, [FromQuery] double vehiclePriceTo, [FromQuery] string vehicleManufactor, [FromQuery] string vehicleModel)
         {
             List<Vehicle> vehicles = FilterSearch(vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel);
             return Ok(vehicles);
@@ -84,7 +84,7 @@ namespace RentVehicle.Controllers
         [HttpGet]
         [Route("SearchNumberOfVehicles")]
         [AllowAnonymous]
-        public IActionResult SearchNumberOfVehicles([FromForm] int vehicleTypeId, [FromForm] double vehiclePriceFrom, [FromForm] double vehiclePriceTo, [FromForm] string vehicleManufactor, [FromForm] string vehicleModel)
+        public IActionResult SearchNumberOfVehicles([FromQuery] int vehicleTypeId, [FromQuery] double vehiclePriceFrom, [FromQuery] double vehiclePriceTo, [FromQuery] string vehicleManufactor, [FromQuery] string vehicleModel)
         {
             List<Vehicle> vehicles = FilterSearch(vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel);
             return Ok(vehicles.Count);
@@ -107,6 +107,7 @@ namespace RentVehicle.Controllers
             }
         }
 
+
         [HttpGet]
         [Route("GetNumberOfVehicles")]
         [AllowAnonymous]
@@ -117,27 +118,27 @@ namespace RentVehicle.Controllers
             {
                 return NotFound();
             }
-
-            List<Vehicle> vehiclesList = new List<Vehicle>(vehicles);
-
-            return Ok(vehiclesList.Count);
+            else
+            {
+                return Ok(vehicles.Count());
+            }
         }
 
 
         [HttpGet]
         [Route("GetSearchPagedVehicles")]
         [AllowAnonymous]
-        public IActionResult GetSearchPagedVehicles([FromForm] int pageIndex, [FromForm] int pageSize, [FromForm] int vehicleTypeId, [FromForm] double vehiclePriceFrom, [FromForm] double vehiclePriceTo, [FromForm] string vehicleManufactor, [FromForm] string vehicleModel)
+        public IActionResult GetSearchPagedVehicles([FromQuery] int pageIndex, [FromQuery] int pageSize, [FromQuery] int vehicleTypeId, [FromQuery] double vehiclePriceFrom, [FromQuery] double vehiclePriceTo, [FromQuery] string vehicleManufactor, [FromQuery] string vehicleModel)
         {
             List<Vehicle> vehicles = FilterSearch(vehicleTypeId, vehiclePriceFrom, vehiclePriceTo, vehicleManufactor, vehicleModel);
             if (vehicles == null)
             {
                 return NotFound();
             }
-
-            List<Vehicle> vehiclesList = vehicles.OrderBy(vehicle => vehicle.Id).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
-            return Ok(vehiclesList);
+            else
+            {
+                return Ok(vehicles.OrderBy(vehicle => vehicle.Id).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList());
+            }
         }
 
 
@@ -158,319 +159,255 @@ namespace RentVehicle.Controllers
         }
 
 
-        // GET: api/Vehicles/LoadImage
         [HttpGet]
         [Route("LoadImage")]
         [AllowAnonymous]
-        public IActionResult LoadImage([FromForm] string imageId)
+        public IActionResult LoadImage([FromQuery] string imageId)
         {
-            Stream readStream = ImageHelper.ReadImageFromServer(_environment.WebRootPath, imageId);
-            return File(readStream, "image/jpeg");
+            string filePath = Path.Combine(_environment.WebRootPath, folderPath, imageId);
+            string fileExtension = Path.GetExtension(filePath);
+
+            Stream readStream = ImageHelper.ReadImageFromServer(_environment.WebRootPath, folderPath, imageId);
+            return File(readStream, "image/" + fileExtension);
         }
 
-        // PUT: api/Vehicles/ChangeAvailability/5
+
         [HttpPut]
         [Route("ChangeAvailability")]
         [Authorize(Roles = "Administrator, Manager")]
-        public async Task<IActionResult> ChangeAvailability(VehicleIdBindingModel model)
+        public async Task<IActionResult> ChangeAvailability([FromForm] VehicleIdBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result)
+            else
             {
-                IEnumerable<Service> services = _unitOfWork.Services.GetAll();
-                foreach (Service service in services)
+                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result)
                 {
-                    if (service.Vehicles.Find(v => v.Id == model.VehicleId) != null && service.Creator != user.Id)
+                    IEnumerable<Service> services = _unitOfWork.Services.GetAll();
+                    foreach (Service service in services)
                     {
-                        return BadRequest("U can't edit vehicle at this service.");
+                        if (service.Vehicles.Find(v => v.Id == model.VehicleId) != null && service.Creator != user.Id)
+                        {
+                            return BadRequest("U can't edit vehicle at this service.");
+                        }
                     }
                 }
-            }
 
-            try
-            {
-                lock (lockObjectForVehicles)
+                try
                 {
-                    Vehicle vehicle = _unitOfWork.Vehicles.Get(model.VehicleId);
-                    vehicle.IsAvailable = !vehicle.IsAvailable;
-                    _unitOfWork.Vehicles.Update(vehicle);
-                    _unitOfWork.Complete();
+                    lock (lockObjectForVehicles)
+                    {
+                        Vehicle vehicle = _unitOfWork.Vehicles.Get(model.VehicleId);
+                        vehicle.IsAvailable = !vehicle.IsAvailable;
+                        _unitOfWork.Vehicles.Update(vehicle);
+                        _unitOfWork.Complete();
+                    }
                 }
-            }
-            catch (DBConcurrencyException)
-            {
-                return NotFound();
-            }
-
-            return Ok("Availability changed successfully.");
-        }
-
-
-        // PUT: api/Vehicles/PutVehicle/5
-        [HttpPut]
-        [Route("PutVehicle")]
-        [Authorize(Roles = "Administrator, Manager")]
-        public async Task<IActionResult> PutVehicle([FromForm] int id, EditVehicleBindingModel model)
-        {
-            if (id != model.Id)
-            {
-                return BadRequest();
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            Vehicle vehicle = null;
-            try
-            {
-                vehicle = _unitOfWork.Vehicles.Get(id);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VehicleExists(id))
+                catch (DBConcurrencyException)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                return Ok();
             }
-
-            if (vehicle == null)
-            {
-                return BadRequest();
-            }
-
-            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result)
-            {
-                IEnumerable<Service> services = _unitOfWork.Services.GetAll();
-
-                foreach (Service service in services)
-                {
-                    if (service.Vehicles.Find(v => v.Id == vehicle.Id) != null && service.Creator != user.Id)
-                    {
-                        return BadRequest("U can't edit vehicle at this service.");
-                    }
-                }
-            }
-
-            string[] oldImageUris = vehicle.Images.Split(new string[] { ";_;" }, StringSplitOptions.None);
-
-            foreach (string imageId in oldImageUris)
-            {
-                ImageHelper.DeleteImage(_environment.WebRootPath, imageId);
-            }
-
-            string imageUris = string.Empty;
-            int count = 0;
-
-            /*
-            foreach (string file in httpRequest.Files)
-            {
-                count++;
-                HttpPostedFile uploadedImage = httpRequest.Files[file];
-
-                string validationErrorMessage = string.Empty;
-
-                if (ImageHelper.ValidateImage(uploadedImage, out validationErrorMessage))
-                {
-                    imageUris += ImageHelper.SaveImageToServer(uploadedImage);
-
-                    if (count < httpRequest.Files.Count)
-                    {
-                        imageUris += ";_;";
-                    }
-                }
-                else
-                {
-                    BadRequest(validationErrorMessage);
-                }
-            }
-            */
-            VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(model.VehicleTypeId);
-
-            vehicle.Description = model.Description;
-            vehicle.Model = model.Model;
-            vehicle.Manufactor = model.Manufactor;
-            vehicle.PricePerHour = model.PricePerHour;
-            vehicle.YearMade = model.YearMade;
-            vehicle.IsAvailable = model.IsAvailable.Equals("Available") ? true : false;
-            vehicle.Images = imageUris;
-            vehicle.VehicleType = vehicleType;
-
-            try
-            {
-                lock (lockObjectForVehicles)
-                {
-                    _unitOfWork.Vehicles.Update(vehicle);
-                    _unitOfWork.Complete();
-                }
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VehicleExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Ok("Vehicle successfully updated.");
         }
 
-        // POST: api/Vehicles/PostVehicle/
+
         [HttpPost]
         [Route("PostVehicle")]
         [Authorize(Roles = "Administrator, Manager")]
-        public async Task<IActionResult> PostVehicle(CreateVehicleBindingModel model)
+        public async Task<IActionResult> PostVehicle([FromForm] CreateVehicleBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            /*
-            if (httpRequest.Files == null)
+            else
             {
-                return BadRequest("Images cannot be left blank\n");
-            }
-            */
+                Service service = _unitOfWork.Services.Get(model.ServiceId);
+                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            Service service = _unitOfWork.Services.Get(model.ServiceId);
-            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result && service.Creator != user.Id)
-            {
-                return BadRequest("U can't edit vehicle at this service.");
-            }
-
-            string imageUris = string.Empty;
-            int count = 0;
-
-            /*
-            foreach (string file in httpRequest.Files)
-            {
-                count++;
-                HttpPostedFile uploadedImage = httpRequest.Files[file];
-
-                string validationErrorMessage = string.Empty;
-
-                if (ImageHelper.ValidateImage(uploadedImage, out validationErrorMessage))
+                if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result && service.Creator != user.Id)
                 {
-                    imageUris += ImageHelper.SaveImageToServer(uploadedImage);
+                    return BadRequest();
+                }
 
-                    if (count < httpRequest.Files.Count)
+                VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(model.VehicleTypeId);
+
+                string imageUris = string.Empty;
+                int counter = 0;
+                foreach(IFormFile file in model.Images)
+                {
+                    counter++;
+                    ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
+                    imageUris += file.FileName;
+                    if(counter < model.Images.Count())
                     {
                         imageUris += ";_;";
                     }
                 }
-                else
+
+                Vehicle vehicle = new Vehicle
                 {
-                    return BadRequest(validationErrorMessage);
-                }
-            }
-            */
-            VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(model.VehicleTypeId);
+                    Description = model.Description,
+                    Model = model.Model,
+                    Manufactor = model.Manufactor,
+                    PricePerHour = model.PricePerHour,
+                    YearMade = model.YearMade,
+                    IsAvailable = model.IsAvailable.Equals("IsAvailable"),
+                    Images = imageUris,
+                    VehicleType = vehicleType,
+                };
 
-            Vehicle vehicle = new Vehicle
-            {
-                Description = model.Description,
-                Model = model.Model,
-                Manufactor = model.Manufactor,
-                PricePerHour = model.PricePerHour,
-                YearMade = model.YearMade,
-                IsAvailable = model.IsAvailable.Equals("IsAvailable") ? true : false,
-                Images = imageUris,
-                VehicleType = vehicleType,
-            };
-
-
-            try
-            {
-                lock (lockObjectForVehicles)
+                try
                 {
-                    service.Vehicles.Add(vehicle);
-                    _unitOfWork.Services.Update(service);
-                    _unitOfWork.Vehicles.Add(vehicle);
-                    _unitOfWork.Complete();
+                    lock (lockObjectForVehicles)
+                    {
+                        service.Vehicles.Add(vehicle);
+                        _unitOfWork.Services.Update(service);
+                        _unitOfWork.Vehicles.Add(vehicle);
+                        _unitOfWork.Complete();
+                    }
                 }
-            }
-            catch (DBConcurrencyException)
-            {
-                return NotFound();
-            }
+                catch (DBConcurrencyException)
+                {
+                    return NotFound();
+                }
 
-            return Ok("Vehicle successfully created.");
-
+                return Ok();
+            }
         }
 
-        // DELETE: api/Vehicles/DeleteVehicle/5
+
+        [HttpPut]
+        [Route("PutVehicle")]
+        [Authorize(Roles = "Administrator, Manager")]
+        public async Task<IActionResult> PutVehicle([FromForm] EditVehicleBindingModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            else
+            {
+                Vehicle vehicle = _unitOfWork.Vehicles.Get(model.Id);
+                if (vehicle == null)
+                {
+                    return BadRequest();
+                }
+
+                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result)
+                {
+                    IEnumerable<Service> services = _unitOfWork.Services.GetAll();
+                    foreach (Service service in services)
+                    {
+                        if (service.Vehicles.Find(v => v.Id == vehicle.Id) != null && service.Creator != user.Id)
+                        {
+                            return BadRequest("U can't edit vehicle at this service.");
+                        }
+                    }
+                }
+
+                string[] oldImageUris = vehicle.Images.Split(new string[] { ";_;" }, StringSplitOptions.None);
+                foreach (string imageId in oldImageUris)
+                {
+                    ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, imageId);
+                }
+
+                string imageUris = string.Empty;
+                int count = 0;
+                foreach (IFormFile file in model.Images)
+                {
+                    count++;
+                    ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
+                    imageUris += file.FileName;
+                    if (count < model.Images.Count())
+                    {
+                        imageUris += ";_;";
+                    }
+                }
+
+                vehicle.Description = model.Description;
+                vehicle.Model = model.Model;
+                vehicle.Manufactor = model.Manufactor;
+                vehicle.PricePerHour = model.PricePerHour;
+                vehicle.YearMade = model.YearMade;
+                vehicle.IsAvailable = model.IsAvailable.Equals("Available");
+                vehicle.Images = imageUris;
+                vehicle.VehicleType = _unitOfWork.VehicleTypes.Get(model.VehicleTypeId);
+
+                try
+                {
+                    lock (lockObjectForVehicles)
+                    {
+                        _unitOfWork.Vehicles.Update(vehicle);
+                        _unitOfWork.Complete();
+                    }
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if(_unitOfWork.Vehicles.Get(model.Id) == null)
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return Ok();
+            }
+        }
+
+
         [HttpDelete]
         [Route("DeleteVehicle")]
         [Authorize(Roles = "Administrator, Manager")]
-        public async Task<IActionResult> DeleteVehicle([FromForm] int id)
+        public async Task<IActionResult> DeleteVehicle([FromQuery] int id)
         {
-
             Vehicle vehicle = _unitOfWork.Vehicles.Get(id);
             if (vehicle == null)
             {
                 return NotFound();
             }
-
-            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result)
+            else
             {
-                IEnumerable<Service> services = _unitOfWork.Services.GetAll();
-
-                foreach (Service service in services)
+                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result)
                 {
-                    if (service.Vehicles.Find(v => v.Id == vehicle.Id) != null && service.Creator != user.Id)
+                    IEnumerable<Service> services = _unitOfWork.Services.GetAll();
+                    foreach (Service service in services)
                     {
-                        return BadRequest("U can't edit vehicle at this service.");
+                        if (service.Vehicles.Find(v => v.Id == vehicle.Id) != null && service.Creator != user.Id)
+                        {
+                            return BadRequest("U can't edit vehicle at this service.");
+                        }
                     }
                 }
-            }
 
-            try
-            {
-                lock (lockObjectForVehicles)
+                try
                 {
-                    _unitOfWork.Vehicles.Remove(vehicle);
-                    _unitOfWork.Complete();
+                    lock (lockObjectForVehicles)
+                    {
+                        _unitOfWork.Vehicles.Remove(vehicle);
+                        _unitOfWork.Complete();
+                    }
                 }
+                catch (DBConcurrencyException)
+                {
+                    return NotFound();
+                }
+
+                return Ok();
             }
-            catch (DBConcurrencyException)
-            {
-                return NotFound();
-            }
-
-            return Ok($"Vehicle with id { vehicle.Id } successfully deleted.");
         }
 
-        private bool VehicleExists(int id)
-        {
-            return _unitOfWork.Vehicles.Get(id) != null;
-        }
-
-        private VehicleType GetVehicleType(string vehicleType)
-        {
-            VehicleType vehicle = new VehicleType
-            {
-                TypeName = vehicleType
-            };
-
-            return vehicle;
-        }
-
+        
         private List<Vehicle> FilterSearch(int vehicleTypeId, double vehiclePriceFrom, double vehiclePriceTo, string vehicleManufactor, string vehicleModel)
         {
             List<Vehicle> vehicles;

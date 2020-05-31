@@ -39,7 +39,6 @@ export class ServiceVehiclesComponent implements OnInit {
   }
 
   parseImages(imageId){
-    
     return imageId.split(";_;");
   }
 
@@ -58,10 +57,10 @@ export class ServiceVehiclesComponent implements OnInit {
     this.vehicleService.changeAvailability(id)
     .subscribe(
       res => {
-        alert(res);
+        console.log(res);
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       })
   }
 

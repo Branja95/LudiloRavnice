@@ -65,9 +65,9 @@ export class EditBranchOfficeComponent implements OnInit  {
     this.branchOfficeService.editBranchOffice(this.serviceId, this.branchOfficeId, this.branchOffice, this.selectedFile)
     .subscribe(
       res => {
-        alert(res);
+        console.log('1', res);
       }, error => {
-        alert(error);
+        console.log('2', error);
       });;
     
     this.location.back();

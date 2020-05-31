@@ -51,10 +51,10 @@ export class BranchOfficeComponent implements OnInit {
     this.branchOfficeService.deleteBranchOffice(this.serviceId, branchOfficeId)
     .subscribe(
       res => {
-        alert(res);
+        console.log(res);
       },
       error => {
-        alert(error);
+        console.log(error);
       })
   }
 

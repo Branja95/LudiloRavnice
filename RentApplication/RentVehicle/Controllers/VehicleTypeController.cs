@@ -29,6 +29,7 @@ namespace RentVehicle.Controllers
             return _unitOfWork.VehicleTypes.GetAll();
         }
 
+
         [HttpGet]
         [Route("GetVehicleType")]
         [AllowAnonymous]
@@ -39,90 +40,103 @@ namespace RentVehicle.Controllers
             {
                 return NotFound();
             }
-
-            return Ok(vehicleType);
+            else
+            {
+                return Ok(vehicleType);
+            }
         }
+
 
         [HttpPut]
         [Route("PutVehicleType")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrator")]
         public IActionResult PutVehicleType(UpdateVehicleTypeBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(model.Id);
-
-            if (vehicleType == null)
+            else
             {
-                return BadRequest("Vehicle type don't exists.");
-            }
-
-            vehicleType.TypeName = model.TypeName;
-
-            try
-            {
-                lock (lockObjectForVehicleTypes)
+                VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(model.Id);
+                if (vehicleType == null)
                 {
-                    _unitOfWork.VehicleTypes.Update(vehicleType);
-                    _unitOfWork.Complete();
-                }
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VehicleTypeExists(vehicleType.Id))
-                {
-                    return NotFound();
+                    return BadRequest();
                 }
                 else
                 {
-                    throw;
+                    vehicleType.TypeName = model.TypeName;
+
+                    try
+                    {
+                        lock (lockObjectForVehicleTypes)
+                        {
+                            _unitOfWork.VehicleTypes.Update(vehicleType);
+                            _unitOfWork.Complete();
+                        }
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!VehicleTypeExists(vehicleType.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                    return Ok();
                 }
             }
-
-            return Ok("Vehicle type successfully updated.");
         }
+
 
         [HttpPost]
         [Route("PostVehicleType")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrator")]
         public IActionResult PostVehicleType(CreateVehicleTypeBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            VehicleType vehicleType = new VehicleType()
+            else
             {
-                TypeName = model.TypeName
-            };
-
-            try
-            {
-                lock (lockObjectForVehicleTypes)
+                VehicleType vehicleType = new VehicleType()
                 {
-                    _unitOfWork.VehicleTypes.Add(vehicleType);
-                    _unitOfWork.Complete();
+                    TypeName = model.TypeName
+                };
+
+                try
+                {
+                    lock (lockObjectForVehicleTypes)
+                    {
+                        _unitOfWork.VehicleTypes.Add(vehicleType);
+                        _unitOfWork.Complete();
+                    }
                 }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!VehicleTypeExists(vehicleType.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return Ok();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VehicleTypeExists(vehicleType.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Ok("Vehicle type successfully created.");
         }
 
+
+        [HttpDelete]
+        [Route("DeleteVehicleType")]
+        [Authorize(Roles = "Administrator")]
         public IActionResult DeleteVehicleType(int id)
         {
             VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(id);
@@ -130,29 +144,32 @@ namespace RentVehicle.Controllers
             {
                 return NotFound();
             }
-
-            try
+            else
             {
-                lock (lockObjectForVehicleTypes)
+                try
                 {
-                    _unitOfWork.VehicleTypes.Remove(vehicleType);
-                    _unitOfWork.Complete();
+                    lock (lockObjectForVehicleTypes)
+                    {
+                        _unitOfWork.VehicleTypes.Remove(vehicleType);
+                        _unitOfWork.Complete();
+                    }
                 }
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VehicleTypeExists(vehicleType.Id))
+                catch (DbUpdateConcurrencyException)
                 {
-                    return NotFound();
+                    if (!VehicleTypeExists(vehicleType.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return Ok(vehicleType);
+                return Ok(vehicleType);
+            }
         }
+
 
         private bool VehicleTypeExists(long id)
         {

@@ -20,11 +20,10 @@ export class NavBarService {
   }
 
   getMethodAccountForApproval(){
-    console.log('usao');
     return this.httpClient.get("https://localhost:44366/api/Account/AccountForApproval");
   }
 
   getMethodServiceForApproval(){
-    return this.httpClient.get("https://localhost:44367/api/Account/ServiceForApproval");
+    return this.httpClient.get("https://localhost:44366/api/Account/ServiceForApproval");
   }
 }

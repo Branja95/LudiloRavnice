@@ -33,21 +33,6 @@ export class BranchOfficeService {
     return this.httpClient.delete("https://localhost:44367/api/BranchOffice/DeleteBranchOffice?serviceId=" + serviceId + "&branchOfficeId=" + branchOfficeId);
   }
 
-  editBranchOffice(serviceId, branchOfficeId, branchOffice, uploadedImage: File): Observable<any> {
-    this.formData = new FormData();
-
-    this.formData.append('id', branchOfficeId);
-    this.formData.append('address', branchOffice.Address)
-    this.formData.append('latitude', branchOffice.latitude);
-    this.formData.append('longitude', branchOffice.longitude);
-    this.formData.append('image', uploadedImage, uploadedImage.name);
-
-    let headers = new HttpHeaders();
-    headers.append('Content-Type', 'application/json')
-
-    return this.httpClient.put("https://localhost:44367/api/BranchOffice/PutBranchOffice?serviceId=" + serviceId, this.formData, { headers: headers });
-  }
-  
   postMethodCreateBranchOffice(serviceId, branchOffice, uploadedImage: File): Observable<any> {
     this.formData = new FormData();
 
@@ -60,8 +45,23 @@ export class BranchOfficeService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.post("https://localhost:44367/api/BranchOffice/PostBranchOffice",this.formData, { headers: headers });
+    return this.httpClient.post("https://localhost:44367/api/BranchOffice/PostBranchOffice", this.formData, { headers: headers });
   }
   
+  editBranchOffice(serviceId, branchOfficeId, branchOffice, uploadedImage: File): Observable<any> {
+    
+    let headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/json')
+
+    this.formData = new FormData();
+    this.formData.append('id', branchOfficeId);
+    this.formData.append('serviceId',serviceId);
+    this.formData.append('address', branchOffice.Address)
+    this.formData.append('latitude', branchOffice.latitude);
+    this.formData.append('longitude', branchOffice.longitude);
+    this.formData.append('image', uploadedImage, uploadedImage.name);
+    
+    return this.httpClient.put("https://localhost:44367/api/BranchOffice/PutBranchOffice", this.formData, { headers: headers });
+  }
 }
 

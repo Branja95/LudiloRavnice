@@ -46,10 +46,10 @@ export class AddVehicleComponent implements OnInit {
 
     this.vehicleService.createVehicle(vehicle, this.uploadedFiles).subscribe(
       res => {
-        alert(res);
+        console.log(res);
       }, 
       error => {
-        alert(error.error.Message);
+        console.log(error.error.Message);
     });
 
     form.resetForm();

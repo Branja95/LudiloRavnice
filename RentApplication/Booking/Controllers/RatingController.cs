@@ -21,7 +21,6 @@ namespace Booking.Controllers
     {
         private static object lockObjectForRaitings = new object();
 
-
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -32,7 +31,24 @@ namespace Booking.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // GET: api/Ratings/GetRatings
+
+        [HttpGet]
+        [Route("GetRating")]
+        [AllowAnonymous]
+        public IActionResult GetRating(int id)
+        {
+            Rating rating = _unitOfWork.Ratings.Get(id);
+            if (rating == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(rating);
+            }
+        }
+
+
         [HttpGet]
         [Route("GetRatings")]
         [AllowAnonymous]
@@ -41,19 +57,7 @@ namespace Booking.Controllers
             return _unitOfWork.Ratings.GetAll();
         }
 
-        // GET: api/Ratings/5
-        public IActionResult GetRating(int id)
-        {
-            Rating rating = _unitOfWork.Ratings.Get(id);
-            if (rating == null)
-            {
-                return NotFound();
-            }
 
-            return Ok(rating);
-        }
-
-        // PUT: api/Ratings/PutRating
         [HttpPut]
         [Route("PutRating")]
         [Authorize(Roles = "Administrator, Manager, Client")]
@@ -63,32 +67,36 @@ namespace Booking.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            Rating editRating = _unitOfWork.Ratings.Get(ratingId);
-            if (editRating == null)
+            else
             {
-                return BadRequest("Rating doesn't exist.");
-            }
 
-            editRating.Value = rating.Value;
-
-            try
-            {
-                lock (lockObjectForRaitings)
+                Rating editRating = _unitOfWork.Ratings.Get(ratingId);
+                if (editRating == null)
                 {
-                    _unitOfWork.Ratings.Update(editRating);
-                    _unitOfWork.Complete();
+                    return BadRequest("Rating doesn't exist.");
+                }
+                else
+                {
+                    editRating.Value = rating.Value;
+                    try
+                    {
+                        lock (lockObjectForRaitings)
+                        {
+                            _unitOfWork.Ratings.Update(editRating);
+                            _unitOfWork.Complete();
+                        }
+                    }
+                    catch (DBConcurrencyException)
+                    {
+                        return NotFound();
+                    }
+
+                    return Ok();
                 }
             }
-            catch (DBConcurrencyException)
-            {
-                return NotFound();
-            }
-
-            return Ok();
         }
 
-        // POST: api/Ratings/PostRating
+
         [HttpPost]
         [Route("PostRating")]
         [Authorize(Roles = "Administrator, Manager, Client")]

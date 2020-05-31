@@ -1,20 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RentVehicle.Models.Entities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RentVehicle.Persistance.Repository.Implementation
 {
     public class VehicleTypeRepository : Repository<VehicleType, long>, IVehicleTypeRepository
     {
-        private readonly DbContext _context;
-
-        public VehicleTypeRepository(DbContext context) : base(context)
-        {
-            _context = context;
-        }
+        public VehicleTypeRepository(DbContext context) : base(context) { }
 
         public IEnumerable<VehicleType> GetAll(int pageIndex, int pageSize)
         {
@@ -23,7 +16,10 @@ namespace RentVehicle.Persistance.Repository.Implementation
 
         protected RentVehicleDbContext RentVehicleDbContext
         {
-            get { return context as RentVehicleDbContext; }
+            get
+            {
+                return _context as RentVehicleDbContext;
+            }
         }
     }
 }

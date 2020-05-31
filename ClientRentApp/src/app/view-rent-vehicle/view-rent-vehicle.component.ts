@@ -17,7 +17,6 @@ export class ViewRentVehicleComponent implements OnInit {
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService) {
     activatedRoute.params.subscribe(params => {
       this.ServiceId = params["ServiceId"]
-      console.log(this.ServiceId);
     });
   }
 
@@ -26,7 +25,7 @@ export class ViewRentVehicleComponent implements OnInit {
       res => {
         this.rentVehicle = res as Vehicle;
       },error => {
-        alert(error);
+        console.log('error',error);
       });
   }
 

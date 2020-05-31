@@ -85,7 +85,6 @@ namespace RentVehicle
             });
 
             services.AddScoped<IEmailService, EmailService>();
-
             services.AddMvc()
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 

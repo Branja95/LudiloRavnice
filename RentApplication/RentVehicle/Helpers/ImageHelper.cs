@@ -7,9 +7,8 @@ namespace RentVehicle.Helpers
 {
     public static class ImageHelper
     {
-        private static readonly string folderPath = @"App_Data\";
 
-        public static Stream ReadImageFromServer(string root, string imageId)
+        public static Stream ReadImageFromServer(string root, string folderPath, string imageId)
         {
             IFileProvider provider = new PhysicalFileProvider(root);
             IFileInfo fileInfo = provider.GetFileInfo(folderPath + imageId);
@@ -17,9 +16,9 @@ namespace RentVehicle.Helpers
             return fileInfo.CreateReadStream();
         }
 
-        public static void UploadImageToServer(string root, IFormFile image)
+        public static void UploadImageToServer(string root, string folderPath, IFormFile image)
         {
-            string pathToFolder = System.IO.Path.Combine(root, "App_Data");
+            string pathToFolder = System.IO.Path.Combine(root, folderPath);
             string filePath = Path.Combine(pathToFolder, image.FileName);
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
@@ -28,7 +27,7 @@ namespace RentVehicle.Helpers
             }
         }
 
-        public static void DeleteImage(string root, string imageId)
+        public static void DeleteImage(string root,string folderPath, string imageId)
         {
             IFileProvider provider = new PhysicalFileProvider(root);
             IFileInfo fileInfo = provider.GetFileInfo(folderPath + imageId);
@@ -38,7 +37,7 @@ namespace RentVehicle.Helpers
             }
         }
 
-        public static void DeleteImages(string root, string images)
+        public static void DeleteImages(string root, string folderPath, string images)
         {
             string[] imagesforDelete = images.Split(new string[] { ";_;" }, StringSplitOptions.None);
 

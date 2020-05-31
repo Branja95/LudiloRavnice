@@ -61,7 +61,7 @@ export class RentVehicleService {
     this.formData.append('name', rentVehicle.name)
     this.formData.append('contactEmail', rentVehicle.contactEmail);
     this.formData.append('description', rentVehicle.description);
-    this.formData.append('logoImage', uploadedImage, uploadedImage.name);
+    this.formData.append('image', uploadedImage, uploadedImage.name);
 
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'multipart/form-data')
@@ -73,6 +73,7 @@ export class RentVehicleService {
     this.formData = new FormData();
     
     this.formData.append('id', serviceId);
+    this.formData.append('serviceId', serviceId);
     this.formData.append('name', service.Name)
     this.formData.append('emailaddress', service.EmailAddress);
     this.formData.append('description', service.Description);
@@ -81,7 +82,7 @@ export class RentVehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.put("https://localhost:44367/api/Service/PutService?serviceId=" + serviceId, this.formData, { headers: headers });
+    return this.httpClient.put("https://localhost:44367/api/Service/PutService", this.formData, { headers: headers });
   }
 
 }

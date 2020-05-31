@@ -7,10 +7,8 @@ namespace RentVehicle.Persistance.Repository.Implementation
 {
     public class ServiceForApprovalRepository : Repository<ServiceForApproval, long>, IServiceForApprovalRepository
     {
-        public ServiceForApprovalRepository(DbContext context) : base(context)
-        {
-        }
-
+        public ServiceForApprovalRepository(DbContext context) : base(context) { }
+        
         public IEnumerable<ServiceForApproval> GetAll(int pageIndex, int pageSize)
         {
             return RentVehicleDbContext.ServicesForApproval.Skip((pageIndex - 1) * pageSize).Take(pageSize);
@@ -21,6 +19,12 @@ namespace RentVehicle.Persistance.Repository.Implementation
             return RentVehicleDbContext.Set<ServiceForApproval>().Count();
         }
 
-        protected RentVehicleDbContext RentVehicleDbContext { get { return context as RentVehicleDbContext; } }
+        protected RentVehicleDbContext RentVehicleDbContext
+        {
+            get
+            {
+                return _context as RentVehicleDbContext;
+            }
+        }
     }
 }

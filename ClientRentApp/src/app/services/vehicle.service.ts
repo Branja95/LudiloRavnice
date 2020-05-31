@@ -81,7 +81,7 @@ export class VehicleService {
     this.formData.append('isAvailable', vehicle.isAvailable);
     
     Array.from(uploadedImages).forEach(uploadedImage => { 
-      this.formData.append(uploadedImage.name, uploadedImage, uploadedImage.name);
+      this.formData.append('images', uploadedImage, uploadedImage.name);
     });
 
     let headers = new HttpHeaders();
@@ -95,7 +95,6 @@ export class VehicleService {
   }
 
   editVehicle(vehicleId, vehicle, uploadedImages: FileList): Observable<any>{
-    this.formData = new FormData();
 
     this.formData.append('id', vehicleId);
     this.formData.append('vehicleTypeId', vehicle.vehicleType);
@@ -106,13 +105,15 @@ export class VehicleService {
     this.formData.append('pricePerHour', vehicle.pricePerHour);
     this.formData.append('isAvailable', vehicle.isAvailable);
     Array.from(uploadedImages).forEach(uploadedImage => { 
-      this.formData.append(uploadedImage.name, uploadedImage, uploadedImage.name);
+      this.formData.append('images', uploadedImage, uploadedImage.name);
     });
 
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.put("https://localhost:44367/api/Vehicle/PutVehicle?id=" + vehicleId, this.formData, { headers: headers });
+    let result = this.httpClient.put("https://localhost:44367/api/Vehicle/PutVehicle", this.formData, { headers: headers });
+  
+    this.formData = new FormData();
+    return result;
   }
-
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace RentVehicle.Models.Bindings
 {
@@ -20,6 +21,11 @@ namespace RentVehicle.Models.Bindings
             [DataType(DataType.Text)]
             [Display(Name = "Description")]
             public string Description { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Image")]
+            public IFormFile Image { get; set; }
         }
 
         public class EditRentVehicleServiceBindingModel
@@ -27,6 +33,10 @@ namespace RentVehicle.Models.Bindings
             [Required]
             [Display(Name = "Id")]
             public int Id { get; set; }
+
+            [Required]
+            [Display(Name = "ServiceId")]
+            public int ServiceId { get; set; }
 
             [Required]
             [DataType(DataType.Text)]
@@ -42,6 +52,11 @@ namespace RentVehicle.Models.Bindings
             [DataType(DataType.Text)]
             [Display(Name = "Description")]
             public string Description { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Image")]
+            public IFormFile Image { get; set; }
         }
     }
 }

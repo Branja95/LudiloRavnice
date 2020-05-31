@@ -80,6 +80,7 @@ export class VehicleComponent implements OnInit {
   getSearchVehicles(searchVehicle: SearchVehicle){
     this.vehicleService.searchVehicles(searchVehicle.VehicleTypeId, searchVehicle.PriceFrom, searchVehicle.PriceTo, searchVehicle.Manufactor, searchVehicle.Model).subscribe(
       res => {
+        console.log('1', res)
         this.vehicles = res as Array<Vehicle>;
         this.setShowPage(1);
       },
@@ -143,7 +144,6 @@ export class VehicleComponent implements OnInit {
   }
 
   parseImages(imageId){
-    if(imageId != null)
       return imageId.split(";_;");
   }
 

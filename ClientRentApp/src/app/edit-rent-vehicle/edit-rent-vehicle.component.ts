@@ -51,7 +51,7 @@ export class EditRentVehicleComponent implements OnInit {
       res => {
         console.log(res);
       }, error => {
-        alert(error);
+        console.log(error);
       });;
     
       form.reset();

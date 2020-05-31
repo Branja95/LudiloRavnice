@@ -14,6 +14,12 @@ namespace RentVehicle.Persistance.Repository.Implementation
             return RentVehicleDbContext.BranchOffices.Skip((pageIndex - 1) * pageSize).Take(pageSize);
         }
 
-        protected RentVehicleDbContext RentVehicleDbContext { get { return context as RentVehicleDbContext; } }
+        protected RentVehicleDbContext RentVehicleDbContext
+        {
+            get
+            {
+                return _context as RentVehicleDbContext;
+            }
+        }
     }
 }

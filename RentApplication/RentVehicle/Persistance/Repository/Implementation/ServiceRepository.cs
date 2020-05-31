@@ -2,20 +2,34 @@
 using RentVehicle.Models.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data;
 
 namespace RentVehicle.Persistance.Repository.Implementation
 {
     public class ServiceRepository : Repository<Service, long>, IServiceRepository
     {
-        public ServiceRepository(DbContext context) : base(context)
+        public ServiceRepository(DbContext context) : base(context) { }
+
+        public new Service Get(long id)
         {
+            return RentVehicleDbContext.Services.Where(service => service.Id == id)
+                .Include(service => service.BranchOfficces)
+                .Include(service => service.Vehicles)
+                .ThenInclude(vehicle => vehicle.VehicleType)
+                .FirstOrDefault();
         }
 
         public IEnumerable<Service> GetAll(int pageIndex, int pageSize)
         {
-            return RentVehicleDbContext.Services.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            return RentVehicleDbContext.Services.Skip((pageIndex - 1) * pageSize).Take(pageSize).Include(x => x.Vehicles);
         }
 
-        protected RentVehicleDbContext RentVehicleDbContext { get { return context as RentVehicleDbContext; } }
+        protected RentVehicleDbContext RentVehicleDbContext
+        {
+            get
+            {
+                return _context as RentVehicleDbContext;
+            }
+        }
     }
 }
