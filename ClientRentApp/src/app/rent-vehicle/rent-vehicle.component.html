@@ -1,9 +1,10 @@
 <div class="container">
-    <div class=text-center>
+    <div class="text-center">
      <h2>Rent-Vehicle Services</h2>
      <br/><br/>
-      <div id="banner" class="col col-lg-4 col-lg-push-4">
+      <div  class="col col-lg-4 col-lg-push-4">
         <br/>
+        <div id="banner">
           <div class="inline-block">
             <div *ngFor='let rentVehicle of services'>
                 <img src='https://localhost:44367/api/Service/LoadImage?imageId={{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
@@ -17,6 +18,7 @@
                 <button type="button" [routerLink]="['/Rating/' , rentVehicle.Id]" class="btn btn-default">Ratings</button> &nbsp;
                 <br/><br/><br/><br/>
             </div>
+          </div>
             <div class="inline-block">
                 <br/><br/>
                 <button type="button" *ngIf="isManagerOrAdmin(rentVehicle)" [routerLink]="['/AddService']" class="btn btn-default">Add Rent-Vehicle Service</button>

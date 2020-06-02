@@ -24,6 +24,6 @@ export class NavBarService {
   }
 
   getMethodServiceForApproval(){
-    return this.httpClient.get("https://localhost:44366/api/Account/ServiceForApproval");
+    return this.httpClient.get("https://localhost:44367/api/Service/ServicesForApprovalCount");
   }
 }

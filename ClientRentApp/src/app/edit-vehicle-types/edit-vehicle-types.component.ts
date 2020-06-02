@@ -24,7 +24,7 @@ export class EditVehicleTypesComponent implements OnInit {
         this.vehicleType = data;
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       });
   }
 
@@ -33,11 +33,10 @@ export class EditVehicleTypesComponent implements OnInit {
 
     this.vehicleTypesService.putMethodVehicleTypes(vehicleType).subscribe(
       res => {
-        alert(res);
         this.router.navigateByUrl("/VehicleTypes");
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
     });
   }
 

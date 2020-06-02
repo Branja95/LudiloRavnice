@@ -121,81 +121,88 @@ namespace RentVehicle.Controllers
 
 
         [HttpGet]
-        [Route("ServicesForApproves")]
+        [Route("ServicesForApproval")]
         [Authorize(Roles = "Administrator")]
-        public IActionResult ServicesForApproves()
+        public IActionResult ServicesForApproval()
         {
-            IEnumerable<Service> servicesForApproves = _unitOfWork.Services.Find(s => !s.IsApproved);
-
-            List<Service> servicesForApprovesList = new List<Service>(servicesForApproves);
-
-            return Ok(servicesForApprovesList);
+            return Ok(_unitOfWork.Services.Find(service => !service.IsApproved));
         }
 
+        [HttpGet]
+        [Route("ServicesForApprovalCount")]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult ServicesForApprovalCount()
+        {
+            int a = _unitOfWork.Services.Find(service => !service.IsApproved).Count();
+            return Ok(_unitOfWork.Services.Find(service => !service.IsApproved).Count());
+        }
 
         [HttpPost]
         [Route("ApproveService")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> ApproveService([FromBody] long id)
+        public async Task<IActionResult> ApproveService([FromBody] int serviceId)
         {
-
-            if (_unitOfWork.Services.Get(id) == null)
+            if (_unitOfWork.Services.Get(serviceId) == null)
             {
-                return BadRequest("Bad request. Id don't exists.");
+                return BadRequest();
             }
-
-            Service serviceForApprove = _unitOfWork.Services.Get(id);
-
-            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            serviceForApprove.IsApproved = true;
-            _emailService.SendMail("Service approved", "Your service " + serviceForApprove.Name + " is approved, now you can add branch offices and vehicles.", user.Email);
-            try
+            else
             {
-                lock (lockObjectForServices)
+                Service serviceForApprove = _unitOfWork.Services.Get(serviceId);
+                serviceForApprove.IsApproved = true;
+
+                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                _emailService.SendMail("Service approved", "Your service " + serviceForApprove.Name + " is approved, now you can add branch offices and vehicles.", user.Email);
+
+                try
                 {
-                    _unitOfWork.Services.Update(serviceForApprove);
-                    _unitOfWork.Complete();
+                    lock (lockObjectForServices)
+                    {
+                        _unitOfWork.Services.Update(serviceForApprove);
+                        _unitOfWork.Complete();
+                    }
                 }
-            }
-            catch (DBConcurrencyException)
-            {
-                return NotFound();
-            }
+                catch (DBConcurrencyException)
+                {
+                    return NotFound();
+                }
 
-            return Ok("Service Successfully approved.");
+                return Ok();
+            }
         }
 
 
         [HttpPost]
         [Route("RejectService")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> RejectService([FromBody] long id)
+        public async Task<IActionResult> RejectService([FromBody] int serviceId)
         {
-            if (_unitOfWork.Services.Get(id) == null)
+            if (_unitOfWork.Services.Get(serviceId) == null)
             {
-                return BadRequest("Bad request. Id don't exists.");
+                return BadRequest();
             }
-
-            Service serviceForApprove = _unitOfWork.Services.Get(id);
-
-            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            _emailService.SendMail("Service rejected", "Your service " + serviceForApprove.Name + " is rejected.", user.Email);
-            ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, serviceForApprove.LogoImage);
-
-            try
+            else
             {
-                lock (lockObjectForServices)
+                Service serviceForApprove = _unitOfWork.Services.Get(serviceId);
+
+                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                _emailService.SendMail("Service rejected", "Your service " + serviceForApprove.Name + " is rejected.", user.Email);
+                ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, serviceForApprove.LogoImage);
+                try
                 {
-                    _unitOfWork.Services.Remove(serviceForApprove);
-                    _unitOfWork.Complete();
+                    lock (lockObjectForServices)
+                    {
+                        _unitOfWork.Services.Remove(serviceForApprove);
+                        _unitOfWork.Complete();
+                    }
                 }
-            }
-            catch (DBConcurrencyException)
-            {
-                return NotFound();
-            }
+                catch (DBConcurrencyException)
+                {
+                    return NotFound();
+                }
 
-            return Ok("Service Successfully rejected.");
+                return Ok();
+            }
         }
 
 
@@ -232,11 +239,17 @@ namespace RentVehicle.Controllers
                     IsApproved = false
                 };
 
+                ServiceForApproval serviceForApproval = new ServiceForApproval
+                {
+                    Service = service
+                };
+
                 try
                 {
                     lock (lockObjectForServices)
                     {
                         _unitOfWork.Services.Add(service);
+                        _unitOfWork.ServicesForApproval.Add(serviceForApproval);
                         _unitOfWork.Complete();
                     }
                 }
@@ -424,129 +437,5 @@ namespace RentVehicle.Controllers
             }
         }
 
-
-        #region Booking
-        [HttpGet]
-        [AllowAnonymous]
-        [Route("GetComments")]
-        public async Task<IActionResult> GetComments([FromForm] long serviceId)
-        {
-            Service service = _unitOfWork.Services.Get(serviceId);
-            if (service == null)
-            {
-                return NotFound();
-            }
-
-            List<Comment> comments = new List<Comment>();
-
-            foreach (Comment comment in service.Comments)
-            {
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                comments.Add(new Comment()
-                {
-                    Id = comment.Id,
-                    UserId = user.Email,
-                    Text = comment.Text,
-                    DateTime = comment.DateTime
-                });
-            }
-
-            return Ok(comments);
-        }
-
-
-        [HttpGet]
-        [AllowAnonymous]
-        [Route("GetRatings")]
-        public async Task<IActionResult> GetRatings([FromForm] long serviceId)
-        {
-            Service service = _unitOfWork.Services.Get(serviceId);
-            if (service == null)
-            {
-                return NotFound();
-            }
-
-            List<Rating> ratings = new List<Rating>();
-
-            foreach (Rating rating in service.Ratings)
-            {
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                ratings.Add(new Rating()
-                {
-                    Id = rating.Id,
-                    UserId = user.Email,
-                    Value = rating.Value
-                });
-            }
-
-            return Ok(ratings);
-        }
-
-
-        [HttpGet]
-        [AllowAnonymous]
-        [Route("HasUserCommented")]
-        public async Task<IActionResult> HasUserCommented([FromForm] long serviceId)
-        {
-            bool hasUserCommented = false;
-
-            Service service = _unitOfWork.Services.Get(serviceId);
-            if (service == null)
-            {
-                return NotFound();
-            }
-
-            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (user == null)
-            {
-                return Ok(true);
-            }
-
-            Comment comment = service.Comments.Find(comm => comm.UserId == user.Id);
-            if (comment == null)
-            {
-                hasUserCommented = false;
-            }
-            else
-            {
-                hasUserCommented = true;
-            }
-
-            return Ok(hasUserCommented);
-        }
-
-
-        [HttpGet]
-        [AllowAnonymous]
-        [Route("HasUserRated")]
-        public async Task<IActionResult> HasUserRated([FromForm] long serviceId)
-        {
-            bool hasUserRated = false;
-
-            Service service = _unitOfWork.Services.Get(serviceId);
-            if (service == null)
-            {
-                return NotFound();
-            }
-
-            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (user == null)
-            {
-                return Ok(true);
-            }
-
-            Rating rating = service.Ratings.Find(rate => rate.UserId == user.Id);
-            if (rating == null)
-            {
-                hasUserRated = false;
-            }
-            else
-            {
-                hasUserRated = true;
-            }
-
-            return Ok(hasUserRated);
-        }
-        #endregion
     }
 }

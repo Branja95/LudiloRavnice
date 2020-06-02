@@ -52,39 +52,6 @@ namespace Booking.Controllers
             return Ok(reservation);
         }
 
-        // PUT: api/Reservations/5
-        public IActionResult PutReservation(int id, Reservation reservation)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != reservation.Id)
-            {
-                return BadRequest();
-            }
-
-            try
-            {
-                _unitOfWork.Reservations.Update(reservation);
-                _unitOfWork.Complete();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReservationExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            //return StatusCode(HttpStatusCode.NoContent);
-            return BadRequest();
-        }
 
         // POST: api/Reservations/PostReservation
         [HttpPost]
@@ -180,6 +147,43 @@ namespace Booking.Controllers
 
             return Ok("Reservation successfully created.");
         }
+
+
+
+        // PUT: api/Reservations/5
+        public IActionResult PutReservation(int id, Reservation reservation)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != reservation.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                _unitOfWork.Reservations.Update(reservation);
+                _unitOfWork.Complete();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ReservationExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            //return StatusCode(HttpStatusCode.NoContent);
+            return BadRequest();
+        }
+
 
         // DELETE: api/Reservations/5
         public IActionResult DeleteReservation(int id)

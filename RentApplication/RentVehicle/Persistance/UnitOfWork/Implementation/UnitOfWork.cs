@@ -7,10 +7,10 @@ namespace RentVehicle.Persistance.UnitOfWork.Implementation
     public class UnitOfWork : IUnitOfWork
     {
         private readonly DbContext _context;
-        public IServiceForApprovalRepository ServicesForApproval { get; set; }
 
         private IBranchOfficeRepository branchOfficeRepository;
         private IServiceRepository serviceRepository;
+        private IServiceForApprovalRepository servicesForApproval;
         private IVehicleRepository vehicleRepository;
         private IVehicleTypeRepository vehicleTypeRepository;
 
@@ -25,6 +25,7 @@ namespace RentVehicle.Persistance.UnitOfWork.Implementation
                 this.branchOfficeRepository = value;
             }
         }
+
         public IServiceRepository Services
         {
             get
@@ -36,6 +37,19 @@ namespace RentVehicle.Persistance.UnitOfWork.Implementation
                 this.serviceRepository = value;
             }
         }
+
+        public IServiceForApprovalRepository ServicesForApproval
+        {
+            get
+            {
+                return servicesForApproval = servicesForApproval ?? new ServiceForApprovalRepository(_context);
+            }
+            set
+            {
+                this.servicesForApproval = value;
+            }
+        }
+
         public IVehicleRepository Vehicles
         {
             get
@@ -47,6 +61,7 @@ namespace RentVehicle.Persistance.UnitOfWork.Implementation
                 this.vehicleRepository = value;
             }
         }
+
         public IVehicleTypeRepository VehicleTypes
         {
             get
@@ -58,6 +73,7 @@ namespace RentVehicle.Persistance.UnitOfWork.Implementation
                 this.vehicleTypeRepository = value;
             }
         }
+
         public UnitOfWork(DbContext context)
         {
             _context = context;

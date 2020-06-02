@@ -90,7 +90,6 @@ namespace RentVehicle.Controllers
             return Ok(vehicles.Count);
         }
 
-
         [HttpGet]
         [Route("GetNumberOfVehicles")]
         [AllowAnonymous]
@@ -107,7 +106,7 @@ namespace RentVehicle.Controllers
             }
         }
 
-
+        /*
         [HttpGet]
         [Route("GetNumberOfVehicles")]
         [AllowAnonymous]
@@ -123,7 +122,8 @@ namespace RentVehicle.Controllers
                 return Ok(vehicles.Count());
             }
         }
-
+        
+        */
 
         [HttpGet]
         [Route("GetSearchPagedVehicles")]

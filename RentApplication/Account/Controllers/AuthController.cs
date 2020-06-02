@@ -44,8 +44,8 @@ namespace AccountManaging.Controllers
                 List<string> role = _userManager.GetRolesAsync(user).Result.ToList();
                 Claim[] claims = new[] {
                      new Claim("role", role.FirstOrDefault()),
-                     new Claim("unique_name", user.Email),
-                     new Claim("nameid", user.Id)
+                     new Claim("username", user.Email),
+                     new Claim("id", user.Id)
                 };
 
                 JwtSecurityToken token = new JwtSecurityToken(

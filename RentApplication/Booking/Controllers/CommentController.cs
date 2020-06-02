@@ -8,7 +8,6 @@ using Booking.Models.Entities;
 using Booking.Models.IdentityUsers;
 using Booking.Persistance.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using static Booking.Models.Bindings.CommentBindingModel;
@@ -21,7 +20,6 @@ namespace Booking.Controllers
     {
         private static object lockObjectForComments = new object();
 
-
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -33,146 +31,135 @@ namespace Booking.Controllers
         }
 
 
-        // GET: api/Comments/GetComments
         [HttpGet]
+        [Route("GetComment")]
         [AllowAnonymous]
-        [Route("GetComments")]
-        public IEnumerable<Comment> GetComments()
-        {
-            return _unitOfWork.Comments.GetAll();
-        }
-
-        // GET: api/Comments/5
-        public IActionResult GetComment(int id)
+        public IActionResult GetComment([FromQuery] int id)
         {
             Comment comment = _unitOfWork.Comments.Get(id);
             if (comment == null)
             {
                 return NotFound();
             }
-
-            return Ok(comment);
+            else
+            {
+                return Ok(comment);
+            }
         }
 
-        // GET: api/Comments/UserName
+
         [HttpGet]
-        [Route("UserName")]
+        [Route("GetComments")]
         [AllowAnonymous]
-        public async Task<IActionResult> UserName([FromForm] int commentId)
+        public IEnumerable<Comment> GetComments([FromQuery] long serviceId)
         {
-            Comment comment = _unitOfWork.Comments.Get(commentId);
+            return _unitOfWork.Comments.GetAll(serviceId);
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("HasUserCommented")]
+        public async Task<IActionResult> HasUserCommented([FromQuery] long serviceId)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (user == null)
+            {
+                return Ok(true);
+            }
+
+            Comment comment = _unitOfWork.Comments.Find(com => com.UserId == user.Id).FirstOrDefault(x=>x.ServiceId == serviceId);
             if (comment == null)
             {
-                return NotFound();
+                return Ok(false);
             }
-            ApplicationUser applicationUser = _userManager.FindByIdAsync(comment.UserId).Result;
-
-            return Ok(applicationUser.Email);
+            else
+            {
+                return Ok(true);
+            }
         }
 
-        // PUT: api/Comments/PutComment
-        [HttpPut]
-        [Route("PutComment")]
-        [Authorize(Roles = "Administrator, Manager, Client")]
-        public IActionResult PutComment([FromForm] int commentId, EditCommentBindingModel comment)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            Comment editComment = _unitOfWork.Comments.Get(commentId);
-            if (editComment == null)
-            {
-                return BadRequest("Comment doesn't exist.");
-            }
-
-            editComment.Text = comment.Text;
-            editComment.DateTime = DateTime.Now;
-
-            try
-            {
-                _unitOfWork.Comments.Update(editComment);
-                _unitOfWork.Complete();
-            }
-            catch (DBConcurrencyException)
-            {
-                return NotFound();
-            }
-
-            return Ok();
-        }
-
-        // POST: api/Comments/PostComment
         [HttpPost]
         [Route("PostComment")]
         [Authorize(Roles = "Administrator, Manager, Client")]
-        public async Task<IActionResult> PostComment(CreateCommentBindingModel model)
+        public async Task<IActionResult> PostComment([FromForm] CreateCommentBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-
-            //Service service = _unitOfWork.Services.Get(model.ServiceId);
-            Service service = new Service();
-            if (service == null)
+            else
             {
-                return NotFound();
-            }
-
-            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (!CanComment(user.Id, service))
-            {
-                return BadRequest("You can not commenting on the service until your first renting is completed.");
-            }
-
-            Comment comment = new Comment
-            {
-                Text = model.Text,
-                DateTime = DateTime.Now,
-                UserId = user.Id
-            };
-
-            try
-            {
-                lock (lockObjectForComments)
+                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                if (!CanComment(user.Id))
                 {
-                    service.Comments.Add(comment);
-                    _unitOfWork.Comments.Add(comment);
+                    return BadRequest();
+                }
+
+                Comment comment = new Comment
+                {
+                    UserId = user.Id,
+                    ServiceId = model.ServiceId,
+                    Text = model.Text,
+                    DateTime = DateTime.Now
+                };
+
+                try
+                {
+                    lock (lockObjectForComments)
+                    {
+                        _unitOfWork.Comments.Add(comment);
+                        _unitOfWork.Complete();
+                    }
+                }
+                catch (DBConcurrencyException)
+                {
+                    return NotFound();
+                }
+
+                return Ok();
+            }
+        }
+
+
+        [HttpPut]
+        [Route("PutComment")]
+        [Authorize(Roles = "Administrator, Manager, Client")]
+        public IActionResult PutComment([FromForm] EditCommentBindingModel comment)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            else
+            {
+                Comment editComment = _unitOfWork.Comments.Get(comment.Id);
+                if (editComment == null)
+                {
+                    return BadRequest();
+                }
+
+                editComment.Text = comment.Text;
+                editComment.DateTime = DateTime.Now;
+                try
+                {
+                    _unitOfWork.Comments.Update(editComment);
                     _unitOfWork.Complete();
                 }
+                catch (DBConcurrencyException)
+                {
+                    return NotFound();
+                }
+
+                return Ok();
             }
-            catch (DBConcurrencyException)
-            {
-                return NotFound();
-            }
-            return Ok("Service successfully commented.");
         }
 
-        // DELETE: api/Comments/5
-        public IActionResult DeleteComment(int id)
+
+        private bool CanComment(string userId)
         {
-            Comment comment = _unitOfWork.Comments.Get(id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            _unitOfWork.Comments.Remove(comment);
-            _unitOfWork.Complete();
-
-            return Ok(comment);
-        }
-
-        private bool CommentExists(int id)
-        {
-            return _unitOfWork.Comments.Get(id) != null;
-        }
-
-        private bool CanComment(string userId, Service service)
-        {
+            /*
             IEnumerable<Reservation> reservations = null;
 
             foreach (Vehicle vehicle in service.Vehicles)
@@ -184,8 +171,9 @@ namespace Booking.Controllers
                     return true;
                 }
             }
+            */
 
-            return false;
+            return true;
         }
     }
 }

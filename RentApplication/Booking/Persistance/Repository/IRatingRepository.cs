@@ -5,6 +5,6 @@ namespace Booking.Persistance.Repository
 {
     public interface IRatingRepository : IRepository<Rating, long>
     {
-        IEnumerable<Rating> GetAll(int pageIndex, int pageSize);
+        IEnumerable<Rating> GetAll(long serviceId);
     }
 }

@@ -8,7 +8,6 @@ using Booking.Models.Entities;
 using Booking.Models.IdentityUsers;
 using Booking.Persistance.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using static Booking.Models.Bindings.RatingBindingModel;
@@ -35,7 +34,7 @@ namespace Booking.Controllers
         [HttpGet]
         [Route("GetRating")]
         [AllowAnonymous]
-        public IActionResult GetRating(int id)
+        public IActionResult GetRating([FromQuery] int id)
         {
             Rating rating = _unitOfWork.Ratings.Get(id);
             if (rating == null)
@@ -52,16 +51,78 @@ namespace Booking.Controllers
         [HttpGet]
         [Route("GetRatings")]
         [AllowAnonymous]
-        public IEnumerable<Rating> GetRatings()
+        public IEnumerable<Rating> GetRatings([FromQuery] long serviceId)
         {
-            return _unitOfWork.Ratings.GetAll();
+            return _unitOfWork.Ratings.GetAll(serviceId);
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("HasUserRated")]
+        public async Task<IActionResult> HasUserRated([FromQuery] long serviceId)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (user == null)
+            {
+                return Ok(true);
+            }
+
+            Rating rating = _unitOfWork.Ratings.Find(rate => rate.UserId == user.Id).FirstOrDefault(x => x.ServiceId == serviceId);
+            if (rating == null)
+            {
+                return Ok(false);
+            }
+            else
+            {
+                return Ok(true);
+            }
+        }
+
+
+        [HttpPost]
+        [Route("PostRating")]
+        [Authorize(Roles = "Administrator, Manager, Client")]
+        public async Task<IActionResult> PostRating(CreateRatingBindingModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            else
+            {
+                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                if (!CanRating(user.Id))
+                {
+                    return BadRequest();
+                }
+
+                Rating rating = new Rating
+                {
+                    UserId = user.Id,
+                    ServiceId = model.ServiceId,
+                    Value = model.Value
+                };
+
+                try
+                {
+                    _unitOfWork.Ratings.Add(rating);
+                    _unitOfWork.Complete();
+                }
+                catch (DBConcurrencyException)
+                {
+                    return NotFound();
+                }
+
+                return Ok();
+            }
         }
 
 
         [HttpPut]
         [Route("PutRating")]
         [Authorize(Roles = "Administrator, Manager, Client")]
-        public IActionResult PutRating([FromForm] int ratingId, EditRatingBindingModel rating)
+        public IActionResult PutRating([FromForm] EditRatingBindingModel rating)
         {
             if (!ModelState.IsValid)
             {
@@ -70,7 +131,7 @@ namespace Booking.Controllers
             else
             {
 
-                Rating editRating = _unitOfWork.Ratings.Get(ratingId);
+                Rating editRating = _unitOfWork.Ratings.Get(rating.Id);
                 if (editRating == null)
                 {
                     return BadRequest("Rating doesn't exist.");
@@ -97,56 +158,9 @@ namespace Booking.Controllers
         }
 
 
-        [HttpPost]
-        [Route("PostRating")]
-        [Authorize(Roles = "Administrator, Manager, Client")]
-        public async Task<IActionResult> PostRating(CreateRatingBindingModel model)
+        private bool CanRating(string userId)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            //Service service = _unitOfWork.Services.Get(model.ServiceId);
-            Service service = new Service();
-            if (service == null)
-            {
-                return NotFound();
-            }
-
-            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (!CanRating(user.Id, service))
-            {
-                return BadRequest("You can not rating on the service until your first renting is completed.");
-            }
-
-            Rating rating = new Rating
-            {
-                UserId = user.Id,
-                Value = model.Value
-            };
-
-            try
-            {
-                service.Ratings.Add(rating);
-                _unitOfWork.Ratings.Add(rating);
-                _unitOfWork.Complete();
-            }
-            catch (DBConcurrencyException)
-            {
-                return NotFound();
-            }
-
-            return Ok("Service successfully rated.");
-        }
-
-        private bool RatingExists(int id)
-        {
-            return _unitOfWork.Ratings.Get(id) != null;
-        }
-
-        private bool CanRating(string userId, Service service)
-        {
+            /*
             IEnumerable<Reservation> reservations = null;
 
             foreach (Vehicle vehicle in service.Vehicles)
@@ -157,8 +171,8 @@ namespace Booking.Controllers
                     return true;
                 }
             }
-
-            return false;
+            */
+            return true;
         }
     }
 }

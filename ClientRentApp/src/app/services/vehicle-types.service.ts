@@ -26,5 +26,4 @@ export class VehicleTypesService {
   postMethodVehicleTypes(vehicleTypeName): Observable<any>{
     return this.httpClient.post("https://localhost:44367/api/VehicleType/PostVehicleType", vehicleTypeName);
   }
-  
 }

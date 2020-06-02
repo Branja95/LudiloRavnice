@@ -18,6 +18,10 @@ namespace Booking.Models.Bindings
         public class EditRatingBindingModel
         {
             [Required]
+            [Display(Name = "Id")]
+            public int Id { get; set; }
+
+            [Required]
             [Display(Name = "Value")]
             public int Value { get; set; }
         }

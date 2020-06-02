@@ -3,7 +3,6 @@ C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\RentVehicle\b
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\RentVehicle\bin\Debug\netcoreapp2.1\RentVehicle.runtimeconfig.dev.json
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\RentVehicle\bin\Debug\netcoreapp2.1\RentVehicle.dll
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\RentVehicle\bin\Debug\netcoreapp2.1\RentVehicle.pdb
-C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\RentVehicle\obj\Debug\netcoreapp2.1\RentVehicle.csprojAssemblyReference.cache
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\RentVehicle\obj\Debug\netcoreapp2.1\RentVehicle.csproj.CoreCompileInputs.cache
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\RentVehicle\obj\Debug\netcoreapp2.1\RentVehicle.RazorAssemblyInfo.cache
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\RentVehicle\obj\Debug\netcoreapp2.1\RentVehicle.RazorAssemblyInfo.cs

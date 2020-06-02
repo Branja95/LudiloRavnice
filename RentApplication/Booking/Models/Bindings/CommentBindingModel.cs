@@ -20,6 +20,10 @@ namespace Booking.Models.Bindings
         public class EditCommentBindingModel
         {
             [Required]
+            [Display(Name = "Id")]
+            public int Id { get; set; }
+
+            [Required]
             [DataType(DataType.Text)]
             [Display(Name = "Text")]
             public string Text { get; set; }

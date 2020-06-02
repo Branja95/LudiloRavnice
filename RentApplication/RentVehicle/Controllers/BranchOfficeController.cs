@@ -51,7 +51,7 @@ namespace RentVehicle.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("GetVehicleBranchOffices")]
-        public IActionResult GetVehicleBranchOffices([FromForm] long vehicleId)
+        public IActionResult GetVehicleBranchOffices([FromQuery] long vehicleId)
         {
             Vehicle vehicle = _unitOfWork.Vehicles.Get(vehicleId);
             if (vehicle == null)

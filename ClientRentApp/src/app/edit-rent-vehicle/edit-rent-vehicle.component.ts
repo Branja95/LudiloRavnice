@@ -27,7 +27,7 @@ export class EditRentVehicleComponent implements OnInit {
         this.rentVehicle = res;
         console.log(this.rentVehicle);
       },error => {
-        alert(error.error.Message);
+        console.log(error);
       });
   }
 

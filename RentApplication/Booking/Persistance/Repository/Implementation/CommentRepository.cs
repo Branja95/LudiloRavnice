@@ -7,15 +7,11 @@ namespace Booking.Persistance.Repository.Implementation
 {
     public class CommentRepository : Repository<Comment, long>, ICommentRepository
     {
-        private readonly DbContext _context;
-        public CommentRepository(DbContext context) : base(context)
-        {
-            _context = context;
-        }
+        public CommentRepository(DbContext context) : base(context) { }
 
-        public IEnumerable<Comment> GetAll(int pageIndex, int pageSize)
+        public IEnumerable<Comment> GetAll(long serviceId)
         {
-            return BookingDbContext.Comments.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            return BookingDbContext.Comments.Where(x => x.ServiceId == serviceId);
         }
 
         public long Count()
@@ -23,6 +19,12 @@ namespace Booking.Persistance.Repository.Implementation
             return BookingDbContext.Set<Comment>().Count();
         }
 
-        protected BookingDbContext BookingDbContext { get { return context as BookingDbContext; } }
+        protected BookingDbContext BookingDbContext
+        {
+            get
+            {
+                return context as BookingDbContext;
+            }
+        }
     }
 }

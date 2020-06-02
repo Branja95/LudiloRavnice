@@ -80,7 +80,6 @@ export class VehicleComponent implements OnInit {
   getSearchVehicles(searchVehicle: SearchVehicle){
     this.vehicleService.searchVehicles(searchVehicle.VehicleTypeId, searchVehicle.PriceFrom, searchVehicle.PriceTo, searchVehicle.Manufactor, searchVehicle.Model).subscribe(
       res => {
-        console.log('1', res)
         this.vehicles = res as Array<Vehicle>;
         this.setShowPage(1);
       },
@@ -109,7 +108,6 @@ export class VehicleComponent implements OnInit {
       .subscribe(
         res => {
           this.pagedVehicles = res as Array<Vehicle>;
-          console.log(this.pagedVehicles);
         },
         error=> {
           console.log(error);

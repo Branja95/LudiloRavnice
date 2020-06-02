@@ -22,7 +22,7 @@ export class ApproveServiceAdminComponent implements OnInit {
         console.log(res);
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       })
   }
 
@@ -35,7 +35,7 @@ export class ApproveServiceAdminComponent implements OnInit {
         this.router.navigate(['/RentVehicle']);
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       })
   }
 
@@ -48,7 +48,7 @@ export class ApproveServiceAdminComponent implements OnInit {
         this.router.navigate(['/RentVehicle']);
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       })
   }
 }

@@ -10,7 +10,6 @@ namespace RentVehicle.Persistance.UnitOfWork
         IServiceForApprovalRepository ServicesForApproval { get; set; }
         IVehicleRepository Vehicles { get; set; }
         IVehicleTypeRepository VehicleTypes { get; set; }
-
         int Complete();
     }
 }

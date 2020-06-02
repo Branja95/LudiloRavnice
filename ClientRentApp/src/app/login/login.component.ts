@@ -41,14 +41,10 @@ export class LoginComponent implements OnInit {
     let decodedJwtJsonData = window.atob(jwtData)
     let decodedJwtData = JSON.parse(decodedJwtJsonData)
     
-    let role = decodedJwtData.role
-    let uniqueName = decodedJwtData.unique_name
-    let nameid = decodedJwtData.nameid;
-
     localStorage.setItem('jwt', jwt)
-    localStorage.setItem('role', role);
-    localStorage.setItem('username', uniqueName);
-    localStorage.setItem('nameid', nameid);
+    localStorage.setItem('role', decodedJwtData.role);
+    localStorage.setItem('username', decodedJwtData.username);
+    localStorage.setItem('id', decodedJwtData.id);
   
   }
 

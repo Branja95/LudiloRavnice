@@ -25,14 +25,13 @@ export class ReserveAVehicleComponent implements OnInit {
       res => {
         this.branchOffices = res as Array<BranchOffice>;
       },error => {
-        alert(error);
+        console.log(error);
     });
   }
 
   onSubmit(form: NgForm, reservation: Reservation) {
     this.reservationService.createReservation(reservation, this.VehicleId).subscribe(
       res => {
-        alert(res);
       }, error => {
         console.log(error);
       });

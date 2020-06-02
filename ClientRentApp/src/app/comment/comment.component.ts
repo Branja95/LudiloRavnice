@@ -49,8 +49,7 @@ export class CommentComponent implements OnInit {
   }
   
   canUserEditComment(userId) : boolean {
-    console.log("T:" + localStorage.getItem("username"));
-    if(localStorage.getItem("username") == userId)
+    if(localStorage.getItem("id") == userId)
     {
       return true;
     }

@@ -1,12 +1,12 @@
 ﻿using Booking.Persistance.Repository;
 using Booking.Persistance.Repository.Implementation;
+using Microsoft.EntityFrameworkCore;
 
 namespace Booking.Persistance.UnitOfWork.Implementation
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public readonly BookingDbContext _context;
-
+        private readonly DbContext _context;
 
         private ICommentRepository commentRepository;
         private IRatingRepository ratingRepository;
@@ -23,6 +23,7 @@ namespace Booking.Persistance.UnitOfWork.Implementation
                 this.commentRepository = value;
             }
         }
+
         public IRatingRepository Ratings
         {
             get
@@ -34,6 +35,7 @@ namespace Booking.Persistance.UnitOfWork.Implementation
                 this.ratingRepository = value;
             }
         }
+
         public IReservationRepository Reservations
         {
             get
@@ -45,6 +47,12 @@ namespace Booking.Persistance.UnitOfWork.Implementation
                 this.reservationRepository = value;
             }
         }
+
+        public UnitOfWork(DbContext context)
+        {
+            _context = context;
+        }
+
         public int Complete()
         {
             return _context.SaveChanges();

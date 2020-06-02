@@ -2,7 +2,6 @@
 using RentVehicle.Models.Entities;
 using System.Collections.Generic;
 using System.Linq;
-using System.Data;
 
 namespace RentVehicle.Persistance.Repository.Implementation
 {
@@ -18,6 +17,14 @@ namespace RentVehicle.Persistance.Repository.Implementation
                 .ThenInclude(vehicle => vehicle.VehicleType)
                 .FirstOrDefault();
         }
+
+        public new IEnumerable<Service> GetAll()
+        {
+            return RentVehicleDbContext.Services
+                .Include(service => service.BranchOfficces)
+                .Include(service => service.Vehicles);
+        }
+
 
         public IEnumerable<Service> GetAll(int pageIndex, int pageSize)
         {

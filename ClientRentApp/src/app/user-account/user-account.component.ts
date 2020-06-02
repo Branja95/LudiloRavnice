@@ -20,7 +20,6 @@ export class UserAccountComponent implements OnInit {
       },
       error => {
         localStorage.clear();
-        console.log(error);
       })
     this.approved = true;
   }

@@ -21,18 +21,18 @@ export class VehicleTypesComponent implements OnInit {
         this.vehicleTypes = data;
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       });
   }
 
   onAdd(VehicleType){
     this.vehicleTypesService.postMethodVehicleTypes(VehicleType).subscribe(
       res => {
-        alert(res);
+        console.log(res)
         this.router.navigateByUrl("/VehicleTypes");
       },
       error => {
-        alert(error);
+        console.log(error);
       });
   }
 

@@ -7,18 +7,19 @@ namespace Booking.Persistance.Repository.Implementation
 {
     public class RatingRepository : Repository<Rating, long>, IRatingRepository
     {
-        private readonly DbContext _context;
+        public RatingRepository(DbContext context) : base(context) { }
 
-        public RatingRepository(DbContext context) : base(context)
+        public IEnumerable<Rating> GetAll(long serviceId)
         {
-            _context = context;
+            return BookingDbContext.Ratings.Where(x=>x.ServiceId == serviceId);
         }
 
-        public IEnumerable<Rating> GetAll(int pageIndex, int pageSize)
+        protected BookingDbContext BookingDbContext
         {
-            return BookingDbContext.Ratings.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            get
+            {
+                return context as BookingDbContext;
+            }
         }
-
-        protected BookingDbContext BookingDbContext { get { return context as BookingDbContext; } }
     }
 }

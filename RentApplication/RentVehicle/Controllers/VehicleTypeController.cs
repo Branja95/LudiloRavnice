@@ -47,52 +47,6 @@ namespace RentVehicle.Controllers
         }
 
 
-        [HttpPut]
-        [Route("PutVehicleType")]
-        [Authorize(Roles = "Administrator")]
-        public IActionResult PutVehicleType(UpdateVehicleTypeBindingModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            else
-            {
-                VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(model.Id);
-                if (vehicleType == null)
-                {
-                    return BadRequest();
-                }
-                else
-                {
-                    vehicleType.TypeName = model.TypeName;
-
-                    try
-                    {
-                        lock (lockObjectForVehicleTypes)
-                        {
-                            _unitOfWork.VehicleTypes.Update(vehicleType);
-                            _unitOfWork.Complete();
-                        }
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!VehicleTypeExists(vehicleType.Id))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-
-                    return Ok();
-                }
-            }
-        }
-
-
         [HttpPost]
         [Route("PostVehicleType")]
         [Authorize(Roles = "Administrator")]
@@ -119,7 +73,7 @@ namespace RentVehicle.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VehicleTypeExists(vehicleType.Id))
+                    if (_unitOfWork.VehicleTypes.Get(vehicleType.Id) == null)
                     {
                         return NotFound();
                     }
@@ -130,6 +84,51 @@ namespace RentVehicle.Controllers
                 }
 
                 return Ok();
+            }
+        }
+
+
+        [HttpPut]
+        [Route("PutVehicleType")]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult PutVehicleType(UpdateVehicleTypeBindingModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            else
+            {
+                VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(model.Id);
+                if (vehicleType == null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    vehicleType.TypeName = model.TypeName;
+                    try
+                    {
+                        lock (lockObjectForVehicleTypes)
+                        {
+                            _unitOfWork.VehicleTypes.Update(vehicleType);
+                            _unitOfWork.Complete();
+                        }
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (_unitOfWork.VehicleTypes.Get(vehicleType.Id) == null)
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                    return Ok();
+                }
             }
         }
 
@@ -156,7 +155,7 @@ namespace RentVehicle.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VehicleTypeExists(vehicleType.Id))
+                    if (_unitOfWork.VehicleTypes.Get(vehicleType.Id) == null)
                     {
                         return NotFound();
                     }
@@ -168,12 +167,6 @@ namespace RentVehicle.Controllers
 
                 return Ok(vehicleType);
             }
-        }
-
-
-        private bool VehicleTypeExists(long id)
-        {
-            return _unitOfWork.VehicleTypes.Get(id) != null;
         }
     }
 }

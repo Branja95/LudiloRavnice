@@ -24,35 +24,35 @@ export class RentVehicleService {
   }
 
   getMethodComments(serviceId : string){
-    return this.httpClient.get("https://localhost:44367/api/Service/GetComments?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:44383/api/Comment/GetComments?serviceId=" + serviceId);
   }
 
   getMethodRatings(serviceId : string){
-    return this.httpClient.get("https://localhost:44367/api/Service/GetRatings?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:44383/api/Rating/GetRatings?serviceId=" + serviceId);
   }
 
   getMethodServicesForApproves(): Observable<any> {
-    return this.httpClient.get("https://localhost:44367/api/Service/ServicesForApproves");
+    return this.httpClient.get("https://localhost:44367/api/Service/ServicesForApproval");
   }
 
   getMethodHasUserCommented(serviceId : string){
-    return this.httpClient.get("https://localhost:44367/api/Service/HasUserCommented?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:44383/api/Comment/HasUserCommented?serviceId=" + serviceId);
   }
   
   getMethodHasUserRated(serviceId : string){
-    return this.httpClient.get("https://localhost:44367/api/Service/HasUserRated?serviceId=" + serviceId);
+    return this.httpClient.get("https://localhost:44383/api/Rating/HasUserRated?serviceId=" + serviceId);
   }
   
   deleteService(serviceId): Observable<any>{
     return this.httpClient.delete("https://localhost:44367/api/Service/DeleteService?serviceId=" + serviceId);
   }
 
-  postMethodApproveService(id : number) {
-    return this.httpClient.post("https://localhost:44367/api/Service/ApproveService", id);
+  postMethodApproveService(serviceId : number) {
+    return this.httpClient.post("https://localhost:44367/api/Service/ApproveService", serviceId);
   }
 
-  postMethodRejectService(id : number) {
-    return this.httpClient.post("https://localhost:44367/api/Service/RejectService", id);
+  postMethodRejectService(serviceId : number) {
+    return this.httpClient.post("https://localhost:44367/api/Service/RejectService", serviceId);
   }
 
   postMethodCreateRentVehicleService(rentVehicle, uploadedImage: File): Observable<any> {

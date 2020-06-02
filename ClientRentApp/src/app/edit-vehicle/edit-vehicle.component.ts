@@ -33,7 +33,7 @@ export class EditVehicleComponent implements OnInit {
         this.getAvailable(data.IsAvailable);
         this.getYearMade(data.YearMade);
       },error => {
-        alert(error.error.Message);
+        console.log(error);
       });
   }
 
@@ -57,7 +57,7 @@ export class EditVehicleComponent implements OnInit {
     this.vehicleService.editVehicle(this.VehicleId, vehicle, this.uploadedFiles)
     .subscribe(
       data => {
-        alert(data);
+        console.log(data);
       }, error => {
         console.log(error);
       });
@@ -65,7 +65,7 @@ export class EditVehicleComponent implements OnInit {
       form.reset();
       this.urls = new Array<string>();
       this.uploadedFiles = null;
-      this.router.navigateByUrl("/Vehicle");
+      this.router.navigateByUrl("Vehicles/" + this.VehicleId);
   }
 
   getVehicleTypes() { 
