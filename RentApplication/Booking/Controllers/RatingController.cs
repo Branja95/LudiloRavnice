@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Booking.Models.Entities;
@@ -10,6 +12,7 @@ using Booking.Persistance.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using static Booking.Models.Bindings.RatingBindingModel;
 
 namespace Booking.Controllers
@@ -23,11 +26,16 @@ namespace Booking.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
+        private readonly string serviceUrl;
+
         public RatingController(IUnitOfWork unitOfWork,
-            UserManager<ApplicationUser> applicationUserManager)
+            UserManager<ApplicationUser> applicationUserManager,
+            IConfiguration configuration)
         {
             _userManager = applicationUserManager;
             _unitOfWork = unitOfWork;
+
+            serviceUrl = configuration["RentVehicleService:ServiceUrl"];
         }
 
 
@@ -92,29 +100,38 @@ namespace Booking.Controllers
             else
             {
                 ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                if (!CanRating(user.Id))
+                using (HttpClient httpClient = new HttpClient())
                 {
+                    HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(serviceUrl + model.ServiceId).ConfigureAwait(true);
+                    if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                    {
+                        Service service = await httpResponseMessage.Content.ReadAsAsync<Service>().ConfigureAwait(false);
+                        if (!CanUserRate(user.Id, service))
+                        {
+                            return BadRequest();
+                        }
+                        Rating rating = new Rating
+                        {
+                            UserId = user.Id,
+                            ServiceId = model.ServiceId,
+                            Value = model.Value
+                        };
+
+                        try
+                        {
+                            _unitOfWork.Ratings.Add(rating);
+                            _unitOfWork.Complete();
+                        }
+                        catch (DBConcurrencyException)
+                        {
+                            return NotFound();
+                        }
+
+                        return Ok();
+                    }
+
                     return BadRequest();
                 }
-
-                Rating rating = new Rating
-                {
-                    UserId = user.Id,
-                    ServiceId = model.ServiceId,
-                    Value = model.Value
-                };
-
-                try
-                {
-                    _unitOfWork.Ratings.Add(rating);
-                    _unitOfWork.Complete();
-                }
-                catch (DBConcurrencyException)
-                {
-                    return NotFound();
-                }
-
-                return Ok();
             }
         }
 
@@ -158,21 +175,17 @@ namespace Booking.Controllers
         }
 
 
-        private bool CanRating(string userId)
+        private bool CanUserRate(string userId, Service service)
         {
-            /*
-            IEnumerable<Reservation> reservations = null;
-
             foreach (Vehicle vehicle in service.Vehicles)
             {
-                reservations = _unitOfWork.Reservations.Find(r => r.Vehicle.Id == vehicle.Id && r.UserId == userId && r.ReservationEnd < DateTime.Now);
-                if (reservations.Any())
+                if (_unitOfWork.Reservations.Find(r => r.VehicleId == vehicle.Id && r.UserId == userId && r.ReservationEnd < DateTime.Now).Any())
                 {
                     return true;
                 }
             }
-            */
-            return true;
+
+            return false;
         }
     }
 }

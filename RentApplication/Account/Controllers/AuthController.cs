@@ -45,7 +45,7 @@ namespace AccountManaging.Controllers
                 Claim[] claims = new[] {
                      new Claim("role", role.FirstOrDefault()),
                      new Claim("username", user.Email),
-                     new Claim("id", user.Id)
+                     new Claim("nameid", user.Id)
                 };
 
                 JwtSecurityToken token = new JwtSecurityToken(

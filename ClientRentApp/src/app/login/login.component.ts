@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
     localStorage.setItem('jwt', jwt)
     localStorage.setItem('role', decodedJwtData.role);
     localStorage.setItem('username', decodedJwtData.username);
-    localStorage.setItem('id', decodedJwtData.id);
+    localStorage.setItem('nameid', decodedJwtData.nameid);
   
   }
 

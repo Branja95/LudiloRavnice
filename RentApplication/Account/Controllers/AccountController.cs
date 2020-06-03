@@ -86,6 +86,20 @@ namespace AccountManaging.Controllers
             return Ok(userRoles);
         }
 
+        [HttpGet]
+        [Route("IsAccountApproved")]
+        public IActionResult IsAccountApproved(string userId)
+        {
+            if (_unitOfWork.AccountsForApproval.Find(a => a.UserId == userId).Any())
+            {
+                return NotFound(false);
+            }
+            else
+            {
+                return Ok(true);
+            }
+        }
+
 
         [HttpGet]
         [Authorize(Roles = "Administrator")]

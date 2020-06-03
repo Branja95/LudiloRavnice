@@ -87,9 +87,9 @@ namespace RentVehicle.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("GetBranchOffice")]
-        public IActionResult GetBranchOffice([FromQuery] long branchOfficeId)
+        public IActionResult GetBranchOffice([FromQuery] long id)
         {
-            BranchOffice branchOffice = _unitOfWork.BranchOffices.Get(branchOfficeId);
+            BranchOffice branchOffice = _unitOfWork.BranchOffices.Get(id);
             if (branchOffice == null)
             {
                 return NotFound();

@@ -20,11 +20,11 @@ export class ReservationService {
   createReservation(reservation: Reservation, vehicleId): Observable<any> {
     this.formData = new FormData();
 
-    this.formData.append('VehicleId', vehicleId);
-    this.formData.append('ReservationStart', reservation.reservationStartDate + 'T' + reservation.reservationStartTime);
-    this.formData.append('ReservationEnd', reservation.reservationEndDate + 'T' + reservation.reservationEndTime);
-    this.formData.append('RentBranchOfficeId', reservation.rentBranchOfficeId);
-    this.formData.append('ReturnBranchOfficeId', reservation.returnBranchOfficeId)
+    this.formData.append('vehicleId', vehicleId);
+    this.formData.append('rentBranchOfficeId', reservation.rentBranchOfficeId);
+    this.formData.append('returnBranchOfficeId', reservation.returnBranchOfficeId)
+    this.formData.append('reservationStart', reservation.reservationStartDate + 'T' + reservation.reservationStartTime);
+    this.formData.append('reservationEnd', reservation.reservationEndDate + 'T' + reservation.reservationEndTime);
     
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')

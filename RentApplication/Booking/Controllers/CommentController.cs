@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Booking.Models.Entities;
@@ -10,6 +12,7 @@ using Booking.Persistance.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using static Booking.Models.Bindings.CommentBindingModel;
 
 namespace Booking.Controllers
@@ -23,11 +26,16 @@ namespace Booking.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
+        private readonly string serviceUrl;
+
         public CommentController(IUnitOfWork unitOfWork,
-            UserManager<ApplicationUser> applicationUserManager)
+            UserManager<ApplicationUser> applicationUserManager,
+            IConfiguration configuration)
         {
             _userManager = applicationUserManager;
             _unitOfWork = unitOfWork;
+
+            serviceUrl = configuration["RentVehicleService:ServiceUrl"];
         }
 
 
@@ -92,33 +100,42 @@ namespace Booking.Controllers
             else
             {
                 ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                if (!CanComment(user.Id))
+                using (HttpClient httpClient = new HttpClient())
                 {
-                    return BadRequest();
-                }
-
-                Comment comment = new Comment
-                {
-                    UserId = user.Id,
-                    ServiceId = model.ServiceId,
-                    Text = model.Text,
-                    DateTime = DateTime.Now
-                };
-
-                try
-                {
-                    lock (lockObjectForComments)
+                    HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(serviceUrl + model.ServiceId).ConfigureAwait(true);
+                    if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
                     {
-                        _unitOfWork.Comments.Add(comment);
-                        _unitOfWork.Complete();
+                        Service service = await httpResponseMessage.Content.ReadAsAsync<Service>().ConfigureAwait(false);
+                        if (!CanUserComment(user.Id, service))
+                        {
+                            return BadRequest();
+                        }
+
+                        Comment comment = new Comment
+                        {
+                            UserId = user.Id,
+                            ServiceId = model.ServiceId,
+                            Text = model.Text,
+                            DateTime = DateTime.Now
+                        };
+
+                        try
+                        {
+                            lock (lockObjectForComments)
+                            {
+                                _unitOfWork.Comments.Add(comment);
+                                _unitOfWork.Complete();
+                            }
+                        }
+                        catch (DBConcurrencyException)
+                        {
+                            return NotFound();
+                        }
+
+                        return Ok();
                     }
-                }
-                catch (DBConcurrencyException)
-                {
                     return NotFound();
                 }
-
-                return Ok();
             }
         }
 
@@ -157,23 +174,17 @@ namespace Booking.Controllers
         }
 
 
-        private bool CanComment(string userId)
+        private bool CanUserComment(string userId, Service service)
         {
-            /*
-            IEnumerable<Reservation> reservations = null;
-
             foreach (Vehicle vehicle in service.Vehicles)
             {
-                reservations = _unitOfWork.Reservations.Find(r => r.Vehicle.Id == vehicle.Id && r.UserId == userId && r.ReservationEnd < DateTime.Now);
-
-                if (reservations.Any())
+                if (_unitOfWork.Reservations.Find(r => r.VehicleId == vehicle.Id && r.UserId == userId && r.ReservationEnd < DateTime.Now).Any())
                 {
                     return true;
                 }
             }
-            */
 
-            return true;
+            return false;
         }
     }
 }

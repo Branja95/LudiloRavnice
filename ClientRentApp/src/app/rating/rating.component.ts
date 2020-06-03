@@ -48,7 +48,7 @@ export class RatingComponent implements OnInit {
   }
 
   canUserEditRating(userId) : boolean {
-    if(localStorage.getItem("id") == userId)
+    if(localStorage.getItem("nameid") == userId)
     {
       return true;
     }

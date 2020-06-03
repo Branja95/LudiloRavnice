@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Booking.Models.Entities;
 using Booking.Models.IdentityUsers;
 using Booking.Persistance.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using static Booking.Models.Bindings.ReservationBindingmodel;
 
 namespace Booking.Controllers
@@ -26,183 +25,143 @@ namespace Booking.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
+        private readonly string accountServiceUrl;
+        private readonly string vehicleServiceUrl;
+        private readonly string branchOfficeUrl;
+
         public ReservationController(IUnitOfWork unitOfWork,
-            UserManager<ApplicationUser> applicationUserManager)
+            UserManager<ApplicationUser> applicationUserManager,
+            IConfiguration configuration)
         {
             _userManager = applicationUserManager;
             _unitOfWork = unitOfWork;
+
+            accountServiceUrl = configuration["AccountService:AccountServiceUrl"];
+            vehicleServiceUrl = configuration["RentVehicleService:VehicleServiceUrl"];
+            branchOfficeUrl = configuration["RentVehicleService:BranchOfficeUrl"];
         }
 
 
-        // GET: api/Reservations
-        public IEnumerable<Reservation> GetReservations()
-        {
-            return _unitOfWork.Reservations.GetAll();
-        }
-
-        // GET: api/Reservations/5
-        public IActionResult GetReservation(int id)
-        {
-            Reservation reservation = _unitOfWork.Reservations.Get(id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(reservation);
-        }
-
-
-        // POST: api/Reservations/PostReservation
         [HttpPost]
         [Route("PostReservation")]
         [Authorize(Roles = "Administrator, Manager, Client")]
-        public async Task<IActionResult> PostReservationAsync(CreateReservationBindingModel model)
+        public async Task<IActionResult> PostReservationAsync([FromForm] CreateReservationBindingModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            else
+            {
+                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(accountServiceUrl + user.Id).ConfigureAwait(true);
+                    if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                    {
+                        httpResponseMessage = await httpClient.GetAsync(vehicleServiceUrl + model.VehicleId).ConfigureAwait(true);
+                        if(httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                        {
+                            Vehicle vehicle = await httpResponseMessage.Content.ReadAsAsync<Vehicle>().ConfigureAwait(false);
+                            if(string.IsNullOrEmpty(VerifyVehicle(vehicle, model)))
+                            {
+                                return BadRequest(VerifyVehicle(vehicle, model));
+                            }
 
-            //if (_unitOfWork.AccountsForApprove.Find(a => a.UserId == UserManager.FindById(User.Identity.GetUserId()).Id).Count() > 0)
-            //{
-            //    return BadRequest("Your account is not approved.");
-            //}
+                            httpResponseMessage = await httpClient.GetAsync(branchOfficeUrl + model.RentBranchOfficeId).ConfigureAwait(true);
+                            if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                            {
+                                BranchOffice rentBranchOffice = await httpResponseMessage.Content.ReadAsAsync<BranchOffice>().ConfigureAwait(false);
+                                if (rentBranchOffice == null)
+                                {
+                                    BadRequest("Non-existent rent branch office.");
+                                }
+                                else
+                                {
+                                    httpResponseMessage = await httpClient.GetAsync(branchOfficeUrl + model.ReturnBranchOfficeId).ConfigureAwait(true);
+                                    if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                                    {
+                                        BranchOffice returnBranchOffice = await httpResponseMessage.Content.ReadAsAsync<BranchOffice>().ConfigureAwait(false);
+                                        if (returnBranchOffice == null)
+                                        {
+                                            BadRequest("Non-existent return rent branch office.");
+                                        }
+                                        else
+                                        {
+                                            lock (lockObjectForReservations)
+                                            {
+                                                IEnumerable<Reservation> vehicleReservations = _unitOfWork.Reservations.Find(r => r.Id == vehicle.Id);
+                                                int numOfexcessiveReservations = vehicleReservations.Count(r => (r.ReservationStart <= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart <= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd));
 
-            // Vehicle vehicle = _unitOfWork.Vehicles.Get(model.VehicleId);
-            Vehicle vehicle = new Vehicle();
+                                                if (numOfexcessiveReservations > 0)
+                                                {
+                                                    BadRequest("The vehicle was rented in a given period.");
+                                                }
+
+                                                Reservation reservation = new Reservation()
+                                                {
+                                                    VehicleId = vehicle.Id,
+                                                    UserId = user.Id,
+                                                    ReservationStart = model.ReservationStart,
+                                                    ReservationEnd = model.ReservationEnd,
+                                                    RentBranchOfficeId = rentBranchOffice.Id,
+                                                    ReturnBranchOfficeId = returnBranchOffice.Id
+                                                };
+
+                                                try
+                                                {
+                                                    _unitOfWork.Reservations.Add(reservation);
+                                                    _unitOfWork.Complete();
+                                                }
+                                                catch (Exception)
+                                                {
+                                                    return NotFound();
+                                                }
+
+                                                return Ok();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return BadRequest();
+                }
+            }
+        }
+
+        private string VerifyVehicle(Vehicle vehicle, CreateReservationBindingModel reservation)
+        {
+            string errorMessage = string.Empty;
+
             if (vehicle == null)
             {
-                return BadRequest("Non-existent vehicle.");
+                errorMessage = "Vehicle doesn't exist.";
             }
-
-            if (!vehicle.IsAvailable)
+            else
             {
-                return BadRequest("Vehicle is unavailable.");
-            }
-
-            if (model.ReservationStart >= model.ReservationEnd)
-            {
-                BadRequest("Reservation start date and time must be greater than reservation end date and time.");
-            }
-
-            if (model.ReservationStart < DateTime.Now)
-            {
-                BadRequest("Reservation start date and time must be greater than current date and time.");
-            }
-
-            if (model.ReservationEnd < DateTime.Now)
-            {
-                BadRequest("Reservation end date and time must be greater than current date and time.");
-            }
-
-            //BranchOffice rentBranchOffice = _unitOfWork.BranchOffices.Get(model.RentBranchOfficeId);
-            BranchOffice rentBranchOffice = new BranchOffice();
-            if (rentBranchOffice == null)
-            {
-                BadRequest("Non-existent rent branch office.");
-            }
-
-
-            //BranchOffice returnBranchOffice = _unitOfWork.BranchOffices.Get(model.ReturnBranchOfficeId);
-            BranchOffice returnBranchOffice = new BranchOffice();
-            if (returnBranchOffice == null)
-            {
-                BadRequest("Non-existent return branch office.");
-            }
-
-            //lock (lockObjectForReservations)
-            //{
-                IEnumerable<Reservation> vehicleReservations = _unitOfWork.Reservations.Find(r => r.Id == vehicle.Id);
-
-                int numOfexcessiveReservations = vehicleReservations.Where(r => (r.ReservationStart <= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart <= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd)).Count();
-
-                if (numOfexcessiveReservations > 0)
+                if (!vehicle.IsAvailable)
                 {
-                    BadRequest("The vehicle was rented in a given period.");
+                    errorMessage = "Vehicle isn't available.";
                 }
-
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                Reservation reservation = new Reservation()
+                if (reservation.ReservationStart >= reservation.ReservationEnd)
                 {
-                    Vehicle = vehicle,
-                    UserId = user.Id,
-                    ReservationStart = model.ReservationStart,
-                    ReservationEnd = model.ReservationEnd,
-                    RentBranchOffice = rentBranchOffice,
-                    ReturnBranchOffice = returnBranchOffice
-                };
-
-                try
-                {
-                    _unitOfWork.Reservations.Add(reservation);
-                    _unitOfWork.Complete();
+                    errorMessage = "Reservation start date and time must be greater than reservation end date and time.";
+                    BadRequest();
                 }
-                catch (DBConcurrencyException)
+                if (reservation.ReservationStart < DateTime.Now)
                 {
-                    return NotFound();
+                    errorMessage = "Reservation start date and time must be greater than current date and time.";
                 }
-
-            //}
-
-            return Ok("Reservation successfully created.");
-        }
-
-
-
-        // PUT: api/Reservations/5
-        public IActionResult PutReservation(int id, Reservation reservation)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != reservation.Id)
-            {
-                return BadRequest();
-            }
-
-            try
-            {
-                _unitOfWork.Reservations.Update(reservation);
-                _unitOfWork.Complete();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReservationExists(id))
+                if (reservation.ReservationEnd < DateTime.Now)
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    errorMessage = "Reservation end date and time must be greater than current date and time.";
                 }
             }
 
-            //return StatusCode(HttpStatusCode.NoContent);
-            return BadRequest();
-        }
-
-
-        // DELETE: api/Reservations/5
-        public IActionResult DeleteReservation(int id)
-        {
-            Reservation reservation = _unitOfWork.Reservations.Get(id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-
-            _unitOfWork.Reservations.Remove(reservation);
-            _unitOfWork.Complete();
-
-            return Ok(reservation);
-        }
-
-        private bool ReservationExists(int id)
-        {
-            return _unitOfWork.Reservations.Get(id) != null;
+            return errorMessage;
         }
     }
 }

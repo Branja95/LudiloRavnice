@@ -49,7 +49,7 @@ export class CommentComponent implements OnInit {
   }
   
   canUserEditComment(userId) : boolean {
-    if(localStorage.getItem("id") == userId)
+    if(localStorage.getItem("nameid") == userId)
     {
       return true;
     }

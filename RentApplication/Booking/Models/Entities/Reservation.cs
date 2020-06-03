@@ -14,10 +14,10 @@ namespace Booking.Models.Entities
 
         public DateTime ReservationEnd { get; set; }
 
-        public virtual Vehicle Vehicle { get; set; }
+        public long VehicleId { get; set; }
 
-        public virtual BranchOffice RentBranchOffice { get; set; }
+        public long RentBranchOfficeId { get; set; }
 
-        public virtual BranchOffice ReturnBranchOffice { get; set; }
+        public long ReturnBranchOfficeId { get; set; }
     }
 }

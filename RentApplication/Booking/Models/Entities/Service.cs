@@ -5,7 +5,6 @@ namespace Booking.Models.Entities
 {
     public class Service
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public string Creator { get; set; }
         public string Name { get; set; }

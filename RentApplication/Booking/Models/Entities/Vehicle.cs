@@ -5,7 +5,6 @@ namespace Booking.Models.Entities
 {
     public class Vehicle
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
         public string Model { get; set; }
