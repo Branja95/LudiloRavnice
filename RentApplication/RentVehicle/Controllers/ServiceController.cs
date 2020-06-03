@@ -9,8 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using RentVehicle.Helpers;
+using RentVehicle.Hubs;
 using RentVehicle.Models.Entities;
 using RentVehicle.Models.IdentityUsers;
 using RentVehicle.Persistance.UnitOfWork;
@@ -29,6 +31,7 @@ namespace RentVehicle.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
         private readonly IHostingEnvironment _environment;
         private readonly IConfiguration _configuration;
@@ -36,12 +39,14 @@ namespace RentVehicle.Controllers
         public ServiceController(UserManager<ApplicationUser> userManager,
            IUnitOfWork unitOfWork,
            IEmailService emailService,
+            IHubContext<NotificationHub> hubContext,
            IHostingEnvironment environment,
            IConfiguration configuration)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _emailService = emailService;
+            _hubContext = hubContext;
             _environment = environment;
             _configuration = configuration;
         }
@@ -133,7 +138,6 @@ namespace RentVehicle.Controllers
         [Authorize(Roles = "Administrator")]
         public IActionResult ServicesForApprovalCount()
         {
-            int a = _unitOfWork.Services.Find(service => !service.IsApproved).Count();
             return Ok(_unitOfWork.Services.Find(service => !service.IsApproved).Count());
         }
 
@@ -257,7 +261,9 @@ namespace RentVehicle.Controllers
                 {
                     return NotFound();
                 }
-                //NotificationHub.NewRentVehicleServiceToApprove(unitOfWork.Services.Find(s => !s.IsApproved).Count());
+
+                await _hubContext.Clients.All.SendAsync("newRentAVehicleServiceToApprove", _unitOfWork.ServicesForApproval.Count());
+
                 return Ok();
             }
         }

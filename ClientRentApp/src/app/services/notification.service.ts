@@ -1,4 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
+import * as signalR from "@aspnet/signalr";
 
 declare var $: any;  
 
@@ -7,9 +8,11 @@ declare var $: any;
   })
 
 export class NotificationService {
+  
+  private hubConnection: signalR.HubConnection;
 
   private proxy: any;  
-  private proxyName: string = 'Notifications';  
+  private proxyName: string = 'notificationHub';  
   public connection: any;  
   // create the Event Emitter  
   public messageAccountReceived: EventEmitter < number > ;  
@@ -18,49 +21,45 @@ export class NotificationService {
   public connectionExists: Boolean;  
 
   constructor() {  
-    // Constructor initialization  
+    this.connectionExists = false;  
     this.connectionEstablished = new EventEmitter < Boolean > ();  
     this.messageAccountReceived = new EventEmitter < number > ();  
     this.messageServiceReceived = new EventEmitter < number > ();  
-    this.connectionExists = false;  
-    // create hub connection  
-    //this.connection = $.hubConnection("https://localhost:44366/");  
-    //this.connection.qs = { "token" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiJ9.eyJuYW1laWQiOiJhZG1pbiIsInVuaXF1ZV9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL2FjY2Vzc2NvbnRyb2xzZXJ2aWNlLzIwMTAvMDcvY2xhaW1zL2lkZW50aXR5cHJvdmlkZXIiOiJBU1AuTkVUIElkZW50aXR5IiwiQXNwTmV0LklkZW50aXR5LlNlY3VyaXR5U3RhbXAiOiI5NjZjM2U5MC0yMWVmLTQ2OWEtOGFlMC0zMDVmYmE5ZWJlZjYiLCJyb2xlIjoiQWRtaW4iLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUxNjgwIiwiYXVkIjoiYldsc1lYTm9hVzQ9IiwiZXhwIjoxNTI4ODAyNzg1LCJuYmYiOjE1Mjg3MTYzODV9.R4YkZjxyw550quPqakw-RZ-M0Lc4R8oviyTNZGFqFzj35eg_i1HAv07urPivqfsybq40HEnBPasL8nNSqLak9A" };
-    // create new proxy as name already given in top  
-    //this.proxy = this.connection.createHubProxy(this.proxyName);  
-    // register on server events  
-    //this.registerOnServerAccountEvents();  
-    //.registerOnServerServiceEvents();
-    // call the connecion start method to start the connection to send and receive events.  
-    //this.startConnection();  
+
+    this.buildConnection();
+    this.registerOnServerAccountEvents(); 
+    this.registerOnServerServiceEvents(); 
   }  
 
-  sendStart() : void {
-    this.proxy.invoke("TimeServerUpdates");
+  public buildConnection = () => {
+    this.hubConnection = new signalR.HubConnectionBuilder()
+      .withUrl("https://localhost:44366/notificationHub")
+      .build();
   }
 
-  // check in the browser console for either signalr connected or not  
-  public startConnection(): void {  
-      this.connection.start().done((data: any) => {  
-          console.log('Now connected ' + data.transport.name + ', connection ID= ' + data.id);  
-          this.connectionEstablished.emit(true);  
-          this.connectionExists = true;  
-      }).fail((error: any) => {  
-          console.log('Could not connect ' + error);  
-          this.connectionEstablished.emit(false);  
-      });  
-  }  
+  public startConnection = () => {
+    this.hubConnection
+      .start()
+      .then(() => {
+        this.connectionEstablished.emit(true);  
+        this.connectionExists = true;  
+      })
+      .catch(err => {
+        setTimeout(function(){
+          this.startConnection();
+        }, 500);
+      })
+  }
+
   private registerOnServerAccountEvents(): void {  
-      this.proxy.on('newUserAccountToApprove', (data: number) => {  
-          console.log('Received in NotificationService: ' + JSON.stringify(data));  
+      this.hubConnection.on('newUserAccountToApprove', (data: number) => {  
           this.messageAccountReceived.emit(data);  
       });  
   }  
 
   private registerOnServerServiceEvents(): void {  
-    this.proxy.on('newRentVehicleServiceToApprove', (data: number) => {  
-        console.log('Received in NotificationService: ' + JSON.stringify(data));  
+    this.hubConnection.on('newRentAVehicleServiceToApprove', (data: number) => {  
         this.messageServiceReceived.emit(data);  
     });  
-    }  
+  }  
 }

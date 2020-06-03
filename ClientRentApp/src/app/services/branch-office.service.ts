@@ -18,7 +18,7 @@ export class BranchOfficeService {
   constructor(private httpClient: HttpClient) { }
 
   getBranchOffice(branchOfficeId): Observable<any> {
-    return this.httpClient.get("https://localhost:44367/api/BranchOffice/GetBranchOffice?branchOfficeId=" + branchOfficeId);
+    return this.httpClient.get("https://localhost:44367/api/BranchOffice/GetBranchOffice?id=" + branchOfficeId);
   }
 
   getBranchOffices(serviceId): Observable<any> {

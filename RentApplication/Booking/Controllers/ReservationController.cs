@@ -64,7 +64,7 @@ namespace Booking.Controllers
                         if(httpResponseMessage.StatusCode == HttpStatusCode.OK)
                         {
                             Vehicle vehicle = await httpResponseMessage.Content.ReadAsAsync<Vehicle>().ConfigureAwait(false);
-                            if(string.IsNullOrEmpty(VerifyVehicle(vehicle, model)))
+                            if(!string.IsNullOrEmpty(VerifyVehicle(vehicle, model)))
                             {
                                 return BadRequest(VerifyVehicle(vehicle, model));
                             }
@@ -96,7 +96,7 @@ namespace Booking.Controllers
 
                                                 if (numOfexcessiveReservations > 0)
                                                 {
-                                                    BadRequest("The vehicle was rented in a given period.");
+                                                    return BadRequest("The vehicle was rented in a given period.");
                                                 }
 
                                                 Reservation reservation = new Reservation()

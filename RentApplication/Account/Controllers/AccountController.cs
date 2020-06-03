@@ -168,7 +168,7 @@ namespace AccountManaging.Controllers
             else
             {
                 ApplicationUser applicationUser =  _userManager.FindByIdAsync(userId).Result;
-                if (_userManager.IsInRoleAsync(applicationUser, model.Role).Result)
+                if (!_userManager.IsInRoleAsync(applicationUser, model.Role).Result)
                 {
                     return Ok();
                 }
@@ -177,7 +177,7 @@ namespace AccountManaging.Controllers
                     lock(_lockObjectForAccounts)
                     {
                         string oldRole = _userManager.GetRolesAsync(applicationUser).Result.FirstOrDefault();
-                        _userManager.AddToRoleAsync(applicationUser, model.Role);
+                        _userManager.AddToRoleAsync(applicationUser, "Manager");
                         _userManager.RemoveFromRoleAsync(applicationUser, oldRole);
                     }
                 }

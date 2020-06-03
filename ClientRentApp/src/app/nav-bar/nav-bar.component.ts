@@ -12,7 +12,6 @@ import { NavBarService } from '../services/nav-bar.service';
 export class NavBarComponent implements OnInit {
 
   private username: string;
-  private role : string;
 
   private showNotificationsAccount: boolean;
   private showNotificationsService: boolean;
@@ -93,7 +92,7 @@ export class NavBarComponent implements OnInit {
       if(!this.username)
       {
         this.username = localStorage.username;
-        //this.startHubConnection();      
+        this.startHubConnection();      
         this.getNumOfAccAndServiceForApproval();       
       }
       return true;
@@ -103,7 +102,7 @@ export class NavBarComponent implements OnInit {
   private startHubConnection() : void {
     if(localStorage.role == 'Administrator')
     {
-      this.notificationService.connection.qs = { "token" : `Bearer ${localStorage.jwt}` };
+      //this.notificationService.connection.qs = { "token" : `Bearer ${localStorage.jwt}` };
       this.notificationService.startConnection()
       this.subscribeToAccountEvents();  
       this.subscribeToServiceEvents();

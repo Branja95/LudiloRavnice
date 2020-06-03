@@ -51,6 +51,7 @@ namespace RentVehicle
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<DbContext, RentVehicleDbContext>();
 
+            services.AddSignalR();
             services.AddIdentity<ApplicationUser, ApplicationRole>(
                 options => {
                     options.User.RequireUniqueEmail = false;
@@ -132,7 +133,7 @@ namespace RentVehicle
             app.UseCors("CorsPolicy");
             app.UseSignalR(routes =>
             {
-                routes.MapHub<NotificationHub>("/Notifications");
+                routes.MapHub<NotificationHub>("/notificationHub");
             });
 
             app.UseMvc();

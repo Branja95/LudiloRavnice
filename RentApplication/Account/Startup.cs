@@ -82,6 +82,7 @@ namespace AccountManaging
                 };
             });
 
+            services.AddSignalR();
             services.AddScoped<IEmailService, EmailService>();
 
             services.AddMvc()
@@ -106,7 +107,6 @@ namespace AccountManaging
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -125,13 +125,14 @@ namespace AccountManaging
                 app.UseHsts();
             }
 
+            app.UseWebSockets();
             app.UseHttpsRedirection();
             app.UseAuthentication();
 
             app.UseCors("CorsPolicy");
             app.UseSignalR(routes =>
             {
-                routes.MapHub<NotificationHub>("/Notifications");
+                routes.MapHub<NotificationHub>("/notificationHub");
             });
             app.UseMvc();
 

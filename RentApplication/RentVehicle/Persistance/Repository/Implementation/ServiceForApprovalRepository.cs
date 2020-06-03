@@ -8,7 +8,10 @@ namespace RentVehicle.Persistance.Repository.Implementation
     public class ServiceForApprovalRepository : Repository<ServiceForApproval, long>, IServiceForApprovalRepository
     {
         public ServiceForApprovalRepository(DbContext context) : base(context) { }
-        
+        public new IEnumerable<ServiceForApproval> GetAll()
+        {
+            return RentVehicleDbContext.ServicesForApproval.Where(x => !x.Service.IsApproved);
+        }
         public IEnumerable<ServiceForApproval> GetAll(int pageIndex, int pageSize)
         {
             return RentVehicleDbContext.ServicesForApproval.Skip((pageIndex - 1) * pageSize).Take(pageSize);
