@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,21 +29,24 @@ namespace RentVehicle.Controllers
         private static object lockObjectForVehicles = new object();
 
         private static readonly string folderPath = @"App_Data\vehicle\";
-        private readonly UserManager<ApplicationUser> _userManager;
+
+        private readonly string _isUserInRoleEndpoint;
+        private readonly string _findUserEndpoint;
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHostingEnvironment _environment;
         private readonly IConfiguration _configuration;
 
-        public VehicleController(UserManager<ApplicationUser> userManager,
-            IUnitOfWork unitOfWork,
+        public VehicleController(IUnitOfWork unitOfWork,
             IHostingEnvironment environment,
             IConfiguration configuration)
         {
-            _userManager = userManager;
             _unitOfWork = unitOfWork;
             _environment = environment;
             _configuration = configuration;
+
+            _isUserInRoleEndpoint = configuration["AccountService:IsUserInRoleEndpoint"];
+            _findUserEndpoint = configuration["AccountService:FindUserEndpoint"];
         }
 
         [HttpGet]
@@ -90,6 +94,7 @@ namespace RentVehicle.Controllers
             return Ok(vehicles.Count);
         }
 
+
         [HttpGet]
         [Route("GetNumberOfVehicles")]
         [AllowAnonymous]
@@ -106,24 +111,6 @@ namespace RentVehicle.Controllers
             }
         }
 
-        /*
-        [HttpGet]
-        [Route("GetNumberOfVehicles")]
-        [AllowAnonymous]
-        public IActionResult GetNumberOfVehicles([FromForm] int pageIndex, [FromForm] int pageSize)
-        {
-            IEnumerable<Vehicle> vehicles = _unitOfWork.Vehicles.GetAll();
-            if (vehicles == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return Ok(vehicles.Count());
-            }
-        }
-        
-        */
 
         [HttpGet]
         [Route("GetSearchPagedVehicles")]
@@ -183,15 +170,23 @@ namespace RentVehicle.Controllers
             }
             else
             {
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result)
+               
+                if (IsUserInRole("Manager").Result && !IsUserInRole("Administrator").Result)
                 {
-                    IEnumerable<Service> services = _unitOfWork.Services.GetAll();
-                    foreach (Service service in services)
+                    ApplicationUser user = await FindUser();
+                    if(user == null)
                     {
-                        if (service.Vehicles.Find(v => v.Id == model.VehicleId) != null && service.Creator != user.Id)
+                        return BadRequest();
+                    }
+                    else
+                    {
+                        IEnumerable<Service> services = _unitOfWork.Services.GetAll();
+                        foreach (Service service in services)
                         {
-                            return BadRequest("U can't edit vehicle at this service.");
+                            if (service.Vehicles.Find(v => v.Id == model.VehicleId) != null && service.Creator != user.Id)
+                            {
+                                return BadRequest("U can't edit vehicle at this service.");
+                            }
                         }
                     }
                 }
@@ -204,14 +199,14 @@ namespace RentVehicle.Controllers
                         vehicle.IsAvailable = !vehicle.IsAvailable;
                         _unitOfWork.Vehicles.Update(vehicle);
                         _unitOfWork.Complete();
+
+                        return Ok(_unitOfWork.Vehicles.GetAll());
                     }
                 }
                 catch (DBConcurrencyException)
                 {
                     return NotFound();
                 }
-
-                return Ok();
             }
         }
 
@@ -228,56 +223,62 @@ namespace RentVehicle.Controllers
             else
             {
                 Service service = _unitOfWork.Services.Get(model.ServiceId);
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-                if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result && service.Creator != user.Id)
+                ApplicationUser user = await FindUser();
+                if(user == null)
                 {
                     return BadRequest();
                 }
-
-                VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(model.VehicleTypeId);
-
-                string imageUris = string.Empty;
-                int counter = 0;
-                foreach(IFormFile file in model.Images)
+                else
                 {
-                    counter++;
-                    ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
-                    imageUris += file.FileName;
-                    if(counter < model.Images.Count())
+                    if (IsUserInRole("Manager").Result && !IsUserInRole("Administrator").Result && service.Creator != user.Id)
                     {
-                        imageUris += ";_;";
+                        return BadRequest();
                     }
-                }
 
-                Vehicle vehicle = new Vehicle
-                {
-                    Description = model.Description,
-                    Model = model.Model,
-                    Manufactor = model.Manufactor,
-                    PricePerHour = model.PricePerHour,
-                    YearMade = model.YearMade,
-                    IsAvailable = model.IsAvailable.Equals("IsAvailable"),
-                    Images = imageUris,
-                    VehicleType = vehicleType,
-                };
+                    VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(model.VehicleTypeId);
 
-                try
-                {
-                    lock (lockObjectForVehicles)
+                    string imageUris = string.Empty;
+                    int counter = 0;
+                    foreach (IFormFile file in model.Images)
                     {
-                        service.Vehicles.Add(vehicle);
-                        _unitOfWork.Services.Update(service);
-                        _unitOfWork.Vehicles.Add(vehicle);
-                        _unitOfWork.Complete();
+                        counter++;
+                        ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
+                        imageUris += file.FileName;
+                        if (counter < model.Images.Count())
+                        {
+                            imageUris += ";_;";
+                        }
                     }
-                }
-                catch (DBConcurrencyException)
-                {
-                    return NotFound();
-                }
 
-                return Ok();
+                    Vehicle vehicle = new Vehicle
+                    {
+                        Description = model.Description,
+                        Model = model.Model,
+                        Manufactor = model.Manufactor,
+                        PricePerHour = model.PricePerHour,
+                        YearMade = model.YearMade,
+                        IsAvailable = model.IsAvailable.Equals("IsAvailable"),
+                        Images = imageUris,
+                        VehicleType = vehicleType,
+                    };
+
+                    try
+                    {
+                        lock (lockObjectForVehicles)
+                        {
+                            service.Vehicles.Add(vehicle);
+                            _unitOfWork.Services.Update(service);
+                            _unitOfWork.Vehicles.Add(vehicle);
+                            _unitOfWork.Complete();
+                        }
+                    }
+                    catch (DBConcurrencyException)
+                    {
+                        return NotFound();
+                    }
+
+                    return Ok();
+                }
             }
         }
 
@@ -299,8 +300,13 @@ namespace RentVehicle.Controllers
                     return BadRequest();
                 }
 
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result)
+                ApplicationUser user = await FindUser();
+                if(user == null)
+                {
+                    return BadRequest();
+                }
+
+                if (IsUserInRole("Manager").Result && !IsUserInRole("Administrator").Result)
                 {
                     IEnumerable<Service> services = _unitOfWork.Services.GetAll();
                     foreach (Service service in services)
@@ -377,8 +383,13 @@ namespace RentVehicle.Controllers
             }
             else
             {
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result)
+                ApplicationUser user = await FindUser();
+                if(user == null)
+                {
+                    return BadRequest();
+                }
+
+                if (IsUserInRole("Manager").Result && !IsUserInRole("Administrator").Result)
                 {
                     IEnumerable<Service> services = _unitOfWork.Services.GetAll();
                     foreach (Service service in services)
@@ -407,7 +418,41 @@ namespace RentVehicle.Controllers
             }
         }
 
-        
+
+        private async Task<ApplicationUser> FindUser()
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(_findUserEndpoint + User.FindFirstValue(ClaimTypes.NameIdentifier)).ConfigureAwait(true);
+                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    ApplicationUser user = await httpResponseMessage.Content.ReadAsAsync<ApplicationUser>().ConfigureAwait(false);
+                    return user;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        private async Task<bool> IsUserInRole(string role)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(string.Format(_isUserInRoleEndpoint, User.FindFirstValue(ClaimTypes.NameIdentifier), role)).ConfigureAwait(true);
+                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    return await httpResponseMessage.Content.ReadAsAsync<bool>().ConfigureAwait(false);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+
         private List<Vehicle> FilterSearch(int vehicleTypeId, double vehiclePriceFrom, double vehiclePriceTo, string vehicleManufactor, string vehicleModel)
         {
             List<Vehicle> vehicles;

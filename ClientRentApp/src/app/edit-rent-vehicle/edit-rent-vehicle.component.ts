@@ -45,7 +45,7 @@ export class EditRentVehicleComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-  
+    console.log('eee2')
     this.rentVehicleService.editService(this.ServiceId, this.rentVehicle, this.selectedFile)
     .subscribe(
       res => {

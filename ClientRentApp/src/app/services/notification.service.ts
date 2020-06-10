@@ -9,11 +9,9 @@ declare var $: any;
 
 export class NotificationService {
   
-  private hubConnection: signalR.HubConnection;
-
-  private proxy: any;  
-  private proxyName: string = 'notificationHub';  
-  public connection: any;  
+  private hubAccountConnection: signalR.HubConnection;
+  private hubServiceConnection: signalR.HubConnection;
+ 
   // create the Event Emitter  
   public messageAccountReceived: EventEmitter < number > ;  
   public messageServiceReceived: EventEmitter < number > ;  
@@ -32,13 +30,27 @@ export class NotificationService {
   }  
 
   public buildConnection = () => {
-    this.hubConnection = new signalR.HubConnectionBuilder()
+    this.hubAccountConnection = new signalR.HubConnectionBuilder()
       .withUrl("https://localhost:44366/notificationHub")
+      .build();
+    this.hubServiceConnection = new signalR.HubConnectionBuilder()
+      .withUrl("https://localhost:44367/notificationHub")
       .build();
   }
 
   public startConnection = () => {
-    this.hubConnection
+    this.hubAccountConnection
+      .start()
+      .then(() => {
+        this.connectionEstablished.emit(true);  
+        this.connectionExists = true;  
+      })
+      .catch(err => {
+        setTimeout(function(){
+          this.startConnection();
+        }, 500);
+      })
+    this.hubServiceConnection
       .start()
       .then(() => {
         this.connectionEstablished.emit(true);  
@@ -52,13 +64,13 @@ export class NotificationService {
   }
 
   private registerOnServerAccountEvents(): void {  
-      this.hubConnection.on('newUserAccountToApprove', (data: number) => {  
+      this.hubAccountConnection.on('newUserAccountToApprove', (data: number) => {  
           this.messageAccountReceived.emit(data);  
       });  
   }  
 
   private registerOnServerServiceEvents(): void {  
-    this.hubConnection.on('newRentAVehicleServiceToApprove', (data: number) => {  
+    this.hubServiceConnection.on('newRentAVehicleServiceToApprove', (data: number) => {  
         this.messageServiceReceived.emit(data);  
     });  
   }  

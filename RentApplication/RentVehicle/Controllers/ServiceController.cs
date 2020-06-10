@@ -2,12 +2,13 @@
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AccountManaging.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +29,12 @@ namespace RentVehicle.Controllers
 
         private static readonly string folderPath = @"App_Data\rent-vehicle-service\";
 
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly string _isUserInRoleEndpoint;
+        private readonly string _findUserEndpoint;
+        private readonly string _isManagerBannedEndpoint;
+        private readonly string _deleteCommentsEndpoint;
+        private readonly string _deleteRatingsEndpoint;
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
         private readonly IHubContext<NotificationHub> _hubContext;
@@ -36,19 +42,22 @@ namespace RentVehicle.Controllers
         private readonly IHostingEnvironment _environment;
         private readonly IConfiguration _configuration;
 
-        public ServiceController(UserManager<ApplicationUser> userManager,
-           IUnitOfWork unitOfWork,
+        public ServiceController(IUnitOfWork unitOfWork,
            IEmailService emailService,
             IHubContext<NotificationHub> hubContext,
            IHostingEnvironment environment,
            IConfiguration configuration)
         {
-            _userManager = userManager;
             _unitOfWork = unitOfWork;
             _emailService = emailService;
             _hubContext = hubContext;
             _environment = environment;
             _configuration = configuration;
+            _isUserInRoleEndpoint = configuration["AccountService:IsUserInRoleEndpoint"];
+            _findUserEndpoint = configuration["AccountService:FindUserEndpoint"];
+            _isManagerBannedEndpoint = configuration["AccountService:IsManagerBannedEndpoint"];
+            _deleteCommentsEndpoint = configuration["BookingService:DeleteCommentsForServiceEndpoint"];
+            _deleteRatingsEndpoint = configuration["BookingService:DeleteRatingsForServiceEndpoint"];
         }
 
 
@@ -155,8 +164,8 @@ namespace RentVehicle.Controllers
                 Service serviceForApprove = _unitOfWork.Services.Get(serviceId);
                 serviceForApprove.IsApproved = true;
 
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                _emailService.SendMail("Service approved", "Your service " + serviceForApprove.Name + " is approved, now you can add branch offices and vehicles.", user.Email);
+                ApplicationUser user = await FindUser();
+                _emailService.SendMail("Service approved", "Your service " + serviceForApprove.Name + " is approved, now you can add branch offices and vehicles.", serviceForApprove.EmailAddress);
 
                 try
                 {
@@ -189,7 +198,7 @@ namespace RentVehicle.Controllers
             {
                 Service serviceForApprove = _unitOfWork.Services.Get(serviceId);
 
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                ApplicationUser user = await FindUser();
                 _emailService.SendMail("Service rejected", "Your service " + serviceForApprove.Name + " is rejected.", user.Email);
                 ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, serviceForApprove.LogoImage);
                 try
@@ -221,50 +230,68 @@ namespace RentVehicle.Controllers
             }
             else
             {
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                /* communicate with account
-                if (_userManager.IsInRoleAsync(user, "Manager").Result)
+                ApplicationUser user = await FindUser();
+                if(user == null)
                 {
-                    if (_unitOfWork.BanedManagers.Find(bm => bm.User.Id == user.Id).Count() > 0)
+                    return BadRequest();
+                }
+                else
+                {
+                    if (IsUserInRole("Manager").Result)
                     {
-                        return BadRequest("You are baned for add service.");
+                        using (HttpClient httpClient = new HttpClient())
+                        {
+                            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(_isManagerBannedEndpoint + User.FindFirstValue(ClaimTypes.NameIdentifier)).ConfigureAwait(true);
+                            if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                            {
+                                bool isBanned = await httpResponseMessage.Content.ReadAsAsync<bool>().ConfigureAwait(false);
+                                if (isBanned)
+                                {
+                                    return Ok("You are banned!");
+                                }
+                            }
+                            else
+                            {
+                                return BadRequest();
+                            }
+                        }
                     }
-                }
-                */
 
-                ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
-                Service service = new Service()
-                {
-                    Creator = user.Id,
-                    Name = model.Name,
-                    EmailAddress = model.ContactEmail,
-                    Description = model.Description,
-                    LogoImage = model.Image.FileName,
-                    IsApproved = false
-                };
 
-                ServiceForApproval serviceForApproval = new ServiceForApproval
-                {
-                    Service = service
-                };
-
-                try
-                {
-                    lock (lockObjectForServices)
+                    ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+                    Service service = new Service()
                     {
-                        _unitOfWork.Services.Add(service);
-                        _unitOfWork.ServicesForApproval.Add(serviceForApproval);
-                        _unitOfWork.Complete();
+                        Creator = user.Id,
+                        Name = model.Name,
+                        EmailAddress = model.ContactEmail,
+                        Description = model.Description,
+                        LogoImage = model.Image.FileName,
+                        IsApproved = false
+                    };
+
+                    ServiceForApproval serviceForApproval = new ServiceForApproval
+                    {
+                        Service = service
+                    };
+
+                    try
+                    {
+                        lock (lockObjectForServices)
+                        {
+                            _unitOfWork.Services.Add(service);
+                            _unitOfWork.ServicesForApproval.Add(serviceForApproval);
+                            _unitOfWork.Complete();
+                        }
                     }
-                }
-                catch (DBConcurrencyException)
-                {
-                    return NotFound();
-                }
+                    catch (DBConcurrencyException)
+                    {
+                        return NotFound();
+                    }
 
-                await _hubContext.Clients.All.SendAsync("newRentAVehicleServiceToApprove", _unitOfWork.ServicesForApproval.Count());
+                    await _hubContext.Clients.All.SendAsync("newRentAVehicleServiceToApprove", _unitOfWork.ServicesForApproval.Count());
 
-                return Ok();
+                    return Ok();
+                }
             }
         }
 
@@ -292,43 +319,51 @@ namespace RentVehicle.Controllers
                 }
                 else
                 {
-                    ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                    if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result && serviceForValidation.Creator != user.Id)
+                    ApplicationUser user = await FindUser();
+                    if(user == null)
                     {
-                        return BadRequest("Access denied.");
+                        return BadRequest();
                     }
-
-                    Service oldService = _unitOfWork.Services.Get(model.ServiceId);
-
-                    ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, oldService.LogoImage);
-                    ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
-
-                    oldService.Name = model.Name;
-                    oldService.EmailAddress = model.EmailAddress;
-                    oldService.Description = model.Description;
-                    oldService.LogoImage = model.Image.FileName;
-
-                    try
+                    else
                     {
-                        lock (lockObjectForServices)
+                        if (IsUserInRole("Manager").Result && !IsUserInRole("Administrator").Result && serviceForValidation.Creator != user.Id)
                         {
-                            _unitOfWork.Services.Update(oldService);
-                            _unitOfWork.Complete();
+                            return BadRequest("Access denied.");
                         }
-                    }
-                    catch (DBConcurrencyException)
-                    {
-                        if (_unitOfWork.Services.Get(oldService.Id) == null)
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
 
-                    return Ok();
+                        Service oldService = _unitOfWork.Services.Get(model.ServiceId);
+
+                        ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, oldService.LogoImage);
+                        ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+
+                        oldService.Name = model.Name;
+                        oldService.EmailAddress = model.EmailAddress;
+                        oldService.Description = model.Description;
+                        oldService.LogoImage = model.Image.FileName;
+
+                        try
+                        {
+                            lock (lockObjectForServices)
+                            {
+                                _unitOfWork.Services.Update(oldService);
+                                _unitOfWork.Complete();
+                            }
+                        }
+                        catch (DBConcurrencyException)
+                        {
+                            if (_unitOfWork.Services.Get(oldService.Id) == null)
+                            {
+                                return NotFound();
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+
+                        return Ok();
+                    }
+               
                 }
             }
         }
@@ -346,8 +381,8 @@ namespace RentVehicle.Controllers
             }
             else
             {
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                if (_userManager.IsInRoleAsync(user, "Manager").Result && !_userManager.IsInRoleAsync(user, "Administrator").Result && service.Creator != user.Id)
+                ApplicationUser user = await FindUser();
+                if (IsUserInRole("Manager").Result && !IsUserInRole("Administrator").Result && service.Creator != user.Id)
                 {
                     return BadRequest();
                 }
@@ -372,30 +407,9 @@ namespace RentVehicle.Controllers
                     }
                 }
 
-                /* communicate with booking
-                List<long> commentIds = new List<long>();
-                if (service.Comments != null)
-                {
-                    foreach (Comment comment in service.Comments)
-                    {
-                        commentIds.Add(comment.Id);
-                    }
-                }
-                List<long> raitingIds = new List<long>();
-                if (service.Ratings != null)
-                {
-                    foreach (Rating rating in service.Ratings)
-                    {
-                        raitingIds.Add(rating.Id);
-                    }
-                }
-                */
-
                 ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, service.LogoImage);
                 try
                 {
-                    lock (lockObjectForServices)
-                    {
                         foreach (long branchOfficeId in branchOfficeIds)
                         {
                             BranchOffice branchOffice = _unitOfWork.BranchOffices.Get(branchOfficeId);
@@ -408,24 +422,25 @@ namespace RentVehicle.Controllers
                             _unitOfWork.Vehicles.Remove(vehicle);
                         }
 
-                        /* communicate with bookig
-                        foreach (long commentId in commentIds)
+                        using (HttpClient httpClient = new HttpClient())
                         {
-                            Comment comment = _unitOfWork.Comments.Get(commentId);
-                            _unitOfWork.Comments.Remove(comment);
+                            HttpResponseMessage httpResponseMessage = await httpClient.DeleteAsync(_deleteCommentsEndpoint + serviceId).ConfigureAwait(true);
+                            if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                            {
+                                httpResponseMessage = await httpClient.DeleteAsync(_deleteRatingsEndpoint + serviceId).ConfigureAwait(true);
+                                if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
+                                {
+                                    return BadRequest();
+                                }
+                            }
+                            else
+                            {
+                                return BadRequest();
+                            }
                         }
-
-                        foreach (long raitingId in raitingIds)
-                        {
-                            Rating raiting = _unitOfWork.Ratings.Get(raitingId);
-                            _unitOfWork.Ratings.Remove(raiting);
-                        }
-                        */
 
                         _unitOfWork.Services.Remove(service);
                         _unitOfWork.Complete();
-
-                    }
                 }
                 catch (DBConcurrencyException)
                 {
@@ -443,5 +458,38 @@ namespace RentVehicle.Controllers
             }
         }
 
+
+        private async Task<bool> IsUserInRole(string role)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(string.Format(_isUserInRoleEndpoint, User.FindFirstValue(ClaimTypes.NameIdentifier), role)).ConfigureAwait(true);
+                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    return await httpResponseMessage.Content.ReadAsAsync<bool>().ConfigureAwait(false);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        private async Task<ApplicationUser> FindUser()
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(_findUserEndpoint + User.FindFirstValue(ClaimTypes.NameIdentifier)).ConfigureAwait(true);
+                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    ApplicationUser user = await httpResponseMessage.Content.ReadAsAsync<ApplicationUser>().ConfigureAwait(false);
+                    return user;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
     }
 }

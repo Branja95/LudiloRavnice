@@ -2,11 +2,12 @@
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using RentVehicle.Helpers;
@@ -24,18 +25,19 @@ namespace RentVehicle.Controllers
         private static readonly string folderPath = @"App_Data\branch-office\";
         private static object lockObjectForBranchOffices = new object();
 
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly string _isUserInRoleEndpoint;
+        private readonly string _findUserEndpoint;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHostingEnvironment _environment;
 
-        public BranchOfficeController(UserManager<ApplicationUser> userManager,
-           IUnitOfWork unitOfWork,
+        public BranchOfficeController(IUnitOfWork unitOfWork,
            IHostingEnvironment environment,
            IConfiguration configuration)
         {
-            _userManager = userManager;
             _unitOfWork = unitOfWork;
             _environment = environment;
+            _isUserInRoleEndpoint = configuration["AccountService:IsUserInRoleEndpoint"];
+            _findUserEndpoint = configuration["AccountService:FindUserEndpoint"];
         }
 
         [HttpGet]
@@ -131,11 +133,12 @@ namespace RentVehicle.Controllers
                     return BadRequest();
                 }
 
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                if (_userManager.IsInRoleAsync(new ApplicationUser { Id = user.Id }, "Manager").Result && !_userManager.IsInRoleAsync(new ApplicationUser { Id = user.Id }, "Administrator").Result && service.Creator != user.Id)
+                ApplicationUser user = await FindUser();
+                if (IsUserInRole("Manager").Result && !IsUserInRole("Administrator").Result && service.Creator != user.Id)
                 {
-                    return BadRequest();
+                   return BadRequest();
                 }
+
                 ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
                 BranchOffice branchOffice = new BranchOffice
                 {
@@ -177,7 +180,7 @@ namespace RentVehicle.Controllers
             }
             else
             {
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                ApplicationUser user = await FindUser();
 
                 Service serviceForValidation = _unitOfWork.Services.Get(model.ServiceId);
                 if (serviceForValidation == null)
@@ -185,7 +188,7 @@ namespace RentVehicle.Controllers
                     return BadRequest();
                 }
 
-                if (_userManager.IsInRoleAsync(new ApplicationUser { Id = user.Id }, "Manager").Result && _userManager.IsInRoleAsync(new ApplicationUser { Id = user.Id }, "Administrator").Result && serviceForValidation.Creator != user.Id)
+                if (IsUserInRole("Manager").Result && !IsUserInRole("Administartor").Result && serviceForValidation.Creator != user.Id)
                 {
                     return BadRequest("Access denied.");
                 }
@@ -242,8 +245,8 @@ namespace RentVehicle.Controllers
             }
             else
             {
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                if (_userManager.IsInRoleAsync(new ApplicationUser { Id = user.Id }, "Manager").Result && !_userManager.IsInRoleAsync(new ApplicationUser { Id = user.Id }, "Administrator").Result && service.Creator != user.Id)
+                ApplicationUser user = await FindUser();
+                if (IsUserInRole("Manager").Result && !IsUserInRole("Administrator").Result && service.Creator != user.Id)
                 {
                     return BadRequest();
                 }
@@ -264,6 +267,40 @@ namespace RentVehicle.Controllers
                 }
 
                 return Ok();
+            }
+        }
+
+
+        private async Task<bool> IsUserInRole(string role)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(string.Format(_isUserInRoleEndpoint, User.FindFirstValue(ClaimTypes.NameIdentifier), role)).ConfigureAwait(true);
+                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    return await httpResponseMessage.Content.ReadAsAsync<bool>().ConfigureAwait(false);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        private async Task<ApplicationUser> FindUser()
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(_findUserEndpoint + User.FindFirstValue(ClaimTypes.NameIdentifier)).ConfigureAwait(true);
+                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    ApplicationUser user = await httpResponseMessage.Content.ReadAsAsync<ApplicationUser>().ConfigureAwait(false);
+                    return user;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
     }

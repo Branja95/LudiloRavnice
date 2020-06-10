@@ -81,7 +81,8 @@ namespace RentVehicle
                     Credentials = new NetworkCredential(
                             config.GetValue<string>("Email:Smtp:Username"),
                             config.GetValue<string>("Email:Smtp:Password")
-                        )
+                        ),
+                    EnableSsl = true
                 };
             });
 

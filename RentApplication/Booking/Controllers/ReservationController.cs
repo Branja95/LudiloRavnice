@@ -9,7 +9,6 @@ using Booking.Models.Entities;
 using Booking.Models.IdentityUsers;
 using Booking.Persistance.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using static Booking.Models.Bindings.ReservationBindingmodel;
@@ -22,23 +21,21 @@ namespace Booking.Controllers
     {
         private static object lockObjectForReservations = new object();
 
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly string _findUserEndpoint;
         private readonly IUnitOfWork _unitOfWork;
 
-        private readonly string accountServiceUrl;
-        private readonly string vehicleServiceUrl;
-        private readonly string branchOfficeUrl;
+        private readonly string _isAccountApprovedEndpoint;
+        private readonly string _vehicleServiceEndpoint;
+        private readonly string _branchOfficeEndpoint;
 
         public ReservationController(IUnitOfWork unitOfWork,
-            UserManager<ApplicationUser> applicationUserManager,
             IConfiguration configuration)
         {
-            _userManager = applicationUserManager;
             _unitOfWork = unitOfWork;
-
-            accountServiceUrl = configuration["AccountService:AccountServiceUrl"];
-            vehicleServiceUrl = configuration["RentVehicleService:VehicleServiceUrl"];
-            branchOfficeUrl = configuration["RentVehicleService:BranchOfficeUrl"];
+            _isAccountApprovedEndpoint = configuration["AccountService:IsAccountApprovedEndpoint"];
+            _findUserEndpoint = configuration["AccountService:FindUserEndpoint"];
+            _vehicleServiceEndpoint = configuration["RentVehicleService:GetVehicleEndpoint"];
+            _branchOfficeEndpoint = configuration["RentVehicleService:GetBranchOfficeEndpoint"];
         }
 
 
@@ -53,81 +50,103 @@ namespace Booking.Controllers
             }
             else
             {
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                
-                using (HttpClient httpClient = new HttpClient())
+                ApplicationUser user = await FindUser();
+                if(user == null)
                 {
-                    HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(accountServiceUrl + user.Id).ConfigureAwait(true);
-                    if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                    return BadRequest();
+                }
+                else
+                {
+                    using (HttpClient httpClient = new HttpClient())
                     {
-                        httpResponseMessage = await httpClient.GetAsync(vehicleServiceUrl + model.VehicleId).ConfigureAwait(true);
-                        if(httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                        HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(_isAccountApprovedEndpoint + user.Id).ConfigureAwait(true);
+                        if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
                         {
-                            Vehicle vehicle = await httpResponseMessage.Content.ReadAsAsync<Vehicle>().ConfigureAwait(false);
-                            if(!string.IsNullOrEmpty(VerifyVehicle(vehicle, model)))
-                            {
-                                return BadRequest(VerifyVehicle(vehicle, model));
-                            }
-
-                            httpResponseMessage = await httpClient.GetAsync(branchOfficeUrl + model.RentBranchOfficeId).ConfigureAwait(true);
+                            httpResponseMessage = await httpClient.GetAsync(_vehicleServiceEndpoint + model.VehicleId).ConfigureAwait(true);
                             if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
                             {
-                                BranchOffice rentBranchOffice = await httpResponseMessage.Content.ReadAsAsync<BranchOffice>().ConfigureAwait(false);
-                                if (rentBranchOffice == null)
+                                Vehicle vehicle = await httpResponseMessage.Content.ReadAsAsync<Vehicle>().ConfigureAwait(false);
+                                if (!string.IsNullOrEmpty(VerifyVehicle(vehicle, model)))
                                 {
-                                    BadRequest("Non-existent rent branch office.");
+                                    return BadRequest(VerifyVehicle(vehicle, model));
                                 }
-                                else
+
+                                httpResponseMessage = await httpClient.GetAsync(_branchOfficeEndpoint + model.RentBranchOfficeId).ConfigureAwait(true);
+                                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
                                 {
-                                    httpResponseMessage = await httpClient.GetAsync(branchOfficeUrl + model.ReturnBranchOfficeId).ConfigureAwait(true);
-                                    if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                                    BranchOffice rentBranchOffice = await httpResponseMessage.Content.ReadAsAsync<BranchOffice>().ConfigureAwait(false);
+                                    if (rentBranchOffice == null)
                                     {
-                                        BranchOffice returnBranchOffice = await httpResponseMessage.Content.ReadAsAsync<BranchOffice>().ConfigureAwait(false);
-                                        if (returnBranchOffice == null)
+                                        BadRequest("Non-existent rent branch office.");
+                                    }
+                                    else
+                                    {
+                                        httpResponseMessage = await httpClient.GetAsync(_branchOfficeEndpoint + model.ReturnBranchOfficeId).ConfigureAwait(true);
+                                        if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
                                         {
-                                            BadRequest("Non-existent return rent branch office.");
-                                        }
-                                        else
-                                        {
-                                            lock (lockObjectForReservations)
+                                            BranchOffice returnBranchOffice = await httpResponseMessage.Content.ReadAsAsync<BranchOffice>().ConfigureAwait(false);
+                                            if (returnBranchOffice == null)
                                             {
-                                                IEnumerable<Reservation> vehicleReservations = _unitOfWork.Reservations.Find(r => r.Id == vehicle.Id);
-                                                int numOfexcessiveReservations = vehicleReservations.Count(r => (r.ReservationStart <= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart <= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd));
-
-                                                if (numOfexcessiveReservations > 0)
+                                                BadRequest("Non-existent return rent branch office.");
+                                            }
+                                            else
+                                            {
+                                                lock (lockObjectForReservations)
                                                 {
-                                                    return BadRequest("The vehicle was rented in a given period.");
+                                                    IEnumerable<Reservation> vehicleReservations = _unitOfWork.Reservations.Find(r => r.Id == vehicle.Id);
+                                                    int numOfexcessiveReservations = vehicleReservations.Count(r => (r.ReservationStart <= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart <= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd));
+
+                                                    if (numOfexcessiveReservations > 0)
+                                                    {
+                                                        return BadRequest("The vehicle was rented in a given period.");
+                                                    }
+
+                                                    Reservation reservation = new Reservation()
+                                                    {
+                                                        VehicleId = vehicle.Id,
+                                                        UserId = user.Id,
+                                                        ReservationStart = model.ReservationStart,
+                                                        ReservationEnd = model.ReservationEnd,
+                                                        RentBranchOfficeId = rentBranchOffice.Id,
+                                                        ReturnBranchOfficeId = returnBranchOffice.Id
+                                                    };
+
+                                                    try
+                                                    {
+                                                        _unitOfWork.Reservations.Add(reservation);
+                                                        _unitOfWork.Complete();
+                                                    }
+                                                    catch (Exception)
+                                                    {
+                                                        return NotFound();
+                                                    }
+
+                                                    return Ok();
                                                 }
-
-                                                Reservation reservation = new Reservation()
-                                                {
-                                                    VehicleId = vehicle.Id,
-                                                    UserId = user.Id,
-                                                    ReservationStart = model.ReservationStart,
-                                                    ReservationEnd = model.ReservationEnd,
-                                                    RentBranchOfficeId = rentBranchOffice.Id,
-                                                    ReturnBranchOfficeId = returnBranchOffice.Id
-                                                };
-
-                                                try
-                                                {
-                                                    _unitOfWork.Reservations.Add(reservation);
-                                                    _unitOfWork.Complete();
-                                                }
-                                                catch (Exception)
-                                                {
-                                                    return NotFound();
-                                                }
-
-                                                return Ok();
                                             }
                                         }
                                     }
                                 }
                             }
                         }
+                        return BadRequest();
                     }
-                    return BadRequest();
+                }
+            }
+        }
+        private async Task<ApplicationUser> FindUser()
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(_findUserEndpoint + User.FindFirstValue(ClaimTypes.NameIdentifier)).ConfigureAwait(true);
+                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    ApplicationUser user = await httpResponseMessage.Content.ReadAsAsync<ApplicationUser>().ConfigureAwait(false);
+                    return user;
+                }
+                else
+                {
+                    return null;
                 }
             }
         }

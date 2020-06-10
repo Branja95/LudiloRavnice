@@ -54,6 +54,7 @@ export class EditVehicleComponent implements OnInit {
   }
 
   onSubmit(form: NgForm, vehicle: Vehicle) {
+    console.log('eee');
     this.vehicleService.editVehicle(this.VehicleId, vehicle, this.uploadedFiles)
     .subscribe(
       data => {

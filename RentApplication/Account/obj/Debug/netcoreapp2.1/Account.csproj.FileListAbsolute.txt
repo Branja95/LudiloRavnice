@@ -18,6 +18,7 @@ C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\bin\D
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\bin\Debug\netcoreapp2.1\Account.runtimeconfig.dev.json
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\bin\Debug\netcoreapp2.1\Account.dll
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\bin\Debug\netcoreapp2.1\Account.pdb
+C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\obj\Debug\netcoreapp2.1\Account.csprojAssemblyReference.cache
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\obj\Debug\netcoreapp2.1\Account.csproj.CoreCompileInputs.cache
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\obj\Debug\netcoreapp2.1\Account.RazorAssemblyInfo.cache
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\obj\Debug\netcoreapp2.1\Account.RazorAssemblyInfo.cs
@@ -27,4 +28,3 @@ C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\obj\D
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\obj\Debug\netcoreapp2.1\Account.RazorTargetAssemblyInfo.cache
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\obj\Debug\netcoreapp2.1\Account.dll
 C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\obj\Debug\netcoreapp2.1\Account.pdb
-C:\Users\Exlrt-0115\Desktop\projekat\LudiloRavnice\RentApplication\Account\obj\Debug\netcoreapp2.1\Account.csprojAssemblyReference.cache

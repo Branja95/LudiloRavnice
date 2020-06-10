@@ -10,7 +10,6 @@ using Booking.Models.Entities;
 using Booking.Models.IdentityUsers;
 using Booking.Persistance.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using static Booking.Models.Bindings.CommentBindingModel;
@@ -23,21 +22,37 @@ namespace Booking.Controllers
     {
         private static object lockObjectForComments = new object();
 
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
-        private readonly string serviceUrl;
+        private readonly string _serviceEndpoint;
+        private readonly string _findUserEndpoint;
 
         public CommentController(IUnitOfWork unitOfWork,
-            UserManager<ApplicationUser> applicationUserManager,
             IConfiguration configuration)
         {
-            _userManager = applicationUserManager;
             _unitOfWork = unitOfWork;
 
-            serviceUrl = configuration["RentVehicleService:ServiceUrl"];
+            _serviceEndpoint = configuration["RentVehicleService:GetServiceEndpoint"];
+            _findUserEndpoint = configuration["AccountService:FindUserEndpoint"];
         }
 
+        [HttpDelete]
+        [Route("DeleteCommentsForService")]
+        public IActionResult DeleteComments([FromQuery] long serviceId)
+        {
+            List<Comment> comments = _unitOfWork.Comments.GetAll().Where(x=>x.ServiceId == serviceId).ToList();
+            try
+            {
+                _unitOfWork.Comments.RemoveRange(comments);
+                _unitOfWork.Complete();
+            }
+            catch(Exception)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
 
         [HttpGet]
         [Route("GetComment")]
@@ -70,20 +85,22 @@ namespace Booking.Controllers
         [Route("HasUserCommented")]
         public async Task<IActionResult> HasUserCommented([FromQuery] long serviceId)
         {
-            ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (user == null)
-            {
-                return Ok(true);
-            }
-
-            Comment comment = _unitOfWork.Comments.Find(com => com.UserId == user.Id).FirstOrDefault(x=>x.ServiceId == serviceId);
-            if (comment == null)
+            ApplicationUser user = await FindUser();
+            if(user == null)
             {
                 return Ok(false);
             }
             else
             {
-                return Ok(true);
+                Comment comment = _unitOfWork.Comments.Find(com => com.UserId == user.Id).FirstOrDefault(x => x.ServiceId == serviceId);
+                if (comment == null)
+                {
+                    return Ok(false);
+                }
+                else
+                {
+                    return Ok(true);
+                }
             }
         }
 
@@ -99,42 +116,49 @@ namespace Booking.Controllers
             }
             else
             {
-                ApplicationUser user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                using (HttpClient httpClient = new HttpClient())
+                ApplicationUser user = await FindUser();
+                if(user == null)
                 {
-                    HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(serviceUrl + model.ServiceId).ConfigureAwait(true);
-                    if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                    return BadRequest();
+                }
+                else
+                {
+                    using (HttpClient httpClient = new HttpClient())
                     {
-                        Service service = await httpResponseMessage.Content.ReadAsAsync<Service>().ConfigureAwait(false);
-                        if (!CanUserComment(user.Id, service))
+                        HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(_serviceEndpoint + model.ServiceId).ConfigureAwait(true);
+                        if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
                         {
-                            return BadRequest();
-                        }
-
-                        Comment comment = new Comment
-                        {
-                            UserId = user.Id,
-                            ServiceId = model.ServiceId,
-                            Text = model.Text,
-                            DateTime = DateTime.Now
-                        };
-
-                        try
-                        {
-                            lock (lockObjectForComments)
+                            Service service = await httpResponseMessage.Content.ReadAsAsync<Service>().ConfigureAwait(false);
+                            if (!CanUserComment(user.Id, service))
                             {
-                                _unitOfWork.Comments.Add(comment);
-                                _unitOfWork.Complete();
+                                return BadRequest();
                             }
-                        }
-                        catch (DBConcurrencyException)
-                        {
-                            return NotFound();
-                        }
 
-                        return Ok();
+                            Comment comment = new Comment
+                            {
+                                UserId = user.Id,
+                                ServiceId = model.ServiceId,
+                                Text = model.Text,
+                                DateTime = DateTime.Now
+                            };
+
+                            try
+                            {
+                                lock (lockObjectForComments)
+                                {
+                                    _unitOfWork.Comments.Add(comment);
+                                    _unitOfWork.Complete();
+                                }
+                            }
+                            catch (DBConcurrencyException)
+                            {
+                                return NotFound();
+                            }
+
+                            return Ok();
+                        }
+                        return NotFound();
                     }
-                    return NotFound();
                 }
             }
         }
@@ -173,6 +197,22 @@ namespace Booking.Controllers
             }
         }
 
+        private async Task<ApplicationUser> FindUser()
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(_findUserEndpoint + User.FindFirstValue(ClaimTypes.NameIdentifier)).ConfigureAwait(true);
+                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    ApplicationUser user = await httpResponseMessage.Content.ReadAsAsync<ApplicationUser>().ConfigureAwait(false);
+                    return user;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
 
         private bool CanUserComment(string userId, Service service)
         {

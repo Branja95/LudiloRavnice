@@ -57,7 +57,7 @@ export class ServiceVehiclesComponent implements OnInit {
     this.vehicleService.changeAvailability(id)
     .subscribe(
       res => {
-        console.log(res);
+        this.vehicles = res as Array<Vehicle>
       },
       error => {
         console.log(error);

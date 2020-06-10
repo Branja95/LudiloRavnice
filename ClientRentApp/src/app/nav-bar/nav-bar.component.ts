@@ -27,7 +27,6 @@ export class NavBarComponent implements OnInit {
   ngOnInit() {
 
     this.username = null;
-    this.role = null;
     this.serviceToApprove = 0;
     this.showNotificationsService = false;
     this.accountToApprove = 0;

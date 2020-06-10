@@ -19,12 +19,17 @@ namespace AccountManaging.Services.Implementation
         {
             try
             {
-                _smtpClient.Send(new MailMessage(
-                    from: _configuration.GetValue<string>("Email:Smtp:Username"),
-                    to: emailTo,
-                    subject: subject,
-                    body: body
-                ));
+                MailMessage mailMessage = new MailMessage
+                {
+                    Body = body,
+                    Sender = new MailAddress(_configuration.GetValue<string>("Email:Smtp:Username")),
+                    From = new MailAddress(_configuration.GetValue<string>("Email:Smtp:Username")),
+                    Subject = subject
+                };
+                mailMessage.Body = body;
+                mailMessage.To.Add(new MailAddress(emailTo));
+
+                _smtpClient.Send(mailMessage);
             }
             catch (SmtpException smtpException)
             {
