@@ -257,15 +257,14 @@ namespace RentVehicle.Controllers
                         }
                     }
 
-
-                    ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+                    string fileName = ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
                     Service service = new Service()
                     {
                         Creator = user.Id,
                         Name = model.Name,
                         EmailAddress = model.ContactEmail,
                         Description = model.Description,
-                        LogoImage = model.Image.FileName,
+                        LogoImage = fileName,
                         IsApproved = false
                     };
 

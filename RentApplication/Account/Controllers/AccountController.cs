@@ -30,7 +30,6 @@ namespace AccountManaging.Controllers
     public class AccountController : Controller
     {
         private static object _lockObjectForAccounts = new object();
-        private const string LocalLoginProvider = "Local";
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
@@ -159,15 +158,6 @@ namespace AccountManaging.Controllers
         public IActionResult AccountForApproval()
         {
             return Ok(_unitOfWork.AccountsForApproval.GetAll().Count());
-        }
-
-
-        [HttpGet]
-        [Route("ServiceForApproval")]
-        [Authorize(Roles = "Administrator")]
-        public IActionResult ServiceForApproval()
-        {
-            return Ok(_unitOfWork.ServicesForApproval.GetAll().Count());
         }
 
 
@@ -365,8 +355,8 @@ namespace AccountManaging.Controllers
                 return BadRequest();
             }
 
-            ImageHelper.UploadImageToServer(_environment.WebRootPath, image);
-            user.DocumentImage = image.FileName;
+            string fileName = ImageHelper.UploadImageToServer(_environment.WebRootPath, image);
+            user.DocumentImage = fileName;
 
             IdentityResult addUserDocumentImageResult = await _userManager.UpdateAsync(user);
             if (!addUserDocumentImageResult.Succeeded)
@@ -461,6 +451,7 @@ namespace AccountManaging.Controllers
                 return NotFound();
             }
 
+            await _hubContext.Clients.All.SendAsync("newUserAccountToApprove", _unitOfWork.AccountsForApproval.Count());
             return Ok();
         }
 
@@ -500,6 +491,7 @@ namespace AccountManaging.Controllers
                 return NotFound();
             }
 
+            await _hubContext.Clients.All.SendAsync("newUserAccountToApprove", _unitOfWork.AccountsForApproval.Count());
             return Ok();
         }
 

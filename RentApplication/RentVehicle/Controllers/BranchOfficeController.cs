@@ -139,13 +139,13 @@ namespace RentVehicle.Controllers
                    return BadRequest();
                 }
 
-                ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+                string fileName = ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
                 BranchOffice branchOffice = new BranchOffice
                 {
                     Address = model.Address,
                     Latitude = model.Latitude,
                     Longitude = model.Longitude,
-                    Image = model.Image.FileName
+                    Image = fileName
                 };
 
                 try

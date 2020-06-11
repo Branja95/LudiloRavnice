@@ -63,7 +63,11 @@ export class NavBarComponent implements OnInit {
   }  
 
   resetNotificationsService() : void {
-    this.showNotificationsService = false;
+    if(this.serviceToApprove > 0){
+      this.showNotificationsService = true;
+    }else{
+      this.showNotificationsService = false; 
+    }
   }
 
   visibleNotificationsService()
@@ -72,7 +76,11 @@ export class NavBarComponent implements OnInit {
   }
 
   resetNotificationsAccount() : void {
-    this.showNotificationsAccount = false;
+    if(this.accountToApprove > 0){
+      this.showNotificationsAccount = true;
+    }else{
+      this.showNotificationsAccount = false; 
+    }
   }
 
   visibleNotificationsAccount()
@@ -101,7 +109,6 @@ export class NavBarComponent implements OnInit {
   private startHubConnection() : void {
     if(localStorage.role == 'Administrator')
     {
-      //this.notificationService.connection.qs = { "token" : `Bearer ${localStorage.jwt}` };
       this.notificationService.startConnection()
       this.subscribeToAccountEvents();  
       this.subscribeToServiceEvents();

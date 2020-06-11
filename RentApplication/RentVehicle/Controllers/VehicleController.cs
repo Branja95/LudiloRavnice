@@ -242,8 +242,8 @@ namespace RentVehicle.Controllers
                     foreach (IFormFile file in model.Images)
                     {
                         counter++;
-                        ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
-                        imageUris += file.FileName;
+                        string fileName = ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
+                        imageUris += fileName;
                         if (counter < model.Images.Count())
                         {
                             imageUris += ";_;";

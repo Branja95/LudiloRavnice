@@ -14,8 +14,6 @@ namespace RentVehicle.Models.Entities
         public string Description { get; set; }
         public virtual List<BranchOffice> BranchOfficces { get; set; }
         public virtual List<Vehicle> Vehicles { get; set; }
-        public virtual List<Comment> Comments { get; set; }
-        public virtual List<Rating> Ratings { get; set; }
         public bool IsApproved { get; set; }
     }
 }

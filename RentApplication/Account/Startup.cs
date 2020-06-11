@@ -66,7 +66,6 @@ namespace AccountManaging
 
             services.AddScoped<IAccountForApprovalRepository, AccountForApprovalRepository>();
             services.AddScoped<IBanedManagerRepository, BanedManagerRepository>();
-            services.AddScoped<IServiceForApprovalRepository, ServiceForApprovalRepository>();
 
             services.AddScoped<SmtpClient>((serviceProvider) =>
             {

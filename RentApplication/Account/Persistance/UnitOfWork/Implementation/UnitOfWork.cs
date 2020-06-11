@@ -8,7 +8,6 @@ namespace AccountManaging.Persistance.UnitOfWork
         public readonly ApplicationDbContext _context;
 
         private IAccountForApprovalRepository accountForApprovalRepository;
-        private IServiceForApprovalRepository serviceForApprovalRepository;
         private IBanedManagerRepository banedManagerRepository;
 
         public IAccountForApprovalRepository AccountsForApproval
@@ -20,17 +19,6 @@ namespace AccountManaging.Persistance.UnitOfWork
             set
             {
                 this.accountForApprovalRepository = value;
-            }
-        }
-        public IServiceForApprovalRepository ServicesForApproval
-        {
-            get
-            {
-                return serviceForApprovalRepository = serviceForApprovalRepository ?? new ServiceForApprovalRepository(_context);
-            }
-            set
-            {
-                this.serviceForApprovalRepository = value;
             }
         }
         public IBanedManagerRepository BanedManagers

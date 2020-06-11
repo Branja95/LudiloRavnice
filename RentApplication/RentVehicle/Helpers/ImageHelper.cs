@@ -7,6 +7,7 @@ namespace RentVehicle.Helpers
 {
     public static class ImageHelper
     {
+        private static readonly Random _randomNumber = new Random();
 
         public static Stream ReadImageFromServer(string root, string folderPath, string imageId)
         {
@@ -16,15 +17,18 @@ namespace RentVehicle.Helpers
             return fileInfo.CreateReadStream();
         }
 
-        public static void UploadImageToServer(string root, string folderPath, IFormFile image)
+        public static string UploadImageToServer(string root, string folderPath, IFormFile image)
         {
             string pathToFolder = System.IO.Path.Combine(root, folderPath);
-            string filePath = Path.Combine(pathToFolder, image.FileName);
+            string uniqueName = GetRandomNumber(1, 1000000) + image.FileName;
+            string filePath = Path.Combine(pathToFolder, uniqueName);
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
             {
                 image.CopyToAsync(fileStream);
             }
+
+            return uniqueName;
         }
 
         public static void DeleteImage(string root,string folderPath, string imageId)
@@ -49,6 +53,14 @@ namespace RentVehicle.Helpers
                 {
                     File.Delete(fileInfo.PhysicalPath);
                 }
+            }
+        }
+
+        private static int GetRandomNumber(int min, int max)
+        {
+            lock (_randomNumber)
+            {
+                return _randomNumber.Next(min, max);
             }
         }
     }

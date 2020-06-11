@@ -8,6 +8,7 @@ namespace AccountManaging.Helpers
 {
     public static class ImageHelper
     {
+        private static readonly Random _randomNumber = new Random();
         private static readonly string folderPath = @"App_Data\";
 
         public static Stream ReadImageFromServer(string root, string imageId)
@@ -18,15 +19,18 @@ namespace AccountManaging.Helpers
             return fileInfo.CreateReadStream();
         }
 
-        public static void  UploadImageToServer(string root, IFormFile image)
+        public static string  UploadImageToServer(string root, IFormFile image)
         {
             string pathToFolder = System.IO.Path.Combine(root, "App_Data");
-            string filePath = Path.Combine(pathToFolder, image.FileName);
+            string uniqueName = GetRandomNumber(1, 1000000) + image.FileName;
+            string filePath = Path.Combine(pathToFolder, uniqueName);
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
             {
                 image.CopyToAsync(fileStream);
             }
+
+            return uniqueName;
         }
 
         public static void DeleteImage(string root, string imageId)
@@ -51,6 +55,14 @@ namespace AccountManaging.Helpers
                 {
                     File.Delete(fileInfo.PhysicalPath);
                 }
+            }
+        }
+
+        private static int GetRandomNumber(int min, int max)
+        {
+            lock (_randomNumber)
+            {
+                return _randomNumber.Next(min, max);
             }
         }
     }
