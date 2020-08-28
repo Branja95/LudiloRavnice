@@ -6,7 +6,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { HttpClientXsrfModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import { NgForm  } from '@angular/forms';
-import { ToastModule } from '@ng-uikit-pro-standard';
 
 import { AgmCoreModule } from '@agm/core';
 
