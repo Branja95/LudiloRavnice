@@ -5,6 +5,7 @@ import { VehicleService } from '../services/vehicle.service';
 import { PagerService } from '../services/pager.service';
 import { Vehicle } from '../models/vehicle.model';
 import { SearchVehicle } from '../models/searchVehicle.model';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-vehicle',
@@ -34,6 +35,7 @@ export class VehicleComponent implements OnInit {
   vehicleTypes = Array<VehicleType>();
   vehicles = Array<Vehicle>()
   
+  vehicleLoadImage = environment.endpointRentVehicleLoadImageVehicle;
   constructor(private vehicleService: VehicleService, private pagerService: PagerService) { }
 
   ngOnInit() {
@@ -149,10 +151,8 @@ export class VehicleComponent implements OnInit {
     this.vehicleService.deleteVehicle(id)
     .subscribe(
       data => {
-        alert(data);
       },
       error => {
-        alert(error);
       });
   }
 

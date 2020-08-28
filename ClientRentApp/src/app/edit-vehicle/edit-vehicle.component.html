@@ -1,7 +1,7 @@
 <form #f="ngForm" (ngSubmit)="onSubmit(f, f.value)">
   <div class="container">
     <div class="row">
-      <div class="col col-lg-4 col-lg-push-4">
+      <div *ngIf=Vehicle class="col col-lg-4 col-lg-push-4">
         <div class="form-group">  
             <label for="vehicleType">Vehicle Type:</label>  
               <select class="form-control" [(ngModel)]="Vehicle.VehicleType.Id" name="vehicleType">
@@ -48,7 +48,7 @@
               <div id="banner">
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <div class="inline-block" *ngFor='let url of parseImages(Vehicle.Images)'>
-                    <img src='https://localhost:44367/api/Vehicle/LoadImage?imageId={{url}}' height="300" weight="300"/>
+                    <img src='{{vehicleLoadImage}}{{url}}' height="300" weight="300"/>
                   </div> 
               </div>
             </div>

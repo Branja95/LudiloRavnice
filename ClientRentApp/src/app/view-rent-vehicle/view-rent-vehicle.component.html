@@ -1,8 +1,8 @@
 <div class="container">
-  <div class=text-center>
+  <div *ngIf=rentVehicle class=text-center>
      <h2>Rent-Vehicle Service</h2>
      <br/><br/>
-      <img src='https://localhost:44367/api/Service/LoadImage?imageId={{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
+      <img src='{{serviceLoadImage}}{{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
       <label>Email Address:</label> {{rentVehicle.EmailAddress}}<br/>
       <label>Description:</label> {{rentVehicle.Description}}<br/>
       <br/><br/>

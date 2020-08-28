@@ -5,6 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class RegistrationService {
   constructor(private httpClient: HttpClient) { }
 
   postMethodRegistration(user): Observable<any> {
-    return this.httpClient.post("https://localhost:44366/api/Account/Register", user)
+    return this.httpClient.post(environment.endpointAccountRegister, user)
   }
 
   postMethodApproveAccount(uploadedImage: File): Observable<any> {
@@ -27,7 +28,7 @@ export class RegistrationService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.post("https://localhost:44366/api/Account/FinishAccount", this.formData, { headers: headers });
+    return this.httpClient.post(environment.endpointAccountFinish, this.formData, { headers: headers });
   }
 
 }

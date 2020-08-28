@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountService } from '../services/account.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-approve-account-admin',
@@ -11,6 +12,7 @@ import { AccountService } from '../services/account.service';
 export class ApproveAccountAdminComponent implements OnInit {
 
   private users : any;
+  userImageLoad = environment.endpointAccountGetUserImage;
 
   constructor(private accountService: AccountService, private router: Router) { }
 

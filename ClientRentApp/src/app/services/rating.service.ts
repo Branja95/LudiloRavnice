@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
+import { environment } from '../../environments/environment'
 @Injectable({
   providedIn: 'root'
 })
@@ -16,11 +17,11 @@ export class RatingService {
   constructor(private httpClient: HttpClient) { }
 
   getMethodGetRating(ratingId : string){
-    return this.httpClient.get("https://localhost:44383/api/Rating/GetRating?id=" + ratingId);
+    return this.httpClient.get(environment.endpointBookingGetRating + ratingId);
   }
   
   postMethodCreateRating(rating):Observable<any>{
-    return this.httpClient.post("https://localhost:44383/api/Rating/PostRating", rating);
+    return this.httpClient.post(environment.endpointBookingCreateRating, rating);
   }
 
   putMethodEditRating(rating): Observable<any> {
@@ -32,7 +33,7 @@ export class RatingService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.put("https://localhost:44383/api/Rating/PutRating", this.formData, { headers: headers });
+    return this.httpClient.put(environment.endpointBookingEditRating, this.formData, { headers: headers });
   }
 
 }

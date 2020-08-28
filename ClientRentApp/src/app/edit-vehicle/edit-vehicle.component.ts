@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Vehicle } from '../models/vehicle.model';
 import { VehicleType } from '../models/vehicle-type.model';
 import { VehicleService } from '../services/vehicle.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-edit-vehicle',
@@ -16,7 +17,9 @@ export class EditVehicleComponent implements OnInit {
   VehicleAvailable: string = "";
   VehicleYearMade: string = "";
   Vehicle: Vehicle;
-
+  
+  serviceLoadImage = environment.endpointRentvehicleLoadImageService;
+  vehicleLoadImage = environment.endpointRentVehicleLoadImageVehicle;
   urls: Array<string> = new Array<string>();
   uploadedFiles: FileList = null;
   vehicleTypes = Array<VehicleType>()

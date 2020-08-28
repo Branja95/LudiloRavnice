@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-
 import { Observable } from 'rxjs/Observable';
+import { environment } from '../../environments/environment';
+
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
@@ -19,5 +19,5 @@ export class LoginService {
       
    
       headers = headers.append('Content-type', 'application/x-www-form-urlencoded');
-      return this.httpClient.post('https://localhost:44366/api/Auth/Login', user)  }
+      return this.httpClient.post(environment.endpointAccountLogin, user)  }
 }

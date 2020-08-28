@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-
+import { environment } from '../../environments/environment'
 import { Observable } from 'rxjs/Observable';
 
 @Injectable({
@@ -12,18 +12,19 @@ export class VehicleTypesService {
   constructor(private httpClient: HttpClient) { }
 
   getMethodVehicleType(vehicleTypeId): Observable<any>{
-    return this.httpClient.get("https://localhost:44367/api/VehicleType/GetVehicleType?vehicleTypeId=" + vehicleTypeId);
+    return this.httpClient.get(environment.endpointRentVehicleGetVehicleType + vehicleTypeId);
   }
 
   getMethodVehicleTypes(): Observable<any>{
-    return this.httpClient.get("https://localhost:44367/api/VehicleType/GetVehicleTypes");
-  }
-
-  putMethodVehicleTypes(vehicleType): Observable<any>{
-    return this.httpClient.put("https://localhost:44367/api/VehicleType/PutVehicleType", vehicleType);
+    return this.httpClient.get(environment.endpointRentVehicleGetVehicleTypes);
   }
 
   postMethodVehicleTypes(vehicleTypeName): Observable<any>{
-    return this.httpClient.post("https://localhost:44367/api/VehicleType/PostVehicleType", vehicleTypeName);
+    return this.httpClient.post(environment.endpointRentVehicleTypeCreateVehicleType, vehicleTypeName);
   }
+
+  putMethodVehicleTypes(vehicleType): Observable<any>{
+    return this.httpClient.put(environment.endpointRentVehicleTypeEditVehicleType, vehicleType);
+  }
+
 }

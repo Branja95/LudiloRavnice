@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RentVehicleService } from '../services/rent-vehicle.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-approve-service-admin',
@@ -11,6 +12,7 @@ import { RentVehicleService } from '../services/rent-vehicle.service';
 export class ApproveServiceAdminComponent implements OnInit {
 
   private services : any;
+  serviceLoadImage = environment.endpointRentvehicleLoadImageService;
 
   constructor(private rentVehicleService: RentVehicleService, private router: Router) { }
 
@@ -19,7 +21,6 @@ export class ApproveServiceAdminComponent implements OnInit {
     .subscribe(
       res => {
         this.services = res;
-        console.log(res);
       },
       error => {
         console.log(error);
@@ -31,7 +32,6 @@ export class ApproveServiceAdminComponent implements OnInit {
     this.rentVehicleService.postMethodApproveService(id)
     .subscribe(
       res => {
-        console.log(res);
         this.router.navigate(['/RentVehicle']);
       },
       error => {
@@ -44,7 +44,6 @@ export class ApproveServiceAdminComponent implements OnInit {
     this.rentVehicleService.postMethodRejectService(id)
     .subscribe(
       res => {
-        console.log(res);
         this.router.navigate(['/RentVehicle']);
       },
       error => {

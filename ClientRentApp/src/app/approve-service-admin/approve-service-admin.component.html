@@ -11,7 +11,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let service of services">
-              <td> <img src='https://localhost:44367/api/Service/LoadImage?imageId={{service.LogoImage}}' height="100" weight="100"/></td>
+              <td> <img src='{{serviceLoadImage}}{{service.LogoImage}}' height="100" weight="100"/></td>
               <td>{{service.Name}}</td>
               <td>{{service.EmailAddress}}</td>
               <td>{{service.Description}}</td>

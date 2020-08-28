@@ -1,6 +1,6 @@
 <div class="container">
   <div class="row">
-      <div class="col col-lg-4 col-lg-push-4">
+      <div *ngIf=rentVehicle class="col col-lg-4 col-lg-push-4">
         <form #f="ngForm" (ngSubmit)="onSubmit(f, f.value)">
           <div class="form-group">
             <label for="name">Name:</label>
@@ -16,7 +16,7 @@
           </div>
           <label for="file">Logo Image:</label>
           <div class="text-center">
-            <img src='https://localhost:44367/api/Service/LoadImage?imageId={{rentVehicle.LogoImage}}'  width="300">
+            <img src='{{serviceLoadImage}}{{rentVehicle.LogoImage}}'  width="300">
             <br/><br/>
             <input type="file" id="file" (change)="handleFileInput($event)">
           </div>

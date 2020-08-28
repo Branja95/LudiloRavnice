@@ -6,6 +6,9 @@ import { BranchOfficeService } from '../services/branch-office.service';
 import { MapInfo } from '../models/map-info.model';
 import { Location } from '@angular/common';
 
+import { environment } from '../../environments/environment';
+import { env } from 'process';
+
 @Component({
   selector: 'app-edit-branch-office',
   templateUrl: './edit-branch-office.component.html',
@@ -19,6 +22,8 @@ export class EditBranchOfficeComponent implements OnInit  {
   serviceId : string = "-1";
   branchOfficeId: string = "-1";
   selecetdFileUrl: string = '';
+  
+  branchOfficeLoadImage = environment.endpointRentVehicleLoadImageBranchOffice;
 
   selectedFile: File = null;
   mapInfoCooridnates: MapInfo;

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,18 +13,18 @@ export class NavBarService {
   constructor(private httpClient: HttpClient) { }
 
   getMethodIsUserApproved() : Observable<any> {
-    return this.httpClient.get("https://localhost:44366/api/Account/IsUserApproved");
+    return this.httpClient.get(environment.endpointAccountIsUserApproved);
   }
 
   postMethodLogout() {
-    return this.httpClient.post("https://localhost:44366/api/Auth/Logout", "");
+    return this.httpClient.post(environment.endpointAccountLogout, "");
   }
 
   getMethodAccountForApproval(){
-    return this.httpClient.get("https://localhost:44366/api/Account/AccountForApproval");
+    return this.httpClient.get(environment.endpointAccountForApproval);
   }
 
   getMethodServiceForApproval(){
-    return this.httpClient.get("https://localhost:44367/api/Service/ServicesForApprovalCount");
+    return this.httpClient.get(environment.endpointRentVehicleServicesForApprovalCount);
   }
 }

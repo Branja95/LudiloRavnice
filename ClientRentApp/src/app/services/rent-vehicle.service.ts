@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-
+import { environment } from '../../environments/environment'
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
+import { env } from 'process';
 
 @Injectable({
   providedIn: 'root'
@@ -16,43 +17,43 @@ export class RentVehicleService {
   constructor(private httpClient: HttpClient) { }
 
   getService(serviceId): Observable<any>{
-    return this.httpClient.get("https://localhost:44367/api/Service/GetService?serviceId=" + serviceId);
+    return this.httpClient.get(environment.endpointRentVehicleGetService + serviceId);
   }
 
   getMethodServices(): Observable<any> {
-    return this.httpClient.get("https://localhost:44367/api/Service/GetServices")
+    return this.httpClient.get(environment.endpointRentVehicleGetServices)
   }
 
   getMethodComments(serviceId : string){
-    return this.httpClient.get("https://localhost:44383/api/Comment/GetComments?serviceId=" + serviceId);
+    return this.httpClient.get(environment.endpointBookingGetCommentsForService + serviceId);
   }
 
   getMethodRatings(serviceId : string){
-    return this.httpClient.get("https://localhost:44383/api/Rating/GetRatings?serviceId=" + serviceId);
+    return this.httpClient.get(environment.endpointBookingGetRatingsForService + serviceId);
   }
 
   getMethodServicesForApproves(): Observable<any> {
-    return this.httpClient.get("https://localhost:44367/api/Service/ServicesForApproval");
+    return this.httpClient.get(environment.endpointRentVehicleGetServicesForApproval);
   }
 
   getMethodHasUserCommented(serviceId : string){
-    return this.httpClient.get("https://localhost:44383/api/Comment/HasUserCommented?serviceId=" + serviceId);
+    return this.httpClient.get(environment.endpointBookingHasUserCommented + serviceId);
   }
   
   getMethodHasUserRated(serviceId : string){
-    return this.httpClient.get("https://localhost:44383/api/Rating/HasUserRated?serviceId=" + serviceId);
+    return this.httpClient.get(environment.endpointBookingHasUserRated + serviceId);
   }
   
   deleteService(serviceId): Observable<any>{
-    return this.httpClient.delete("https://localhost:44367/api/Service/DeleteService?serviceId=" + serviceId);
+    return this.httpClient.delete(environment.endpointRentVehicleDeleteService + serviceId);
   }
 
   postMethodApproveService(serviceId : number) {
-    return this.httpClient.post("https://localhost:44367/api/Service/ApproveService", serviceId);
+    return this.httpClient.post(environment.endpointRentVehicleApproveService, serviceId);
   }
 
   postMethodRejectService(serviceId : number) {
-    return this.httpClient.post("https://localhost:44367/api/Service/RejectService", serviceId);
+    return this.httpClient.post(environment.endpointRentVehicleRejectService, serviceId);
   }
 
   postMethodCreateRentVehicleService(rentVehicle, uploadedImage: File): Observable<any> {
@@ -66,7 +67,7 @@ export class RentVehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'multipart/form-data')
 
-    return this.httpClient.post("https://localhost:44367/api/Service/PostService",this.formData, { headers: headers });
+    return this.httpClient.post(environment.endpointRentVehicleCreateService, this.formData, { headers: headers });
   }
 
   editService(serviceId, service, uploadedImage: File): Observable<any>{
@@ -82,7 +83,7 @@ export class RentVehicleService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.put("https://localhost:44367/api/Service/PutService", this.formData, { headers: headers });
+    return this.httpClient.put(environment.endpointRentVehicleEditService, this.formData, { headers: headers });
   }
 
 }

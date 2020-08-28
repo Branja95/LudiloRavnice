@@ -9,7 +9,7 @@
               <div id="banner">
                   &nbsp;&nbsp;&nbsp;
                 <div class="inline-block" *ngFor='let url of parseImages(vehicle.Images)'>
-                  <img src='https://localhost:44367/api/Vehicle/LoadImage?imageId={{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
+                  <img src='{{vehicleLoadImage}}{{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
                 </div> 
             </div>
             <br/><br/>

@@ -1,6 +1,9 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import * as signalR from "@aspnet/signalr";
 
+import { environment } from '../../environments/environment';
+import { env } from 'process'; 
+
 declare var $: any;  
 
 @Injectable({
@@ -31,10 +34,10 @@ export class NotificationService {
 
   public buildConnection = () => {
     this.hubAccountConnection = new signalR.HubConnectionBuilder()
-      .withUrl("https://localhost:44366/notificationHub")
+      .withUrl(environment.endpointAccountHubConnection)
       .build();
     this.hubServiceConnection = new signalR.HubConnectionBuilder()
-      .withUrl("https://localhost:44367/notificationHub")
+      .withUrl(environment.endpointRentVehicleHubConnection)
       .build();
   }
 

@@ -12663,6 +12663,7 @@
         "netcoreapp2.1"
       ],
       "sources": {
+        "http://app561.dmz3.sca.se:8081/repository/AdminUtility-artifact-hosted/": {},
         "http://app561.dmz3/sca.se:8081/repository/Essity-Shared-Modules/": {},
         "https://api.nuget.org/v3/index.json": {}
       },

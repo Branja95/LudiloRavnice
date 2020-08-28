@@ -24,7 +24,6 @@ export class ReserveAVehicleComponent implements OnInit {
     this.branchOfficeService.getVehicleServiceBranchOffices(this.VehicleId).subscribe(
       res => {
         this.branchOffices = res as Array<BranchOffice>;
-        console.log(res);
       },error => {
         console.log(error);
     });

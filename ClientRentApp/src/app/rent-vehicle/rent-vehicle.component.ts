@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RentVehicle } from '../models/rent-vehicle.model';
 import { RentVehicleService } from '../services/rent-vehicle.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-branch-office',
@@ -10,8 +11,9 @@ import { RentVehicleService } from '../services/rent-vehicle.service';
 })
 export class RentVehicleComponent implements OnInit {
 
-  services = Array<RentVehicle>()
-
+  loadImageService = environment.endpointRentvehicleLoadImageService;
+  services = Array<RentVehicle>();
+  
   constructor(private rentVehicleService: RentVehicleService) { }
 
   ngOnInit() {

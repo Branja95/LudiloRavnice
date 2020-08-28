@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { BranchOffice } from '../models/branch-office.model';
 import { BranchOfficeService } from '../services/branch-office.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-branch-office',
@@ -17,6 +18,7 @@ export class BranchOfficeComponent implements OnInit {
   serviceId : string = "-1";
   branchOfficeId : string = "-1";
   branchOffice: BranchOffice;
+  branchOfficeLoadImage = environment.endpointRentVehicleLoadImageBranchOffice;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private branchOfficeService: BranchOfficeService) {
     activatedRoute.params

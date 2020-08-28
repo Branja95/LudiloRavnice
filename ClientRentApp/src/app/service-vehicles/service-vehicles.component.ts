@@ -3,6 +3,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { VehicleType } from '../models/vehicle-type.model';
 import { VehicleService } from '../services/vehicle.service';
 import { Vehicle } from '../models/vehicle.model';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-service-vehicles',
@@ -14,7 +15,8 @@ export class ServiceVehiclesComponent implements OnInit {
   vehicleTypes = Array<VehicleType>();
   vehicles = Array<Vehicle>()
   vehicleType: string;
-
+  
+  vehicleLoadImage = environment.endpointRentVehicleLoadImageVehicle;
   ServiceId : string = "-1";
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private vehicleService: VehicleService) {

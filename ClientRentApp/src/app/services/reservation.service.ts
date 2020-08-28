@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Reservation } from '../models/reservation.model';
-
+import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
@@ -29,7 +29,7 @@ export class ReservationService {
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.post("https://localhost:44383/api/Reservation/PostReservation", this.formData, { headers: headers });
+    return this.httpClient.post(environment.endpointBookingCreateReservation, this.formData, { headers: headers });
   }
 
 }
