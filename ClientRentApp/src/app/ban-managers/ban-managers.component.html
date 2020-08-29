@@ -3,16 +3,18 @@
         <table class="table">
             <thead>
               <tr>
-                <th scope="col">Username</th>
-                <th scope="col">First name</th>
-                <th scope="col">Last name</th>
-                <th scope="col">Date of birth</th>
+                <th scope="col">User Name</th>
+                <th scope="col">Image</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Date of Birth</th>
                 <th class="text-center">Baned</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let manager of managers">
-                <th scope="row">{{manager.Email}}</th>
+                <td scope="row">{{manager.Email}}</td>
+                <td> <img src='{{userImageLoad}}{{manager.DocumentImage}}' height="100" weight="100"/></td>
                 <td>{{manager.FirstName}}</td>
                 <td>{{manager.LastName}}</td>
                 <td>{{manager.DateOfBirth}}</td>

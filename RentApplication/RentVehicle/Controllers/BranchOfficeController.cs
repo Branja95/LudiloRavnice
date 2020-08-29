@@ -139,7 +139,8 @@ namespace RentVehicle.Controllers
                    return BadRequest();
                 }
 
-                string fileName = ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+                ImageHelper imageHelper = new ImageHelper();
+                string fileName = await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
                 BranchOffice branchOffice = new BranchOffice
                 {
                     Address = model.Address,
@@ -204,8 +205,10 @@ namespace RentVehicle.Controllers
                     {
                         return BadRequest("Branch office don't exists.");
                     }
-                    ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, branchOffice.Image);
-                    ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+
+                    ImageHelper imageHelper = new ImageHelper();
+                    await imageHelper.DeleteImage(_environment.WebRootPath, folderPath, branchOffice.Image);
+                    await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
 
                     branchOffice.Address = model.Address;
                     branchOffice.Latitude = model.Latitude;
@@ -251,7 +254,8 @@ namespace RentVehicle.Controllers
                     return BadRequest();
                 }
 
-                ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, branchOffice.Image);
+                ImageHelper imageHelper = new ImageHelper();
+                await imageHelper.DeleteImage(_environment.WebRootPath, folderPath, branchOffice.Image);
                 try
                 {
                     lock (lockObjectForBranchOffices)

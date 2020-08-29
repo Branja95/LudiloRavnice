@@ -236,13 +236,13 @@ namespace RentVehicle.Controllers
                     }
 
                     VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(model.VehicleTypeId);
-
+                    ImageHelper imageHelper = new ImageHelper();
                     string imageUris = string.Empty;
                     int counter = 0;
                     foreach (IFormFile file in model.Images)
                     {
                         counter++;
-                        string fileName = ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
+                        string fileName = await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
                         imageUris += fileName;
                         if (counter < model.Images.Count())
                         {
@@ -318,10 +318,11 @@ namespace RentVehicle.Controllers
                     }
                 }
 
+                ImageHelper imageHelper = new ImageHelper();
                 string[] oldImageUris = vehicle.Images.Split(new string[] { ";_;" }, StringSplitOptions.None);
                 foreach (string imageId in oldImageUris)
                 {
-                    ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, imageId);
+                    imageHelper.DeleteImage(_environment.WebRootPath, folderPath, imageId);
                 }
 
                 string imageUris = string.Empty;
@@ -329,7 +330,7 @@ namespace RentVehicle.Controllers
                 foreach (IFormFile file in model.Images)
                 {
                     count++;
-                    ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
+                    await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
                     imageUris += file.FileName;
                     if (count < model.Images.Count())
                     {

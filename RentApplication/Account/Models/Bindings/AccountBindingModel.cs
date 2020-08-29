@@ -100,6 +100,9 @@ namespace AccountManaging.Models.Bindings
         [Required]
         [Display(Name = "Role")]
         public string Role { get; set; }
+
+        [Display(Name = "DocumentImage")]
+        public string DocumentImage { get; set; }
     }
 
     public class ManagerIdBindingModel
@@ -138,6 +141,9 @@ namespace AccountManaging.Models.Bindings
         [Required]
         [Display(Name = "isBaned")]
         public bool IsBaned { get; set; }
+
+        [Display(Name = "DocumentImage")]
+        public string DocumentImage { get; set; }
 
     }
 

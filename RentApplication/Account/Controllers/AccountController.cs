@@ -124,7 +124,8 @@ namespace AccountManaging.Controllers
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    DateOfBirth = user.DateOfBirth.Value.Date,
+                    DocumentImage = user.DocumentImage,
+                    DateOfBirth = user.DateOfBirth.Value.Date
                 });
             }
 
@@ -178,6 +179,7 @@ namespace AccountManaging.Controllers
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
+                    DocumentImage = user.DocumentImage,
                     DateOfBirth = user.DateOfBirth.Value,
                 });
             }
@@ -355,7 +357,8 @@ namespace AccountManaging.Controllers
                 return BadRequest();
             }
 
-            string fileName = ImageHelper.UploadImageToServer(_environment.WebRootPath, image);
+            ImageHelper imageHelper = new ImageHelper();
+            string fileName = await imageHelper.UploadImageToServer(_environment.WebRootPath, image);
             user.DocumentImage = fileName;
 
             IdentityResult addUserDocumentImageResult = await _userManager.UpdateAsync(user);

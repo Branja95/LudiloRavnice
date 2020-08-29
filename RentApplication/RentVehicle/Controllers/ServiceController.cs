@@ -200,7 +200,8 @@ namespace RentVehicle.Controllers
 
                 ApplicationUser user = await FindUser();
                 _emailService.SendMail("Service rejected", "Your service " + serviceForApprove.Name + " is rejected.", user.Email);
-                ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, serviceForApprove.LogoImage);
+                ImageHelper imageHelper = new ImageHelper();
+                imageHelper.DeleteImage(_environment.WebRootPath, folderPath, serviceForApprove.LogoImage);
                 try
                 {
                     lock (lockObjectForServices)
@@ -256,8 +257,8 @@ namespace RentVehicle.Controllers
                             }
                         }
                     }
-
-                    string fileName = ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+                    ImageHelper imageHelper = new ImageHelper();
+                    string fileName = await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
                     Service service = new Service()
                     {
                         Creator = user.Id,
@@ -331,9 +332,9 @@ namespace RentVehicle.Controllers
                         }
 
                         Service oldService = _unitOfWork.Services.Get(model.ServiceId);
-
-                        ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, oldService.LogoImage);
-                        ImageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+                        ImageHelper imageHelper = new ImageHelper();
+                        imageHelper.DeleteImage(_environment.WebRootPath, folderPath, oldService.LogoImage);
+                        await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
 
                         oldService.Name = model.Name;
                         oldService.EmailAddress = model.EmailAddress;
@@ -386,13 +387,14 @@ namespace RentVehicle.Controllers
                     return BadRequest();
                 }
 
+                ImageHelper imageHelper = new ImageHelper();
                 List<long> branchOfficeIds = new List<long>();
                 if (service.BranchOfficces != null)
                 {
                     foreach (BranchOffice branchOffice in service.BranchOfficces)
                     {
                         branchOfficeIds.Add(branchOffice.Id);
-                        ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, branchOffice.Image);
+                        imageHelper.DeleteImage(_environment.WebRootPath, folderPath, branchOffice.Image);
                     }
                 }
 
@@ -402,11 +404,11 @@ namespace RentVehicle.Controllers
                     foreach (Vehicle vehicle in service.Vehicles)
                     {
                         vehiclesIds.Add(vehicle.Id);
-                        ImageHelper.DeleteImages(_environment.WebRootPath, folderPath, vehicle.Images);
+                        imageHelper.DeleteImages(_environment.WebRootPath, folderPath, vehicle.Images);
                     }
                 }
 
-                ImageHelper.DeleteImage(_environment.WebRootPath, folderPath, service.LogoImage);
+                imageHelper.DeleteImage(_environment.WebRootPath, folderPath, service.LogoImage);
                 try
                 {
                         foreach (long branchOfficeId in branchOfficeIds)

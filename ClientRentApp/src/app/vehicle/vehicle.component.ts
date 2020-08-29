@@ -92,6 +92,9 @@ export class VehicleComponent implements OnInit {
 
   setShowPage(page: number) {
     this.pager = this.pagerService.getPager(this.vehicles.length, page);
+    if(this.pager.currentPage == 0){
+      this.pager.currentPage = 1;
+    }
     this.getPagedVehciles(this.pager.currentPage, this.search);
   }
 

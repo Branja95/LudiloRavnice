@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AccountService } from '../services/account.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-change-roles',
@@ -12,26 +13,28 @@ export class ChangeRolesComponent implements OnInit {
   constructor(private accountService: AccountService, private router: Router) { }
 
   users: any;
+  userImageLoad = environment.endpointAccountGetUserImage;
   roles: Array<String> = ["Administrator", "Manager", "Client"];
 
   ngOnInit() {
     this.accountService.getMethodUsers().subscribe(
       res => {
         this.users = res;
+        this.users.forEach(user => {
+          user.DateOfBirth = user.DateOfBirth.split('T', 1)[0]
+        });
       },
       error => {
-        alert(error.error.Message);
+        console.log(error.error.Message);
     });
   }
 
-  onChangeRole(userId, role){
-    this.accountService.putMethodChangeRole(userId, role).subscribe(
-      res => {
-        this.router.navigateByUrl("/Vehicles");
-      },
+  onChange(role, userId){
+    var request: any = {};
+    request.Role = role;
+    this.accountService.putMethodChangeRole(userId, request).subscribe(
       error => {
-        alert(error.error.Message);
+        console.log(error);
     });
   }
-
 }

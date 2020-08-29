@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountService } from '../services/account.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-ban-managers',
@@ -10,6 +11,7 @@ import { AccountService } from '../services/account.service';
 export class BanManagersComponent implements OnInit {
 
   managers: any;
+  userImageLoad = environment.endpointAccountGetUserImage;
 
   constructor(private accountService: AccountService, private router: Router) { }
 
@@ -18,9 +20,12 @@ export class BanManagersComponent implements OnInit {
     .subscribe(
       res => {
         this.managers = res;
+        this.managers.forEach(manager => {
+          manager.DateOfBirth = manager.DateOfBirth.split('T', 1)[0]
+        });
       },
       error => {
-        alert(error.error.Message);
+        console.log(error.error.Message);
       }
     );
   }

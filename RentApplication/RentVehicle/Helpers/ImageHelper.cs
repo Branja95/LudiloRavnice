@@ -2,13 +2,12 @@
 using Microsoft.Extensions.FileProviders;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace RentVehicle.Helpers
 {
-    public static class ImageHelper
+    public class ImageHelper
     {
-        private static readonly Random _randomNumber = new Random();
-
         public static Stream ReadImageFromServer(string root, string folderPath, string imageId)
         {
             IFileProvider provider = new PhysicalFileProvider(root);
@@ -17,21 +16,21 @@ namespace RentVehicle.Helpers
             return fileInfo.CreateReadStream();
         }
 
-        public static string UploadImageToServer(string root, string folderPath, IFormFile image)
+        public async Task<string> UploadImageToServer(string root, string folderPath, IFormFile image)
         {
             string pathToFolder = System.IO.Path.Combine(root, folderPath);
-            string uniqueName = GetRandomNumber(1, 1000000) + image.FileName;
+            string uniqueName = Guid.NewGuid().ToString() + "_" + image.FileName;
             string filePath = Path.Combine(pathToFolder, uniqueName);
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
             {
-                image.CopyToAsync(fileStream);
+                await image.CopyToAsync(fileStream);
             }
 
             return uniqueName;
         }
 
-        public static void DeleteImage(string root,string folderPath, string imageId)
+        public async Task DeleteImage(string root,string folderPath, string imageId)
         {
             IFileProvider provider = new PhysicalFileProvider(root);
             IFileInfo fileInfo = provider.GetFileInfo(folderPath + imageId);
@@ -41,7 +40,7 @@ namespace RentVehicle.Helpers
             }
         }
 
-        public static void DeleteImages(string root, string folderPath, string images)
+        public async Task DeleteImages(string root, string folderPath, string images)
         {
             string[] imagesforDelete = images.Split(new string[] { ";_;" }, StringSplitOptions.None);
 
@@ -53,14 +52,6 @@ namespace RentVehicle.Helpers
                 {
                     File.Delete(fileInfo.PhysicalPath);
                 }
-            }
-        }
-
-        private static int GetRandomNumber(int min, int max)
-        {
-            lock (_randomNumber)
-            {
-                return _randomNumber.Next(min, max);
             }
         }
     }

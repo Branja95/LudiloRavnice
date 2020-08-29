@@ -8,7 +8,7 @@
           <input type="file" id="documenImage" (change)="handleFileInput($event)">
         </div>
         
-        <button type="submit" class="btn btn-default">Approve account</button>
+        <button *ngIf=url type="submit" class="btn btn-success">Approve account</button>
       </form>
     </div>
   </div>
