@@ -5,7 +5,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
-import { env } from 'process';
 
 @Injectable({
   providedIn: 'root'
@@ -25,11 +24,7 @@ export class RentVehicleService {
   }
 
   getMethodComments(serviceId : string){
-    return this.httpClient.get(environment.endpointBookingGetCommentsForService + serviceId);
-  }
-
-  getMethodRatings(serviceId : string){
-    return this.httpClient.get(environment.endpointBookingGetRatingsForService + serviceId);
+    return this.httpClient.get(environment.endpointBookingFeedbacksForService + serviceId);
   }
 
   getMethodServicesForApproves(): Observable<any> {
@@ -37,11 +32,7 @@ export class RentVehicleService {
   }
 
   getMethodHasUserCommented(serviceId : string){
-    return this.httpClient.get(environment.endpointBookingHasUserCommented + serviceId);
-  }
-  
-  getMethodHasUserRated(serviceId : string){
-    return this.httpClient.get(environment.endpointBookingHasUserRated + serviceId);
+    return this.httpClient.get(environment.endpointBookingHasUserPostedFeedback + serviceId);
   }
   
   deleteService(serviceId): Observable<any>{

@@ -14,7 +14,8 @@ export class EditVehicleTypesComponent implements OnInit {
   VehicleTypeId: string;
 
   constructor(private vehicleTypesService: VehicleTypesService, private activatedRoute: ActivatedRoute, private router: Router) { 
-    activatedRoute.params.subscribe(params => {this.VehicleTypeId = params["VehicleTypeId"]});
+    activatedRoute.params.subscribe(params =>{this.VehicleTypeId = params["VehicleTypeId"]});
+    this.ngOnInit();
   }
 
   ngOnInit() {

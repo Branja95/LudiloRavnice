@@ -137,7 +137,6 @@ namespace AccountManaging.Controllers
             return Ok(userRoles);
         }
 
-
         [HttpGet]
         [Route("IsAccountApproved")]
         public IActionResult IsAccountApproved(string userId)
@@ -265,6 +264,7 @@ namespace AccountManaging.Controllers
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
+                    DocumentImage = user.DocumentImage,
                     DateOfBirth = user.DateOfBirth.Value,
                 });
             }

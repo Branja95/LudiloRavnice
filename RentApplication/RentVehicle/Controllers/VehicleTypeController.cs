@@ -83,7 +83,7 @@ namespace RentVehicle.Controllers
                     }
                 }
 
-                return Ok();
+                return Ok(_unitOfWork.VehicleTypes.GetAll());
             }
         }
 

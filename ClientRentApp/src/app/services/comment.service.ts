@@ -16,35 +16,17 @@ export class CommentService {
 
   constructor(private httpClient: HttpClient) { }
 
-  getMethodGetComment(commentId : string){
-    return this.httpClient.get(environment.endpointBookingGetComment + commentId);
-  }
-
-  getMethodUsername(commentId): Observable<any>{
-    return this.httpClient.get(environment.endpointBookingCommentGetUserName + commentId);
-  }
 
   postMethodCreateComment(comment): Observable<any>{
     this.formData = new FormData();
 
     this.formData.append('serviceId', comment.serviceId);
     this.formData.append('text', comment.text);
+    this.formData.append('value', comment.value);
 
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
 
-    return this.httpClient.post(environment.endpointBookingCreateComment, this.formData, { headers: headers }); 
-  }
-
-  putMethodEditComment(comment): Observable<any> {
-    this.formData = new FormData();
-
-    this.formData.append('id', comment.Id);
-    this.formData.append('text', comment.Text);
-
-    let headers = new HttpHeaders();
-    headers.append('Content-Type', 'application/json')
-
-    return this.httpClient.put(environment.endpointBookingEditComment, this.formData, { headers: headers });
+    return this.httpClient.post(environment.endpointBookingPostFeedback, this.formData, { headers: headers }); 
   }
 }

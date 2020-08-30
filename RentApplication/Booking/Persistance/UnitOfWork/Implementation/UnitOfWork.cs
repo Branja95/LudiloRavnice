@@ -8,31 +8,18 @@ namespace Booking.Persistance.UnitOfWork.Implementation
     {
         private readonly DbContext _context;
 
-        private ICommentRepository commentRepository;
-        private IRatingRepository ratingRepository;
+        private IUserFeedbackRepository userFeedbackRepository;
         private IReservationRepository reservationRepository;
 
-        public ICommentRepository Comments
+        public IUserFeedbackRepository UserFeedbacks
         {
             get
             {
-                return commentRepository = commentRepository ?? new CommentRepository(_context);
+                return userFeedbackRepository = userFeedbackRepository ?? new UserFeedbackRepository(_context);
             }
             set
             {
-                this.commentRepository = value;
-            }
-        }
-
-        public IRatingRepository Ratings
-        {
-            get
-            {
-                return ratingRepository = ratingRepository ?? new RatingRepository(_context);
-            }
-            set
-            {
-                this.ratingRepository = value;
+                this.userFeedbackRepository = value;
             }
         }
 

@@ -5,7 +5,6 @@ import { HttpModule, JsonpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientXsrfModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
-import { NgForm  } from '@angular/forms';
 
 import { AgmCoreModule } from '@agm/core';
 
@@ -34,15 +33,10 @@ import { ApproveServiceAdminComponent } from './approve-service-admin/approve-se
 import { ViewRentVehicleComponent } from './view-rent-vehicle/view-rent-vehicle.component';
 import { ServiceVehiclesComponent } from './service-vehicles/service-vehicles.component';
 import { MapComponent } from './map/map.component';
-import { RatingComponent } from './rating/rating.component';
 import { CommentComponent } from './comment/comment.component';
-import { AddRatingComponent } from './add-rating/add-rating.component';
-import { AddCommentComponent } from './add-comment/add-comment.component';
 import { ReserveAVehicleComponent } from './reserve-a-vehicle/reserve-a-vehicle.component';
 import { VehicleTypesComponent } from './vehicle-types/vehicle-types.component';
 import { EditVehicleTypesComponent } from './edit-vehicle-types/edit-vehicle-types.component';
-import { EditCommentComponent } from './edit-comment/edit-comment.component';
-import { EditRatingComponent } from './edit-rating/edit-rating.component';
 import { ChangeRolesComponent } from './change-roles/change-roles.component';
 import { BanManagersComponent } from './ban-managers/ban-managers.component';
 
@@ -168,31 +162,6 @@ const Routes = [
     canActivate: ['CanAlwaysActivateGuard']
   },
   {
-    path: "Rating/:ServiceId",
-    component: RatingComponent,
-    canActivate: ['CanAlwaysActivateGuard']
-  },
-  {
-    path: "AddComment/:ServiceId",
-    component: AddCommentComponent,
-    canActivate: [AuthGuard] 
-  },
-  {
-    path: "AddRating/:ServiceId",
-    component: AddRatingComponent,
-    canActivate: [AuthGuard] 
-  },
-  {
-    path: "EditComment/:commentId",
-    component: EditCommentComponent,
-    canActivate: [AuthGuard] 
-  },
-  {
-    path: "EditRating/:ratingId",
-    component: EditRatingComponent,
-    canActivate: [AuthGuard] 
-  },
-  {
     path: "ChangeRoles",
     component: ChangeRolesComponent,
     canActivate: [AdminGuard] 
@@ -227,13 +196,8 @@ const Routes = [
     ServiceVehiclesComponent,
     ViewRentVehicleComponent,
     MapComponent,
-    RatingComponent,
     CommentComponent,
-    AddRatingComponent,
-    AddCommentComponent,
     ReserveAVehicleComponent,
-    EditCommentComponent,
-    EditRatingComponent,
     VehicleTypesComponent,
     EditVehicleTypesComponent,
     ChangeRolesComponent,

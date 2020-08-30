@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Booking.Controllers;
 using Booking.Models.IdentityUsers;
 using Booking.Persistance;
 using Booking.Persistance.Repository;
@@ -58,8 +59,7 @@ namespace Booking
                 }).AddEntityFrameworkStores<BookingDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddScoped<ICommentRepository, CommentRepository>();
-            services.AddScoped<IRatingRepository, RatingRepository>();
+            services.AddScoped<IUserFeedbackRepository, UserFeedbackRepository>();
             services.AddScoped<IReservationRepository, ReservationRepository>();
 
             services.AddMvc()

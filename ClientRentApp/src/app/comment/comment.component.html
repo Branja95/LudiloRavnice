@@ -1,16 +1,32 @@
-<div class='parent'>
-    <div *ngFor='let comment of comments'>
-        <div class="inline-block">
-            <label>Comment:</label><br/>
-            <div class="inline-block">
-                <label >User:</label> {{comment.UserId}}<br/>
-                <label>Text:</label> {{comment.Text}}<br/>
-                <label type="Date">Date:</label> {{comment.DateTime}}<br/>
+<div class="container">
+    <div class="row">
+        <div *ngFor='let comment of comments'>
+            <div class="col-sm-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="star-ratings-css" title='{{comment.Value}}'></div>
+                        <br />
+                        <br />
+                        <strong>{{comment.UserFirstName}} {{comment.UserLastName}}</strong> <span class="text-muted"> commented on {{comment.DateTime}}</span>
+                    </div>
+                    <div class="panel-body">
+                        {{comment.Text}}
+                    </div>
+                </div>
             </div>
-            
-            <button type="button" *ngIf="canUserEditComment(comment.UserId)" [routerLink]="['/EditComment/' , comment.Id]" class="btn btn-default">Edit Comment</button> 
-            <br/>
         </div>
     </div>
-</div>  
-<button type="button" *ngIf="!hasUserCommented()" [routerLink]="['/AddComment/' , serviceId]" class="btn btn-default">Add Comment</button>
+    <div class="row" *ngIf='canUserPostFeedback()'>
+          <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit(checkoutForm.value)">
+            <div class="form-group">
+              <div class="col col-sm-1">
+                <input class="form-control" step="1"  min="1" max="5" id="value" formControlName="value">
+              </div>
+              <div class="col col-sm-7">
+                <input class="form-control" id="text" type="text" formControlName="text">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-success">Post Feedback</button>
+          </form>
+    </div>
+</div>

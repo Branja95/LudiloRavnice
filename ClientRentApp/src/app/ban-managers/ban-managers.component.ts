@@ -35,6 +35,9 @@ export class BanManagersComponent implements OnInit {
     .subscribe(
       res => {
         this.managers = res;
+        this.managers.forEach(manager => {
+          manager.DateOfBirth = manager.DateOfBirth.split('T', 1)[0]
+        });
       },
       error => {
         console.log(error);

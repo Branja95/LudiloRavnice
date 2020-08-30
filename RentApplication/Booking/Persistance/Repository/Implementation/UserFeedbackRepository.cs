@@ -1,22 +1,24 @@
 ﻿using Booking.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Booking.Persistance.Repository.Implementation
 {
-    public class CommentRepository : Repository<Comment, long>, ICommentRepository
+    public class UserFeedbackRepository : Repository<UserFeedback, long>, IUserFeedbackRepository
     {
-        public CommentRepository(DbContext context) : base(context) { }
+        public UserFeedbackRepository(DbContext context) : base(context) { }
 
-        public IEnumerable<Comment> GetAll(long serviceId)
+        public IEnumerable<UserFeedback> GetAll(long serviceId)
         {
-            return BookingDbContext.Comments.Where(x => x.ServiceId == serviceId);
+            return BookingDbContext.UserFeedbacks.Where(x => x.ServiceId == serviceId);
         }
 
         public long Count()
         {
-            return BookingDbContext.Set<Comment>().Count();
+            return BookingDbContext.Set<UserFeedback>().Count();
         }
 
         protected BookingDbContext BookingDbContext

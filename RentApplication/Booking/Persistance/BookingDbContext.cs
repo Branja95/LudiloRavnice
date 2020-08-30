@@ -7,8 +7,7 @@ namespace Booking.Persistance
 {
     public class BookingDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
-        public DbSet<Comment> Comments { get; set; }
-        public DbSet<Rating> Ratings { get; set; }
+        public DbSet<UserFeedback> UserFeedbacks { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
 
         public BookingDbContext(DbContextOptions<BookingDbContext> options) : base(options) { }

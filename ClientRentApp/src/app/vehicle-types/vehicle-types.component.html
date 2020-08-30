@@ -1,30 +1,25 @@
 <div>
   <div class="container">
       <div class="text-center">
-        <h1>Vehicle types</h1>
           <table class="table">
             <thead>
               <tr>
-                <th class="text-center">Id</th>
-                <th class="text-center">Type name</th>
+                <th class="text-center">Type</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let vehicleType of vehicleTypes">
-                <td>{{vehicleType.Id}}</td>               
                 <td>{{vehicleType.TypeName}}</td>
-                <td><button type="button" [routerLink]="['/EditVehicleType/', vehicleType.Id]" class="btn btn-default">Edit</button></td>              
+                <td><button type="button" [routerLink]="['/EditVehicleType/', vehicleType.Id]" class="btn btn-warning">Edit</button></td>              
               </tr>
             </tbody>
           </table>
-          <h1>Add new vehicle type:</h1>
           <div class="col col-lg-4 col-lg-push-4">
             <form #f="ngForm" (ngSubmit)="onAdd(f.value)">
               <div class="form-group">
-                <label for="typeName">Type name: </label>
                 <input type="text" class="form-control" id="TypeName" name="TypeName" ngModel #TypeName="ngModel">
               </div>
-              <button type="submit" class="btn btn-default">Add vehicle type</button>
+              <button type="submit" class="btn btn-success">Add</button>
             </form>
           </div>
       </div>

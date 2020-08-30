@@ -1,0 +1,52 @@
+  @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
+
+  .star-ratings-css {
+	  color: #c5c5c5;
+	  font-size: 25px;
+	  height: 20px;
+	  width: 80px;
+	  margin: 0 auto;
+	  position: absolute;
+	  text-shadow: 0 1px 0 #a2a2a2;
+	} 
+	.star-ratings-css::before { 
+	  content: '★★★★★';
+	  opacity: .5;
+	}
+	
+	[title="0"]::after {
+		width: 0%;
+	  }
+	[title="1"]::after {
+	  width: 25%;
+	}
+	[title="2"]::after {
+	  width: 50%;
+	}
+	[title="3"]::after {
+	  width: 75%;
+	}
+	[title="4"]::after {
+	  width: 100%;
+	}
+	[title="5"]::after {
+	  width: 150%;
+	}
+	
+	.star-ratings-css::after {
+	  color: gold;
+	  content: '★★★★★';
+	  text-shadow: 0 1px 0 #ab5414;
+	  position: absolute;
+	  z-index: 1;
+	  display: block;
+	  left: 0;
+	  top:0;
+	  width: attr(rating);
+	  overflow: hidden;
+	}
+	
+	
+	
+	body { margin: 50px; text-align: center; font-family: 'Open Sans', sans-serif; background: #f2fbff; font-size: .6em;}
+	
