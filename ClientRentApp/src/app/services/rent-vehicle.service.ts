@@ -69,7 +69,7 @@ export class RentVehicleService {
     this.formData.append('name', service.Name)
     this.formData.append('emailaddress', service.EmailAddress);
     this.formData.append('description', service.Description);
-    this.formData.append('image', uploadedImage, uploadedImage.name);
+    this.formData.append('image', uploadedImage);
 
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')

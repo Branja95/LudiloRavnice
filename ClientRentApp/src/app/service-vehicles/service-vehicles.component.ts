@@ -45,10 +45,10 @@ export class ServiceVehiclesComponent implements OnInit {
   }
 
   onDelete(id){
-    this.vehicleService.deleteVehicle(id)
+    this.vehicleService.deleteVehicle(id, this.ServiceId)
     .subscribe(
       res => {
-        alert(res);
+        this.vehicles = res as Array<Vehicle>;
       },
       error => {
         alert(error.error.Message);

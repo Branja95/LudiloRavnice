@@ -33,7 +33,7 @@ namespace RentVehicle.Controllers
         [HttpGet]
         [Route("GetVehicleType")]
         [AllowAnonymous]
-        public IActionResult GetVehicleType([FromForm] long vehicleTypeId)
+        public IActionResult GetVehicleType(long vehicleTypeId)
         {
             VehicleType vehicleType = _unitOfWork.VehicleTypes.Get(vehicleTypeId);
             if (vehicleType == null)

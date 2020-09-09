@@ -54,6 +54,7 @@ namespace RentVehicle.Controllers
         [AllowAnonymous]
         public IEnumerable<Vehicle> GetVehicles()
         {
+            var a = _unitOfWork.Vehicles.GetAll();
             return _unitOfWork.Vehicles.GetAll();
         }
 
@@ -257,7 +258,7 @@ namespace RentVehicle.Controllers
                         Manufactor = model.Manufactor,
                         PricePerHour = model.PricePerHour,
                         YearMade = model.YearMade,
-                        IsAvailable = model.IsAvailable.Equals("IsAvailable"),
+                        IsAvailable = model.IsAvailable.Equals("Available"),
                         Images = imageUris,
                         VehicleType = vehicleType,
                     };
@@ -318,24 +319,30 @@ namespace RentVehicle.Controllers
                     }
                 }
 
-                ImageHelper imageHelper = new ImageHelper();
-                string[] oldImageUris = vehicle.Images.Split(new string[] { ";_;" }, StringSplitOptions.None);
-                foreach (string imageId in oldImageUris)
-                {
-                    imageHelper.DeleteImage(_environment.WebRootPath, folderPath, imageId);
-                }
-
                 string imageUris = string.Empty;
-                int count = 0;
-                foreach (IFormFile file in model.Images)
+                if (model.Images != null)
                 {
-                    count++;
-                    await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
-                    imageUris += file.FileName;
-                    if (count < model.Images.Count())
+                    ImageHelper imageHelper = new ImageHelper();
+                    string[] oldImageUris = vehicle.Images.Split(new string[] { ";_;" }, StringSplitOptions.None);
+                    foreach (string imageId in oldImageUris)
                     {
-                        imageUris += ";_;";
+                        imageHelper.DeleteImage(_environment.WebRootPath, folderPath, imageId);
                     }
+
+                    int count = 0;
+                    foreach (IFormFile file in model.Images)
+                    {
+                        count++;
+                        imageUris += await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, file);
+                        if (count < model.Images.Count())
+                        {
+                            imageUris += ";_;";
+                        }
+                    }
+                }
+                else
+                {
+                    imageUris = vehicle.Images;
                 }
 
                 vehicle.Description = model.Description;
@@ -367,7 +374,7 @@ namespace RentVehicle.Controllers
                     }
                 }
 
-                return Ok();
+                return Ok(vehicle);
             }
         }
 
@@ -375,7 +382,7 @@ namespace RentVehicle.Controllers
         [HttpDelete]
         [Route("DeleteVehicle")]
         [Authorize(Roles = "Administrator, Manager")]
-        public async Task<IActionResult> DeleteVehicle([FromQuery] int id)
+        public async Task<IActionResult> DeleteVehicle([FromQuery] int id, [FromQuery] int serviceId)
         {
             Vehicle vehicle = _unitOfWork.Vehicles.Get(id);
             if (vehicle == null)
@@ -415,7 +422,7 @@ namespace RentVehicle.Controllers
                     return NotFound();
                 }
 
-                return Ok();
+                return Ok(_unitOfWork.Services.Get(serviceId).Vehicles);
             }
         }
 

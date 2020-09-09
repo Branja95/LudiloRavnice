@@ -46,7 +46,7 @@ export class AddVehicleComponent implements OnInit {
 
     this.vehicleService.createVehicle(vehicle, this.uploadedFiles).subscribe(
       res => {
-        console.log(res);
+        this.router.navigate(['/Vehicles/' + this.ServiceId]);
       }, 
       error => {
         console.log(error.error.Message);

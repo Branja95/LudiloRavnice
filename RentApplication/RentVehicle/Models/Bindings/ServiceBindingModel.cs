@@ -53,7 +53,6 @@ namespace RentVehicle.Models.Bindings
             [Display(Name = "Description")]
             public string Description { get; set; }
 
-            [Required]
             [DataType(DataType.Text)]
             [Display(Name = "Image")]
             public IFormFile Image { get; set; }

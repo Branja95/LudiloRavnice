@@ -10,15 +10,19 @@ import { VehicleTypesService } from '../services/vehicle-types.service';
 })
 export class EditVehicleTypesComponent implements OnInit {
 
-  vehicleType: VehicleType;
+  vehicleType;
   VehicleTypeId: string;
 
   constructor(private vehicleTypesService: VehicleTypesService, private activatedRoute: ActivatedRoute, private router: Router) { 
     activatedRoute.params.subscribe(params =>{this.VehicleTypeId = params["VehicleTypeId"]});
-    this.ngOnInit();
   }
 
   ngOnInit() {
+    this.vehicleType = {
+      id: -1,
+      typeName: ''
+    };
+
     this.vehicleTypesService.getMethodVehicleType(this.VehicleTypeId)
     .subscribe(
       data => {

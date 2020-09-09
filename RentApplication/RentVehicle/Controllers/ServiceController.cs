@@ -333,13 +333,23 @@ namespace RentVehicle.Controllers
 
                         Service oldService = _unitOfWork.Services.Get(model.ServiceId);
                         ImageHelper imageHelper = new ImageHelper();
-                        imageHelper.DeleteImage(_environment.WebRootPath, folderPath, oldService.LogoImage);
-                        await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+
+                        string imageUri = string.Empty;
+                        if(model.Image != null)
+                        {
+                            imageHelper.DeleteImage(_environment.WebRootPath, folderPath, oldService.LogoImage);
+                            imageUri = await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+                        }
+                        else
+                        {
+                            imageUri = oldService.LogoImage;
+                        }
+
 
                         oldService.Name = model.Name;
                         oldService.EmailAddress = model.EmailAddress;
                         oldService.Description = model.Description;
-                        oldService.LogoImage = model.Image.FileName;
+                        oldService.LogoImage = imageUri;
 
                         try
                         {
@@ -361,7 +371,7 @@ namespace RentVehicle.Controllers
                             }
                         }
 
-                        return Ok();
+                        return Ok(oldService);
                     }
                
                 }
@@ -423,27 +433,10 @@ namespace RentVehicle.Controllers
                             _unitOfWork.Vehicles.Remove(vehicle);
                         }
 
-                        using (HttpClient httpClient = new HttpClient())
-                        {
-                            HttpResponseMessage httpResponseMessage = await httpClient.DeleteAsync(_deleteCommentsEndpoint + serviceId).ConfigureAwait(true);
-                            if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
-                            {
-                                httpResponseMessage = await httpClient.DeleteAsync(_deleteRatingsEndpoint + serviceId).ConfigureAwait(true);
-                                if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
-                                {
-                                    return BadRequest();
-                                }
-                            }
-                            else
-                            {
-                                return BadRequest();
-                            }
-                        }
-
                         _unitOfWork.Services.Remove(service);
                         _unitOfWork.Complete();
                 }
-                catch (DBConcurrencyException)
+                catch (DBConcurrencyException ex)
                 {
                     if (_unitOfWork.Services.Get(serviceId) == null)
                     {

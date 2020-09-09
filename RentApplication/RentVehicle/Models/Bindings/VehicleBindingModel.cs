@@ -98,7 +98,6 @@ namespace RentVehicle.Models.Bindings
             [Display(Name = "IsAvailable")]
             public string IsAvailable { get; set; }
 
-            [Required]
             [Display(Name = "Images")]
             public IEnumerable<IFormFile> Images { get; set; }
         }

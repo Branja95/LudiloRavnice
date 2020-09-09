@@ -56,8 +56,8 @@ export class VehicleService {
     return this.httpClient.get(environment.endpointRentVehicleSearchVehicles + vehicleTypeId + "&vehiclePriceFrom=" + vehiclePriceFrom + "&vehiclePriceTo=" + vehiclePriceTo + "&vehicleManufactor=" + vehicleManufactor + "&vehicleModel=" + vehicleModel);   
   }
 
-  deleteVehicle(vehicleId): Observable<any> {
-    return this.httpClient.delete(environment.endpointRentVehicleDeleteVehicle + vehicleId);
+  deleteVehicle(vehicleId, serviceId): Observable<any> {
+    return this.httpClient.delete(environment.endpointRentVehicleDeleteVehicle + vehicleId + "&serviceId=" + serviceId);
   }
 
   changeAvailability(vehicleId){
@@ -96,7 +96,7 @@ export class VehicleService {
   }
 
   editVehicle(vehicleId, vehicle, uploadedImages: FileList): Observable<any>{
-
+    
     this.formData.append('id', vehicleId);
     this.formData.append('vehicleTypeId', vehicle.vehicleType);
     this.formData.append('model', vehicle.model);
@@ -105,9 +105,12 @@ export class VehicleService {
     this.formData.append('description', vehicle.description);
     this.formData.append('pricePerHour', vehicle.pricePerHour);
     this.formData.append('isAvailable', vehicle.isAvailable);
-    Array.from(uploadedImages).forEach(uploadedImage => { 
-      this.formData.append('images', uploadedImage, uploadedImage.name);
-    });
+
+    if(uploadedImages != null){
+      Array.from(uploadedImages).forEach(uploadedImage => { 
+        this.formData.append('images', uploadedImage, uploadedImage.name);
+      });
+    }
 
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')

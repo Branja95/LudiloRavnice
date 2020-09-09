@@ -57,19 +57,14 @@ export class EditVehicleComponent implements OnInit {
   }
 
   onSubmit(form: NgForm, vehicle: Vehicle) {
-    console.log('eee');
     this.vehicleService.editVehicle(this.VehicleId, vehicle, this.uploadedFiles)
     .subscribe(
       data => {
-        console.log(data);
+        this.Vehicle = data as Vehicle;
+        this.urls = [];
       }, error => {
         console.log(error);
       });
-    
-      form.reset();
-      this.urls = new Array<string>();
-      this.uploadedFiles = null;
-      this.router.navigateByUrl("Vehicles/" + this.VehicleId);
   }
 
   getVehicleTypes() { 

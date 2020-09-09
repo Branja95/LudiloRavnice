@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import {Router, ActivatedRoute } from '@angular/router';
 import { RentVehicleService } from '../services/rent-vehicle.service';
+import { environment } from '../../environments/environment'
 
 @Component({
   selector: 'app-edit-rent-vehicle',
@@ -11,9 +12,11 @@ import { RentVehicleService } from '../services/rent-vehicle.service';
 })
 export class EditRentVehicleComponent implements OnInit {
 
+  url: string = '';
   ServiceId: string = "-1";
-  rentVehicle: any;
+  rentVehicle: RentVehicleService;
     
+  serviceLoadImage = environment.endpointRentvehicleLoadImageService;
   selecetdFileUrl: string = '';
   selectedFile: File = null;
 
@@ -24,21 +27,22 @@ export class EditRentVehicleComponent implements OnInit {
   ngOnInit() {
     this.rentVehicleService.getService(this.ServiceId).subscribe(
       res => {
-        this.rentVehicle = res;
+        this.rentVehicle = res as RentVehicleService;
       },error => {
         console.log(error);
       });
   }
 
   handleFileInput(event) {
+    console.log('aaa');
     this.selectedFile = event.target.files[0];
-    
+      
     if (event.target.files && event.target.files[0]) {
       var reader = new FileReader();
 
       reader.readAsDataURL(event.target.files[0]); 
       reader.onload = (event) => { 
-        this.selecetdFileUrl = reader.result as string;
+        this.url = reader.result as string;
       }
     }
   }
@@ -47,6 +51,7 @@ export class EditRentVehicleComponent implements OnInit {
     this.rentVehicleService.editService(this.ServiceId, this.rentVehicle, this.selectedFile)
     .subscribe(
       res => {
+        this.router.navigateByUrl('/ViewService/' + res.Id)
       }, error => {
         console.log(error);
       });;
@@ -54,8 +59,6 @@ export class EditRentVehicleComponent implements OnInit {
       form.reset();
       this.selecetdFileUrl = '';
       this.selectedFile = null;
-      this.router.navigateByUrl('Service');
-    
   }
 
 }

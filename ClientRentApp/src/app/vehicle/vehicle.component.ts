@@ -150,15 +150,6 @@ export class VehicleComponent implements OnInit {
       return imageId.split(";_;");
   }
 
-  onDelete(id){
-    this.vehicleService.deleteVehicle(id)
-    .subscribe(
-      data => {
-      },
-      error => {
-      });
-  }
-
   onSubmit(form: NgForm, searchVehicle: SearchVehicle){
     if(searchVehicle.VehicleTypeId == undefined || searchVehicle.VehicleTypeId == null)
     {
