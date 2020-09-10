@@ -2,22 +2,35 @@
   <div *ngIf="isMarkerClicked(); then thenBlock; else elseBlock"></div>
 
   <ng-template #thenBlock>
+    
+    <div class="container">
+      <div class="row">
+          <div class="col col-lg-4 col-lg-push-3">
       <div class='child inline-block-child'>
         <img src='{{branchOfficeLoadImage}}{{branchOffice.Image}}' height="300px" weight="300px"/>
         <br/><br/>
-        <label>Address:</label> {{branchOffice.Address}}
-        <br/><br/>
-        <button type="button" *ngIf="isManagerOrAdmin()" (click)="onDelete(branchOffice.Id)" class="btn btn-default">Delete</button>
-         &nbsp; 
-        <button type="button" *ngIf="isManagerOrAdmin()" (click)="onEdit(branchOffice.Id)" class="btn btn-default">Edit</button>
-      </div> 
-      <div class="container">
-        <div class="text-center">
-          <app-map  [serviceId]="serviceId" (messageEvent)="receiveMessage($event)"></app-map>
+        <div>
+          <label>Name:</label> {{branchOffice.Name}}
         </div>
-      </div>
+        <div>
+          <label>Address:</label> {{branchOffice.Address}}
+        </div>
+        <button type="button" *ngIf="isManagerOrAdmin()" (click)="onDelete(branchOffice.Id)" class="btn btn-danger">Delete</button>
+         &nbsp; 
+        <button type="button" *ngIf="isManagerOrAdmin()" (click)="onEdit(branchOffice.Id)" class="btn btn-warning">Edit</button>
+      </div> 
+    </div>
+  </div>
+  </div>
   </ng-template>
   
   <ng-template #elseBlock>
+    
+    <div class="container">
+      <div class="row">
+          <div class="col col-lg-4 col-lg-push-3">
         <app-map  [serviceId]="serviceId" (messageEvent)="receiveMessage($event)"></app-map>
+      </div>
+    </div>
+    </div>
   </ng-template>

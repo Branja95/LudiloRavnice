@@ -22,13 +22,11 @@ export class LoginComponent implements OnInit {
     {
       this.loginService.postMethodLogin(loginUser).subscribe(
         res => {
-          //console.log(res)
           this.saveToken(res);
           this.goToDefault();
         },
         err => {
-          console.log('1', err)
-          alert("Invalid username or/and password.")
+          console.log(err)
         }
       );
     }

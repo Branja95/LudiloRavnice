@@ -20,11 +20,10 @@ export class RegistrationComponent implements OnInit {
   onSubmit(form: NgForm, user: User) {
     this.registrationService.postMethodRegistration(user).subscribe(
       res => {
-        console.log(res);
         this.router.navigate(['/Login']);
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
     });
   }
 

@@ -1,15 +1,15 @@
 export class BranchOffice {
     serviceId: string;
     address: string;
-    latitude: number;
-    longitude: number;
+    Latitude: number;
+    Longitude: number;
     image: string;
 
     constructor(serviceId: string, address: string, latitude: number, longitude: number, image: string) {
         this.serviceId = serviceId;
         this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.Latitude = latitude;
+        this.Longitude = longitude;
         this.image = image;
     }
 }

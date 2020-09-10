@@ -17,16 +17,15 @@
 </ng-template>
 
 <ng-template #elseBlock>
-    <agm-map *ngIf=mapInfo [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" [zoom]="6" [usePanning]="true"  (mapClick)="placeMarker($event)">
-        <agm-marker   *ngFor="let branchOffice of branchOffices" [latitude]="branchOffice.Latitude" [longitude]="branchOffice.Longitude" (markerClick)="markerClicked(branchOffice.Id, infowindow)">
-            <agm-info-window #infowindow [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" >
+    <agm-map #gm *ngIf=mapInfo [latitude]="mapInfo.centerLat" [longitude]="mapInfo.centerLong" [zoom]="10" [usePanning]="true"  (mapClick)="placeMarker($event)">
+        <agm-marker   *ngFor="let branchOffice of branchOffices" [latitude]="branchOffice.Latitude" (mouseOver)="onMouseOver(infowindow,gm)" [longitude]="branchOffice.Longitude" (markerClick)="markerClicked(branchOffice.Id, infowindow)">
+            <agm-info-window #infowindow [latitude]="mapInfo.centerLat"  [longitude]="mapInfo.centerLong" >
+                <br/>
+                <span *ngIf=branchOffice  style="font-size: 16px;font-family:'Times New Roman'">Name: {{branchOffice.Name}}</span>
+                <br/>
                 <br/>
                 <span *ngIf=branchOffice  style="font-size: 16px;font-family:'Times New Roman'">Address: {{branchOffice.Address}}</span>
                 <br/>
-                <br/>
-                <span *ngIf=branchOffice  style="font-family:'Times New Roman'; color:gray;">Latitude: {{branchOffice.Latitude}}</span>
-                <br/>
-                <span *ngIf=branchOffice  style="font-family:'Times New Roman'; color:gray;">Longitude: {{branchOffice.Longitude}}</span>
             </agm-info-window>
         </agm-marker>
     </agm-map>

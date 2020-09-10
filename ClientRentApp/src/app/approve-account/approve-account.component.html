@@ -7,8 +7,10 @@
           <img [src]="url"  width="300">
           <input type="file" id="documenImage" (change)="handleFileInput($event)">
         </div>
-        
-        <button *ngIf=url type="submit" class="btn btn-success">Approve account</button>
+        <div>
+          <br/>
+          <button *ngIf=url type="submit" class="btn btn-success">Request approval</button>
+        </div>
       </form>
     </div>
   </div>

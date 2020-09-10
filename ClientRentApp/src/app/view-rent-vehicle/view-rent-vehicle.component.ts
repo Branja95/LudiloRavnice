@@ -27,7 +27,7 @@ export class ViewRentVehicleComponent implements OnInit {
       res => {
         this.rentVehicle = res as Vehicle;
       },error => {
-        console.log('error',error);
+        console.log(error);
       });
   }
 
@@ -52,7 +52,7 @@ export class ViewRentVehicleComponent implements OnInit {
       res => { 
       console.log(res);
     }, error => {
-      alert(error);
+      console.log(error);
     });
   }
 

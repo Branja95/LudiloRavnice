@@ -21,13 +21,13 @@ export class EditBranchOfficeComponent implements OnInit  {
   mapType = "edit";
   serviceId : string = "-1";
   branchOfficeId: string = "-1";
-  selecetdFileUrl: string = '';
+  selecetdFileUrl =  null;
   
   branchOfficeLoadImage = environment.endpointRentVehicleLoadImageBranchOffice;
 
-  selectedFile: File = null;
+  selectedFile = {} as File;
   mapInfoCooridnates: MapInfo;
-  branchOffice: BranchOffice;
+  branchOffice = {} as BranchOffice;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private location: Location, private branchOfficeService: BranchOfficeService) {
     activatedRoute.params
@@ -42,7 +42,7 @@ export class EditBranchOfficeComponent implements OnInit  {
       res => {
         this.branchOffice = res as BranchOffice;
       },error => {
-        alert(error.error.Message);
+        console.log(error);
     });
   }
 
@@ -64,18 +64,19 @@ export class EditBranchOfficeComponent implements OnInit  {
   }
 
   onSubmit(form: NgForm) {
-    this.branchOffice.latitude = this.mapInfoCooridnates.centerLat;
-    this.branchOffice.longitude = this.mapInfoCooridnates.centerLong;
+    if(this.mapInfoCooridnates != null){
+      this.branchOffice.Latitude = this.mapInfoCooridnates.centerLat;
+      this.branchOffice.Longitude = this.mapInfoCooridnates.centerLong;
+    }
 
     this.branchOfficeService.editBranchOffice(this.serviceId, this.branchOfficeId, this.branchOffice, this.selectedFile)
     .subscribe(
       res => {
-        console.log('1', res);
+        this.router.navigateByUrl('/BranchOffice/' + this.serviceId)
       }, error => {
-        console.log('2', error);
+        console.log(error);
       });;
     
-    this.location.back();
 
     form.reset();
     this.selecetdFileUrl = '';

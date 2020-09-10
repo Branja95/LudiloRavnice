@@ -419,22 +419,29 @@ namespace RentVehicle.Controllers
                 }
 
                 imageHelper.DeleteImage(_environment.WebRootPath, folderPath, service.LogoImage);
+
+                foreach (long branchOfficeId in branchOfficeIds)
+                {
+                    BranchOffice branchOffice = _unitOfWork.BranchOffices.Get(branchOfficeId);
+                    _unitOfWork.BranchOffices.Remove(branchOffice);
+                }
+
+                foreach (long vehicleId in vehiclesIds)
+                {
+                    Vehicle vehicle = _unitOfWork.Vehicles.Get(vehicleId);
+                    _unitOfWork.Vehicles.Remove(vehicle);
+                }
+
+                ServiceForApproval serviceForApproval = _unitOfWork.ServicesForApproval.Find(x => x.Service.Id == serviceId).FirstOrDefault();
+                _unitOfWork.ServicesForApproval.Remove(serviceForApproval);
+
                 try
                 {
-                        foreach (long branchOfficeId in branchOfficeIds)
-                        {
-                            BranchOffice branchOffice = _unitOfWork.BranchOffices.Get(branchOfficeId);
-                            _unitOfWork.BranchOffices.Remove(branchOffice);
-                        }
-
-                        foreach (long vehicleId in vehiclesIds)
-                        {
-                            Vehicle vehicle = _unitOfWork.Vehicles.Get(vehicleId);
-                            _unitOfWork.Vehicles.Remove(vehicle);
-                        }
-
+                    lock (lockObjectForServices)
+                    {
                         _unitOfWork.Services.Remove(service);
                         _unitOfWork.Complete();
+                    }
                 }
                 catch (DBConcurrencyException ex)
                 {
@@ -448,7 +455,7 @@ namespace RentVehicle.Controllers
                     }
                 }
 
-                return Ok();
+                return Ok(_unitOfWork.Services.GetAll());
             }
         }
 

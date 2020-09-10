@@ -40,7 +40,6 @@ export class ApproveAccountComponent implements OnInit {
         }, 
         error => {
           console.log(error)
-          alert(error.message);
       });
 
       form.reset();

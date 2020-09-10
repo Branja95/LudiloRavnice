@@ -36,7 +36,7 @@ export class ServiceVehiclesComponent implements OnInit {
       res => { 
           this.vehicles = res as Array<Vehicle>;
       }, error => {
-        alert(error.error.Message);
+        console.log(error);
       }); 
   }
 
@@ -51,7 +51,7 @@ export class ServiceVehiclesComponent implements OnInit {
         this.vehicles = res as Array<Vehicle>;
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       })
   }
 

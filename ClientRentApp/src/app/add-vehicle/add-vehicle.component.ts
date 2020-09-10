@@ -49,7 +49,7 @@ export class AddVehicleComponent implements OnInit {
         this.router.navigate(['/Vehicles/' + this.ServiceId]);
       }, 
       error => {
-        console.log(error.error.Message);
+        console.log(error);
     });
 
     form.resetForm();

@@ -108,6 +108,10 @@ namespace RentVehicle.Controllers
         [AllowAnonymous]
         public IActionResult LoadImage([FromQuery] string imageId)
         {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                return Ok();
+            }
             string filePath = Path.Combine(_environment.WebRootPath, folderPath, imageId);
             string fileExtension = Path.GetExtension(filePath);
 
@@ -143,6 +147,7 @@ namespace RentVehicle.Controllers
                 string fileName = await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
                 BranchOffice branchOffice = new BranchOffice
                 {
+                    Name = model.Name,
                     Address = model.Address,
                     Latitude = model.Latitude,
                     Longitude = model.Longitude,
@@ -207,13 +212,18 @@ namespace RentVehicle.Controllers
                     }
 
                     ImageHelper imageHelper = new ImageHelper();
-                    await imageHelper.DeleteImage(_environment.WebRootPath, folderPath, branchOffice.Image);
-                    await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+                    string newImageFile = string.Empty;
+                    if (model.Image != null)
+                    {
+                        await imageHelper.DeleteImage(_environment.WebRootPath, folderPath, branchOffice.Image);
+                        newImageFile = await imageHelper.UploadImageToServer(_environment.WebRootPath, folderPath, model.Image);
+                    }
 
+                    branchOffice.Name = model.Name;
                     branchOffice.Address = model.Address;
                     branchOffice.Latitude = model.Latitude;
                     branchOffice.Longitude = model.Longitude;
-                    branchOffice.Image = model.Image.FileName;
+                    branchOffice.Image = string.IsNullOrEmpty(newImageFile) ? branchOffice.Image : newImageFile;
 
                     try
                     {
@@ -270,7 +280,7 @@ namespace RentVehicle.Controllers
                     return NotFound();
                 }
 
-                return Ok();
+                return Ok(_unitOfWork.BranchOffices.GetAll());
             }
         }
 

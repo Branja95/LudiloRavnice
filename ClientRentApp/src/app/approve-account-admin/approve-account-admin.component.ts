@@ -23,7 +23,7 @@ export class ApproveAccountAdminComponent implements OnInit {
         this.users = res;
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       }
     );
   }
@@ -33,11 +33,10 @@ export class ApproveAccountAdminComponent implements OnInit {
     this.accountService.postMethodApproveUser(id)
     .subscribe(
       res => {
-        console.log(res);
         this.router.navigate(['/Vehicle']);
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       })
   }
 
@@ -46,11 +45,10 @@ export class ApproveAccountAdminComponent implements OnInit {
     this.accountService.postMethodRejectUser(id)
     .subscribe(
       res => {
-        console.log(res);
         this.router.navigate(['/Vehicle']);
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       })
   }
 

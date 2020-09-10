@@ -37,9 +37,10 @@ export class BranchOfficeService {
     this.formData = new FormData();
 
     this.formData.append('serviceId',serviceId);
+    this.formData.append('name', branchOffice.name)
     this.formData.append('address', branchOffice.address)
-    this.formData.append('latitude', branchOffice.latitude);
-    this.formData.append('longitude', branchOffice.longitude);
+    this.formData.append('latitude', branchOffice.Latitude);
+    this.formData.append('longitude', branchOffice.Longitude);
     this.formData.append('image', uploadedImage, uploadedImage.name);
 
     let headers = new HttpHeaders();
@@ -49,17 +50,18 @@ export class BranchOfficeService {
   }
   
   editBranchOffice(serviceId, branchOfficeId, branchOffice, uploadedImage: File): Observable<any> {
-    
     let headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json')
-
     this.formData = new FormData();
     this.formData.append('id', branchOfficeId);
     this.formData.append('serviceId',serviceId);
+    this.formData.append('name', branchOffice.Name)
     this.formData.append('address', branchOffice.Address)
-    this.formData.append('latitude', branchOffice.latitude);
-    this.formData.append('longitude', branchOffice.longitude);
-    this.formData.append('image', uploadedImage, uploadedImage.name);
+    this.formData.append('latitude', branchOffice.Latitude);
+    this.formData.append('longitude', branchOffice.Longitude);
+    if(uploadedImage.name != null){
+      this.formData.append('image', uploadedImage, uploadedImage.name);
+    }
     
     return this.httpClient.put(environment.endpointBranchOfficeEdit, this.formData, { headers: headers });
   }

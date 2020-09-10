@@ -86,6 +86,16 @@ export class MapComponent implements OnInit {
     this.previous = infowindow;
   }
 
+  onMouseOver(infoWindow, gm) {
+    if (gm.lastOpen && gm.lastOpen.isOpen) {
+      gm.lastOpen.close();
+    }
+  
+    gm.lastOpen = infoWindow;
+  
+    infoWindow.open();
+  }
+
   placeMarker($event){
     this.mapInfo.centerLat = $event.coords.lat;
     this.mapInfo.centerLong = $event.coords.lng;

@@ -25,7 +25,7 @@ export class BanManagersComponent implements OnInit {
         });
       },
       error => {
-        console.log(error.error.Message);
+        console.log(error);
       }
     );
   }

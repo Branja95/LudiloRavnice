@@ -47,15 +47,15 @@ export class AddBranchOfficeComponent implements OnInit {
   onSubmit(form: NgForm, branchOffice: BranchOffice) {
 
     branchOffice.serviceId = this.ServiceId;
-    branchOffice.latitude = this.mapInfoCooridnates.centerLat;
-    branchOffice.longitude = this.mapInfoCooridnates.centerLong;
+    branchOffice.Latitude = this.mapInfoCooridnates.centerLat;
+    branchOffice.Longitude = this.mapInfoCooridnates.centerLong;
    
     this.branchOfficeService.postMethodCreateBranchOffice(this.ServiceId, branchOffice, this.file)
     .subscribe(
       res => {
-        alert(res);
+        this.router.navigateByUrl('/BranchOffice/' + this.ServiceId)
       }, error => {
-        alert(error.Message);
+        console.log(error);
       });;
 
     form.reset();

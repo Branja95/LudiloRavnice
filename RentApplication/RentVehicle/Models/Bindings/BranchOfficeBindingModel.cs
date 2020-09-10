@@ -13,6 +13,11 @@ namespace RentVehicle.Models.Bindings
 
             [Required]
             [DataType(DataType.Text)]
+            [Display(Name = "Name")]
+            public string Name { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
             [Display(Name = "Address")]
             public string Address { get; set; }
 
@@ -45,6 +50,11 @@ namespace RentVehicle.Models.Bindings
             public string Address { get; set; }
 
             [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Name")]
+            public string Name { get; set; }
+
+            [Required]
             [RegularExpression(@"^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)")]
             [Display(Name = "Latitude")]
             public double Latitude { get; set; }
@@ -54,7 +64,6 @@ namespace RentVehicle.Models.Bindings
             [Display(Name = "Longitude")]
             public double Longitude { get; set; }
 
-            [Required]
             [Display(Name = "Image")]
             public IFormFile Image { get; set; }
         }

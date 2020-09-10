@@ -37,7 +37,6 @@ export class AddRentVehicleComponent implements OnInit {
     this.rentVehicleService.postMethodCreateRentVehicleService(rentVehicle, this.file)
     .subscribe(
       res => {
-        console.log(res);
       }, error => {
         console.log(error);
       });;

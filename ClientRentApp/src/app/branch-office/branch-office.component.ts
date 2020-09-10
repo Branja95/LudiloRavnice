@@ -53,7 +53,7 @@ export class BranchOfficeComponent implements OnInit {
     this.branchOfficeService.deleteBranchOffice(this.serviceId, branchOfficeId)
     .subscribe(
       res => {
-        console.log(res);
+        window.location.reload();
       },
       error => {
         console.log(error);
@@ -87,7 +87,7 @@ export class BranchOfficeComponent implements OnInit {
           this.branchOffice = res as BranchOffice;
       }, 
       error => {
-        alert(error);
+        console.log(error);
       });
   }
 

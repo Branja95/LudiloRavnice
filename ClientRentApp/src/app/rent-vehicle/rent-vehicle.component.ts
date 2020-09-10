@@ -39,9 +39,9 @@ export class RentVehicleComponent implements OnInit {
   deleteService(serviceId){
     this.rentVehicleService.deleteService(serviceId).subscribe(
       res => { 
-      console.log(res);
+        this.services = res;
     }, error => {
-      console.log(error.error.Message);
+      console.log(error);
     });
     
   }

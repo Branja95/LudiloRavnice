@@ -127,7 +127,7 @@ export class NavBarComponent implements OnInit {
           }
         },
         error => {
-          console.log(error.error.Message);
+          console.log(error);
         }
       );
       
@@ -158,10 +158,9 @@ export class NavBarComponent implements OnInit {
   logoutUser(){
     this.navBarService.postMethodLogout().subscribe(
       res => {
-        console.log(res);
       },
       error => {
-        alert(error.error.Message);
+        console.log(error);
       })
     localStorage.clear();
     this.username = null;
