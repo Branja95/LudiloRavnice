@@ -12,7 +12,7 @@
           <tbody>
             <tr *ngFor="let service of services">
               <td>{{service.Name}}</td>
-              <td> <img src='{{serviceLoadImage}}{{service.LogoImage}}' height="100" weight="100"/></td>
+              <td> <img src='{{serviceLoadImage}}{{service.LogoImage}}' height="150px" width="150px"/></td>
               <td>{{service.EmailAddress}}</td>
               <td>{{service.Description}}</td>
               <td><button type="button" (click)="approveService(service.Id)" class="btn btn-success">Approve</button></td>

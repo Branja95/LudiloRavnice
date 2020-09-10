@@ -4,7 +4,7 @@
       <form #f="ngForm" (ngSubmit)="onSubmit(f)">
         <div>
           <label for="documenImage">Document image:</label>
-          <img [src]="url"  width="300">
+          <img [src]="url"  height="300px" width="400px">
           <input type="file" id="documenImage" (change)="handleFileInput($event)">
         </div>
         <div>

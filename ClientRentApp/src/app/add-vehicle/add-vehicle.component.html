@@ -48,7 +48,7 @@
   
               <div class="form-group">
                 <label for="file">Choose Images</label>
-                <img *ngFor="let url of urls" [src]="url" class="rounded mb-3" width="300">
+                <img *ngFor="let url of urls" [src]="url" class="rounded mb-3" height="300px" width="400px">
                 <input type="file" id="file" (change)="handleFileInput($event.target.files)" multiple>
               </div>
   

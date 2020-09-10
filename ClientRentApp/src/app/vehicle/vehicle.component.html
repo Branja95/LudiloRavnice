@@ -37,13 +37,13 @@
             <h2>Vehicles</h2>
             <div *ngFor='let vehicle of pagedVehicles'>
                 <form #f="ngForm" (ngSubmit)="onDelete(f, vehicle.Id)">
-                <br/><br/>
+                <br/>
                 <div id="banner">
                     &nbsp;&nbsp;&nbsp;
                     <div class="inline-block" *ngFor='let url of parseImages(vehicle.Images)'>
-                        <img src='{{vehicleLoadImage}}{{url}}' height="300" weight="300"/> &nbsp;&nbsp;&nbsp;
+                        <img src='{{vehicleLoadImage}}{{url}}' height="300px" width="400px"/> &nbsp;&nbsp;&nbsp;
                     </div>
-                </div>
+                </div>&nbsp;
                 <br/><br/>
                 <div id="banner">
                     &nbsp;&nbsp;&nbsp;

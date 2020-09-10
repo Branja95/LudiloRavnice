@@ -15,10 +15,10 @@
             <input type="text" class="form-control" [(ngModel)]="rentVehicle.Description" value="{{rentVehicle.Description}}" name="description">
           </div>
           <div class="text-center">
-            <img src='{{serviceLoadImage}}{{rentVehicle.LogoImage}}'  width="300">
+            <img src='{{serviceLoadImage}}{{rentVehicle.LogoImage}}'  height="300px" width="400px">
             <br/><br/>
             
-            <img [src]="url"  width="300">
+            <img [src]="url"  height="300px" width="400px">
             <input type="file" id="file" (change)="handleFileInput($event)">
           </div>
           <br/>

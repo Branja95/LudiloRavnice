@@ -2,15 +2,12 @@
   <div *ngIf=rentVehicle class=text-center>
      <h2>Rent-Vehicle Service</h2>
      <br/><br/>
-      <img src='{{serviceLoadImage}}{{rentVehicle.LogoImage}}' height="300" weight="300"/><br/><br/>
+      <img src='{{serviceLoadImage}}{{rentVehicle.LogoImage}}' height="300px" width="400px"/><br/><br/>
       <label>Email Address:</label> {{rentVehicle.EmailAddress}}<br/>
       <label>Description:</label> {{rentVehicle.Description}}<br/>
       <br/><br/>
       <button type="button" [routerLink]="['/BranchOffice/' , rentVehicle.Id]" class="btn btn-default">Branch-Offices</button> &nbsp;
-      <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/AddBranchOffice/' , rentVehicle.Id]" class="btn btn-default">Add Branch Office</button> &nbsp;
-      <button type="button" [routerLink]="['/Vehicles/' , rentVehicle.Id]" class="btn btn-default">View vehicles</button> &nbsp;
-      <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/AddVehicle/' , rentVehicle.Id]" class="btn btn-default">Add Vehicle</button> &nbsp;
-        
+      <button type="button" [routerLink]="['/Vehicles/' , rentVehicle.Id]" class="btn btn-default">Vehicles</button> &nbsp;
       <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/EditService/' , rentVehicle.Id]" class="btn btn-default">Edit</button> &nbsp;
       <button type="button" *ngIf="isManagerOrAdmin()" (click)="deleteService(rentVehicle.Id)" class="btn btn-default">Delete</button> &nbsp;
   </div>

@@ -33,6 +33,9 @@ export class ChangeRolesComponent implements OnInit {
     var request: any = {};
     request.Role = role;
     this.accountService.putMethodChangeRole(userId, request).subscribe(
+      res => {
+
+      },
       error => {
         console.log(error);
     });

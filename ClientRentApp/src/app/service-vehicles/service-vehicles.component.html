@@ -9,7 +9,7 @@
               <div id="banner">
                   &nbsp;&nbsp;&nbsp;
                 <div class="inline-block" *ngFor='let url of parseImages(vehicle.Images)'>
-                  <img src='{{vehicleLoadImage}}{{url}}' height="200" weight="200"/> &nbsp;&nbsp;&nbsp;
+                  <img src='{{vehicleLoadImage}}{{url}}' height="300px" width="400px"/> &nbsp;&nbsp;&nbsp;
                 </div> 
             </div>
             <br/><br/>
@@ -34,8 +34,11 @@
             <button *ngIf="isManagerOrAdmin()" [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>&nbsp;
             <button *ngIf="isManagerOrAdmin()" type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;
             <button *ngIf="isManagerOrAdmin()" type="button" (click)="onChange(vehicle.Id)" class="btn btn-default">Change availability</button>&nbsp;
-        </form>
+          </form>
       </div>
-    </div>
+      <br />
+      <br />
+    <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/AddVehicle/' , ServiceId]" class="btn btn-default">Add Vehicle</button> &nbsp;
+  </div>
   </div>
 </div>
