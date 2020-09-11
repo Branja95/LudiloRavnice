@@ -11,7 +11,7 @@ import { VehicleType } from '../models/vehicle-type.model'
 export class VehicleTypesComponent implements OnInit {
 
   vehicleTypes: Array<VehicleType>;
-
+  TypeName: string;
   constructor(private vehicleTypesService: VehicleTypesService, private router: Router) { }
 
   ngOnInit() {
@@ -29,6 +29,7 @@ export class VehicleTypesComponent implements OnInit {
     this.vehicleTypesService.postMethodVehicleTypes(VehicleType).subscribe(
       res => {
         this.vehicleTypes = res;
+        this.TypeName = '';
       },
       error => {
         console.log(error);

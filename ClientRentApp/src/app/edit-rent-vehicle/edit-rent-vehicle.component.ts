@@ -12,13 +12,14 @@ import { environment } from '../../environments/environment'
 })
 export class EditRentVehicleComponent implements OnInit {
 
-  url: string = '';
   ServiceId: string = "-1";
   rentVehicle: RentVehicleService;
     
   serviceLoadImage = environment.endpointRentvehicleLoadImageService;
-  selecetdFileUrl: string = '';
-  selectedFile: File = null;
+
+  selecetedFileUrl =  null;
+  selectedFile = {} as File;
+  
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private rentVehicleService: RentVehicleService) {
     activatedRoute.params.subscribe(params => {this.ServiceId = params["ServiceId"]});
@@ -35,13 +36,13 @@ export class EditRentVehicleComponent implements OnInit {
 
   handleFileInput(event) {
     this.selectedFile = event.target.files[0];
-      
+    
     if (event.target.files && event.target.files[0]) {
       var reader = new FileReader();
 
       reader.readAsDataURL(event.target.files[0]); 
       reader.onload = (event) => { 
-        this.url = reader.result as string;
+        this.selecetedFileUrl = reader.result as string;
       }
     }
   }
@@ -55,9 +56,9 @@ export class EditRentVehicleComponent implements OnInit {
         console.log(error);
       });;
     
-      form.reset();
-      this.selecetdFileUrl = '';
-      this.selectedFile = null;
+    form.reset();
+    this.selecetedFileUrl = '';
+    this.selectedFile = null;
   }
 
 }

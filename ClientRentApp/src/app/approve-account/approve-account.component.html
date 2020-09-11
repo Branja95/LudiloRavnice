@@ -2,11 +2,11 @@
   <div class="row">
     <div class="col col-lg-4 col-lg-push-4">
       <form #f="ngForm" (ngSubmit)="onSubmit(f)">
-        <div>
-          <label for="documenImage">Document image:</label>
+        <label for="documenImage">Document Image:</label>
+        <div *ngIf="url">
           <img [src]="url"  height="300px" width="400px">
-          <input type="file" id="documenImage" (change)="handleFileInput($event)">
         </div>
+        <input type="file" id="documenImage" (change)="handleFileInput($event)">
         <div>
           <br/>
           <button *ngIf=url type="submit" class="btn btn-success">Request approval</button>

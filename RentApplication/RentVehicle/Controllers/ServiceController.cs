@@ -151,9 +151,9 @@ namespace RentVehicle.Controllers
         }
 
         [HttpPost]
-        [Route("ApproveService")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> ApproveService([FromBody] int serviceId)
+        [Route("ApproveService")]
+        public async Task<IActionResult> ApproveService([FromBody] long serviceId)
         {
             if (_unitOfWork.Services.Get(serviceId) == null)
             {
@@ -161,17 +161,19 @@ namespace RentVehicle.Controllers
             }
             else
             {
-                Service serviceForApprove = _unitOfWork.Services.Get(serviceId);
-                serviceForApprove.IsApproved = true;
+                ServiceForApproval serviceForApproval = _unitOfWork.ServicesForApproval.Get(serviceId);
+                Service service = _unitOfWork.Services.Get(serviceId);
+                service.IsApproved = true;
 
                 ApplicationUser user = await FindUser();
-                _emailService.SendMail("Service approved", "Your service " + serviceForApprove.Name + " is approved, now you can add branch offices and vehicles.", serviceForApprove.EmailAddress);
+                _emailService.SendMail("Service approved", "Your service " + service.Name + " is approved, now you can add branch offices and vehicles.", service.EmailAddress);
 
                 try
                 {
                     lock (lockObjectForServices)
                     {
-                        _unitOfWork.Services.Update(serviceForApprove);
+                        _unitOfWork.Services.Update(service);
+                        _unitOfWork.ServicesForApproval.Remove(serviceForApproval);
                         _unitOfWork.Complete();
                     }
                 }
@@ -180,15 +182,16 @@ namespace RentVehicle.Controllers
                     return NotFound();
                 }
 
+                await _hubContext.Clients.All.SendAsync("newRentAVehicleServiceToApprove", _unitOfWork.ServicesForApproval.Count());
                 return Ok();
             }
         }
 
 
         [HttpPost]
-        [Route("RejectService")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> RejectService([FromBody] int serviceId)
+        [Route("RejectService")]
+        public async Task<IActionResult> RejectService([FromBody] long serviceId)
         {
             if (_unitOfWork.Services.Get(serviceId) == null)
             {
@@ -196,17 +199,15 @@ namespace RentVehicle.Controllers
             }
             else
             {
-                Service serviceForApprove = _unitOfWork.Services.Get(serviceId);
+                ServiceForApproval serviceForApproval = _unitOfWork.ServicesForApproval.Get(serviceId);
 
                 ApplicationUser user = await FindUser();
-                _emailService.SendMail("Service rejected", "Your service " + serviceForApprove.Name + " is rejected.", user.Email);
-                ImageHelper imageHelper = new ImageHelper();
-                imageHelper.DeleteImage(_environment.WebRootPath, folderPath, serviceForApprove.LogoImage);
+                _emailService.SendMail("Service rejected", "Your service " + serviceForApproval.Service.Name + " is rejected.", user.Email);
                 try
                 {
                     lock (lockObjectForServices)
                     {
-                        _unitOfWork.Services.Remove(serviceForApprove);
+                        _unitOfWork.ServicesForApproval.Remove(serviceForApproval);
                         _unitOfWork.Complete();
                     }
                 }
@@ -215,6 +216,7 @@ namespace RentVehicle.Controllers
                     return NotFound();
                 }
 
+                await _hubContext.Clients.All.SendAsync("newRentAVehicleServiceToApprove", _unitOfWork.ServicesForApproval.Count());
                 return Ok();
             }
         }

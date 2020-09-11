@@ -5,27 +5,26 @@
         
             <div class="form-group">
               <label for="name">Name:</label>
-              <input type="text" class="form-control" id="name" name="name" ngModel #name="ngModel">
+              <input type="text" class="form-control" id="name" name="name" [(ngModel)]="name">
             </div>
 
             <div class="form-group">
               <label for="contactEmail">Contact Email:</label>
-              <input type="text" class="form-control" id="contactEmail" name="contactEmail" ngModel #contactEmail="ngModel">
+              <input type="text" class="form-control" id="contactEmail" name="contactEmail" [(ngModel)]="contactEmail">
             </div>
 
             <div class="form-group">
               <label for="description">Description:</label>
-              <input type="text" class="form-control" id="description" name="description" ngModel #description="ngModel">
+              <input type="text" class="form-control" id="description" name="description" [(ngModel)]="description">
             </div>
 
-            <div>
-              <label for="file">Logo Image:</label>
+            <div *ngIf="url">
               <img [src]="url"  height="300px" width="400px">
-              <input type="file" id="file" (change)="handleFileInput($event)">
             </div>
+            <input type="file" id="file" (change)="handleFileInput($event)" name="files" [(ngModel)]="files">
             <div class="col col-lg-4 col-lg-push-4">
               <br/>
-              <button type="submit" class="btn btn-success">Add</button>
+              <button type="submit" [disabled]="!name || !contactEmail || !description || !files" class="btn btn-success">Add</button>
             </div>
           </form>
         </div>

@@ -27,9 +27,9 @@ export class ApproveServiceAdminComponent implements OnInit {
       })
   }
 
-  approveService(id : number)
+  approveService(serviceId : number)
   {
-    this.rentVehicleService.postMethodApproveService(id)
+    this.rentVehicleService.postMethodApproveService(serviceId)
     .subscribe(
       res => {
         this.router.navigate(['/RentVehicle']);
@@ -39,9 +39,9 @@ export class ApproveServiceAdminComponent implements OnInit {
       })
   }
 
-  rejectService(id : number)
+  rejectService(serviceId : number)
   {
-    this.rentVehicleService.postMethodRejectService(id)
+    this.rentVehicleService.postMethodRejectService(serviceId)
     .subscribe(
       res => {
         this.router.navigate(['/RentVehicle']);

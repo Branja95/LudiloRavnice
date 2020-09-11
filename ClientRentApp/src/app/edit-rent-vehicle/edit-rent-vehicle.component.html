@@ -14,16 +14,19 @@
             <label for="description">Description:</label>
             <input type="text" class="form-control" [(ngModel)]="rentVehicle.Description" value="{{rentVehicle.Description}}" name="description">
           </div>
-          <div class="text-center">
-            <img src='{{serviceLoadImage}}{{rentVehicle.LogoImage}}'  height="300px" width="400px">
-            <br/><br/>
-            
-            <img [src]="url"  height="300px" width="400px">
+          <div class="form-group">
+            <div *ngIf="selecetedFileUrl; then thenBlock; else elseBlock"></div>
+            <ng-template #thenBlock>
+              <img [src]="selecetedFileUrl" height="300px" width="400px">
+            </ng-template>
+            <ng-template #elseBlock>
+              <img src='{{serviceLoadImage}}{{rentVehicle.LogoImage}}' height="300px" width="400px"/><br/><br/>   
+            </ng-template>
             <input type="file" id="file" (change)="handleFileInput($event)">
           </div>
           <br/>
           <div class="col col-lg-4 col-lg-push-4">
-            <button type="submit" class="btn btn-default">Edit</button>
+            <button type="submit" [disabled]="!rentVehicle.Name || !rentVehicle.EmailAddress || !rentVehicle.Description" class="btn btn-warning">Edit</button>
           </div>
         </form>
       </div>

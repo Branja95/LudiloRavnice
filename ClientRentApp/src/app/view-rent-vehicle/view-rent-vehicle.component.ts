@@ -50,7 +50,7 @@ export class ViewRentVehicleComponent implements OnInit {
   deleteService(serviceId){
     this.rentVehicleService.deleteService(serviceId).subscribe(
       res => { 
-      console.log(res);
+        this.rentVehicle = res as Vehicle;
     }, error => {
       console.log(error);
     });

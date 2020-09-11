@@ -4,9 +4,9 @@
       <form #f="ngForm" (ngSubmit)="onEdit(f.value)">
         <div class="form-group">
           <label for="typeName">Type</label>
-          <input type="text" class="form-control" id="TypeName" name="TypeName" value="{{vehicleType.TypeName}}" ngModel #TypeName="ngModel">
+          <input type="text" class="form-control" id="TypeName" name="TypeName" value="{{vehicleType.TypeName}}" [(ngModel)]="vehicleType.TypeName">
         </div>
-        <button type="submit" class="btn btn-default">Edit</button>
+        <button type="submit" [disabled]="!vehicleType.TypeName" class="btn btn-warning">Edit</button>
       </form>
     </div>
   </div>

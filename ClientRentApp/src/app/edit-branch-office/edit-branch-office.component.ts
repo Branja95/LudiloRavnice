@@ -21,11 +21,12 @@ export class EditBranchOfficeComponent implements OnInit  {
   mapType = "edit";
   serviceId : string = "-1";
   branchOfficeId: string = "-1";
-  selecetdFileUrl =  null;
+
+  selecetedFileUrl =  null;
+  selectedFile = {} as File;
   
   branchOfficeLoadImage = environment.endpointRentVehicleLoadImageBranchOffice;
 
-  selectedFile = {} as File;
   mapInfoCooridnates: MapInfo;
   branchOffice = {} as BranchOffice;
 
@@ -54,7 +55,7 @@ export class EditBranchOfficeComponent implements OnInit  {
 
       reader.readAsDataURL(event.target.files[0]); 
       reader.onload = (event) => { 
-        this.selecetdFileUrl = reader.result as string;
+        this.selecetedFileUrl = reader.result as string;
       }
     }
   }
@@ -76,10 +77,9 @@ export class EditBranchOfficeComponent implements OnInit  {
       }, error => {
         console.log(error);
       });;
-    
 
     form.reset();
-    this.selecetdFileUrl = '';
+    this.selecetedFileUrl = '';
     this.selectedFile = null;
   }
 
