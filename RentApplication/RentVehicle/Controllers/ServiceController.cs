@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AccountManaging.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -200,6 +201,7 @@ namespace RentVehicle.Controllers
             else
             {
                 ServiceForApproval serviceForApproval = _unitOfWork.ServicesForApproval.Get(serviceId);
+                Service service = _unitOfWork.Services.Get(serviceId);
 
                 ApplicationUser user = await FindUser();
                 _emailService.SendMail("Service rejected", "Your service " + serviceForApproval.Service.Name + " is rejected.", user.Email);
@@ -207,6 +209,7 @@ namespace RentVehicle.Controllers
                 {
                     lock (lockObjectForServices)
                     {
+                        _unitOfWork.Services.Remove(service);
                         _unitOfWork.ServicesForApproval.Remove(serviceForApproval);
                         _unitOfWork.Complete();
                     }

@@ -41,6 +41,8 @@ export class RentVehicleService {
   }
 
   postMethodApproveService(serviceId : number) {
+    console.log(environment.endpointRentVehicleApproveService);
+    console.log(serviceId);
     return this.httpClient.post(environment.endpointRentVehicleApproveService, serviceId);
   }
 

@@ -23,6 +23,8 @@ export class AccountService {
   }
 
   postMethodApproveUser(id : number) {
+    console.log(environment.endpointAccountApproveAccount);
+    console.log(id);
     return this.httpClient.post(environment.endpointAccountApproveAccount, id);
   }
 

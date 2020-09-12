@@ -12,6 +12,12 @@ namespace RentVehicle.Persistance.Repository.Implementation
         {
             return RentVehicleDbContext.ServicesForApproval.Where(x => !x.Service.IsApproved);
         }
+
+        public new ServiceForApproval Get(long serviceId)
+        {
+            return RentVehicleDbContext.ServicesForApproval.Where(x => x.Service.Id == serviceId).FirstOrDefault();
+        }
+
         public IEnumerable<ServiceForApproval> GetAll(int pageIndex, int pageSize)
         {
             return RentVehicleDbContext.ServicesForApproval.Skip((pageIndex - 1) * pageSize).Take(pageSize);
