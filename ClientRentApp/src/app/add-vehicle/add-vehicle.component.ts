@@ -39,6 +39,7 @@ export class AddVehicleComponent implements OnInit {
         reader.readAsDataURL(file);
       }
     }
+    this.urls = new Array<string>();
   }
 
   onSubmit(form: NgForm, vehicle: Vehicle) {

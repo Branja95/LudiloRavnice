@@ -33,7 +33,7 @@ export class RentVehicleService {
   }
 
   getMethodHasUserCommented(serviceId : string){
-    return this.httpClient.get(environment.endpointBookingHasUserPostedFeedback + serviceId);
+    return this.httpClient.get(environment.endpointBookingCanUserPostFeedback + serviceId);
   }
   
   deleteService(serviceId): Observable<any>{

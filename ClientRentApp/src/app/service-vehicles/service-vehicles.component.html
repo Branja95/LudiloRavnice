@@ -30,15 +30,15 @@
               </ng-template>
             </div>
           </div>
-            <button *ngIf="isLogged()" [routerLink]="['/ReserveAVehicle/', vehicle.Id]" class="btn btn-default">Reserve a vehicle</button>&nbsp;
-            <button *ngIf="isManagerOrAdmin()" [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-default">Edit</button>&nbsp;
-            <button *ngIf="isManagerOrAdmin()" type="button" (click)="onDelete(vehicle.Id)" class="btn btn-default">Delete</button>&nbsp;
-            <button *ngIf="isManagerOrAdmin()" type="button" (click)="onChange(vehicle.Id)" class="btn btn-default">Change availability</button>&nbsp;
+            <button *ngIf="isLogged() && vehicle.IsAvailable" [routerLink]="['/ReserveAVehicle/', vehicle.Id]" class="btn btn-success">Reserve</button>&nbsp;
+            <button *ngIf="isManagerOrAdmin()" [routerLink]="['/EditVehicle/', vehicle.Id]" class="btn btn-warning">Edit</button>&nbsp;
+            <button *ngIf="isManagerOrAdmin()" type="button" (click)="onDelete(vehicle.Id)" class="btn btn-danger">Delete</button>&nbsp;
+            <button *ngIf="isManagerOrAdmin()" type="button" (click)="onChange(vehicle.Id)" class="btn btn-info">Change availability</button>&nbsp;
           </form>
       </div>
       <br />
       <br />
-    <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/AddVehicle/' , ServiceId]" class="btn btn-default">Add Vehicle</button> &nbsp;
+    <button type="button" *ngIf="isManagerOrAdmin()" [routerLink]="['/AddVehicle/' , ServiceId]" class="btn btn-success">Add Vehicle</button> &nbsp;
   </div>
   </div>
 </div>

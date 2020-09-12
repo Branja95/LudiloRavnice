@@ -43,21 +43,21 @@
                 </select>  
             </div> 
 
-            <div class="form-group">
-              <label for="file">Old Images</label>
-              <div id="banner">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <div class="inline-block" *ngFor='let url of parseImages(Vehicle.Images)'>
-                    <img src='{{vehicleLoadImage}}{{url}}' height="300px" width="400px"/>
-                  </div> 
+            <label for="file">Images</label>
+            <div *ngIf="urls.length > 0; then thenBlock; else elseBlock"></div>
+            <ng-template #thenBlock>
+              <div class="form-group">
+                <img *ngFor="let url of urls" [src]="url" class="rounded mb-3" height="300px" width="400px">
               </div>
-            </div>
-          
-            <div class="form-group">
-              <label for="file">New Images</label>
-              <img *ngFor="let url of urls" [src]="url" class="rounded mb-3" height="300px" width="400px">
-              <input type="file" id="file" (change)="handleFileInput($event.target.files)" multiple>
-            </div>
+            </ng-template>
+            <ng-template #elseBlock>  
+              <div class="form-group">
+                <div class="inline-block" *ngFor='let url of parseImages(Vehicle.Images)'>
+                  <img src='{{vehicleLoadImage}}{{url}}' height="300px" width="400px"/>
+                </div> 
+              </div>
+            </ng-template>
+            <input type="file" id="file" (change)="handleFileInput($event.target.files)" multiple>
             <button [disabled]="!Vehicle.Manufactor || !Vehicle.Model || !VehicleYearMade || !Vehicle.Description" type="submit" class="btn btn-warning">Edit</button>
       </div>
     </div>

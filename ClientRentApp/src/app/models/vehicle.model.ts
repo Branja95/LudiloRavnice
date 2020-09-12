@@ -4,7 +4,7 @@ export class Vehicle {
     model: string;
     manufactor: string;
     vehicleType: string;
-    yearMade: string;
+    YearMade: string;
     description: string;
     pricePerHour: number;
     isAvailable: string;
@@ -16,7 +16,7 @@ export class Vehicle {
         this.model = model;
         this.manufactor = manufactor;
         this.vehicleType = vehicleType;
-        this.yearMade = yearMade;
+        this.YearMade = yearMade;
         this.description = description;
         this.pricePerHour = pricePerHour;
         this.isAvailable = isAvailable;

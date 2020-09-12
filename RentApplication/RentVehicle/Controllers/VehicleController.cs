@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RentVehicle.Helpers;
+using RentVehicle.Models;
 using RentVehicle.Models.Entities;
 using RentVehicle.Models.IdentityUsers;
 using RentVehicle.Persistance.UnitOfWork;
@@ -32,6 +33,7 @@ namespace RentVehicle.Controllers
 
         private readonly string _isUserInRoleEndpoint;
         private readonly string _findUserEndpoint;
+        private readonly string _getReservations;
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHostingEnvironment _environment;
@@ -45,6 +47,7 @@ namespace RentVehicle.Controllers
             _environment = environment;
             _configuration = configuration;
 
+            _getReservations = configuration["BookingService:GetReservations"];
             _isUserInRoleEndpoint = configuration["AccountService:IsUserInRoleEndpoint"];
             _findUserEndpoint = configuration["AccountService:FindUserEndpoint"];
         }
@@ -52,10 +55,51 @@ namespace RentVehicle.Controllers
         [HttpGet]
         [Route("GetVehicles")]
         [AllowAnonymous]
-        public IEnumerable<Vehicle> GetVehicles()
+        public async Task<IActionResult> GetVehicles()
         {
-            var a = _unitOfWork.Vehicles.GetAll();
-            return _unitOfWork.Vehicles.GetAll();
+            IEnumerable<Vehicle> vehicles = _unitOfWork.Vehicles.GetAll();
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(_getReservations).ConfigureAwait(true);
+                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    Vehicle newVehicle = new Vehicle();
+                    bool updateFlag = false;
+                    IList<Reservation> reservations = await httpResponseMessage.Content.ReadAsAsync<IList<Reservation>>().ConfigureAwait(false);
+                    foreach (Vehicle vehicle in vehicles)
+                    {
+                        Reservation reservation = reservations.FirstOrDefault(r => r.VehicleId == vehicle.Id);
+                        if(reservation != null)
+                        {
+                            if (!vehicle.IsAvailable && reservation.ReservationEnd < DateTime.Now)
+                            {
+                                newVehicle = vehicle;
+                                updateFlag = true;
+                                break;
+                            }
+                        }
+                      
+                    }
+                    if (updateFlag)
+                    {
+                        try
+                        {
+                            lock (lockObjectForVehicles)
+                            {
+                                newVehicle.IsAvailable = true;
+                                _unitOfWork.Vehicles.Update(newVehicle);
+                                _unitOfWork.Complete();
+                            }
+                        }
+                        catch (DBConcurrencyException)
+                        {
+                            return NotFound();
+                        }
+                    }
+                  
+                }
+                return Ok(vehicles);
+            }
         }
 
 
@@ -72,6 +116,29 @@ namespace RentVehicle.Controllers
             else
             {
                 return Ok(vehicle);
+            }
+        }
+
+        [HttpPut]
+        [Route("Reserve")]
+        [AllowAnonymous]
+        public IActionResult Reserve([FromQuery] int vehicleId)
+        {
+            try
+            {
+                lock (lockObjectForVehicles)
+                {
+                    Vehicle vehicle = _unitOfWork.Vehicles.Get(vehicleId);
+                    vehicle.IsAvailable = !vehicle.IsAvailable;
+                    _unitOfWork.Vehicles.Update(vehicle);
+                    _unitOfWork.Complete();
+
+                    return Ok(_unitOfWork.Vehicles.GetAll());
+                }
+            }
+            catch (DBConcurrencyException)
+            {
+                return NotFound();
             }
         }
 
@@ -171,7 +238,6 @@ namespace RentVehicle.Controllers
             }
             else
             {
-               
                 if (IsUserInRole("Manager").Result && !IsUserInRole("Administrator").Result)
                 {
                     ApplicationUser user = await FindUser();

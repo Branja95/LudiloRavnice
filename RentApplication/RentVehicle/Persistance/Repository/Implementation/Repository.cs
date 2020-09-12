@@ -52,8 +52,8 @@ namespace RentVehicle.Persistance.Repository.Implementation
 
         public void Update(TEntity entity)
         {
-            _context.Set<TEntity>().Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
+             _context.Set<TEntity>().Attach(entity);
+             _context.Entry(entity).State = EntityState.Modified;
         }
     }
 }

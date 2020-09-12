@@ -20,6 +20,7 @@ export class EditVehicleComponent implements OnInit {
   
   serviceLoadImage = environment.endpointRentvehicleLoadImageService;
   vehicleLoadImage = environment.endpointRentVehicleLoadImageVehicle;
+  
   urls: Array<string> = new Array<string>();
   uploadedFiles: FileList = null;
   vehicleTypes = Array<VehicleType>()
@@ -54,6 +55,7 @@ export class EditVehicleComponent implements OnInit {
         reader.readAsDataURL(file);
       }
     }
+    this.urls = new Array<string>();
   }
 
   onSubmit(form: NgForm, vehicle: Vehicle) {

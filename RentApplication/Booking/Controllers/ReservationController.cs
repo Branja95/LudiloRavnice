@@ -24,8 +24,9 @@ namespace Booking.Controllers
         private readonly string _findUserEndpoint;
         private readonly IUnitOfWork _unitOfWork;
 
-        private readonly string _isAccountApprovedEndpoint;
-        private readonly string _vehicleServiceEndpoint;
+
+        private readonly string _isAccountApprovedEndpoint;        private readonly string _vehicleServiceEndpoint;
+        private readonly string _vehicleServiceReserveEndpoint;
         private readonly string _branchOfficeEndpoint;
 
         public ReservationController(IUnitOfWork unitOfWork,
@@ -35,9 +36,16 @@ namespace Booking.Controllers
             _isAccountApprovedEndpoint = configuration["AccountService:IsAccountApprovedEndpoint"];
             _findUserEndpoint = configuration["AccountService:FindUserEndpoint"];
             _vehicleServiceEndpoint = configuration["RentVehicleService:GetVehicleEndpoint"];
+            _vehicleServiceReserveEndpoint = configuration["RentVehicleService:GetReserveVehicleEndpoint"];
             _branchOfficeEndpoint = configuration["RentVehicleService:GetBranchOfficeEndpoint"];
         }
 
+        [HttpGet]
+        [Route("GetReservations")]
+        public IActionResult GetReservations()
+        {
+            return Ok(_unitOfWork.Reservations.GetAll());
+        }
 
         [HttpPost]
         [Route("PostReservation")]
@@ -91,37 +99,42 @@ namespace Booking.Controllers
                                             }
                                             else
                                             {
-                                                lock (lockObjectForReservations)
+                                                HttpContent httpContent = new StringContent(vehicle.Id.ToString());
+                                                httpResponseMessage = await httpClient.PutAsync(_vehicleServiceReserveEndpoint + vehicle.Id, httpContent).ConfigureAwait(true);
+                                                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
                                                 {
-                                                    IEnumerable<Reservation> vehicleReservations = _unitOfWork.Reservations.Find(r => r.Id == vehicle.Id);
-                                                    int numOfexcessiveReservations = vehicleReservations.Count(r => (r.ReservationStart <= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart <= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd));
-
-                                                    if (numOfexcessiveReservations > 0)
+                                                    lock (lockObjectForReservations)
                                                     {
-                                                        return BadRequest("The vehicle was rented in a given period.");
+                                                        IEnumerable<Reservation> vehicleReservations = _unitOfWork.Reservations.Find(r => r.Id == vehicle.Id);
+                                                        int numOfexcessiveReservations = vehicleReservations.Count(r => (r.ReservationStart <= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart <= model.ReservationStart && r.ReservationEnd <= model.ReservationEnd) || (r.ReservationStart >= model.ReservationStart && r.ReservationEnd >= model.ReservationEnd));
+
+                                                        if (numOfexcessiveReservations > 0)
+                                                        {
+                                                            return BadRequest("The vehicle was rented in a given period.");
+                                                        }
+
+                                                        Reservation reservation = new Reservation()
+                                                        {
+                                                            VehicleId = vehicle.Id,
+                                                            UserId = user.Id,
+                                                            ReservationStart = model.ReservationStart,
+                                                            ReservationEnd = model.ReservationEnd,
+                                                            RentBranchOfficeId = rentBranchOffice.Id,
+                                                            ReturnBranchOfficeId = returnBranchOffice.Id
+                                                        };
+
+                                                        try
+                                                        {
+                                                            _unitOfWork.Reservations.Add(reservation);
+                                                            _unitOfWork.Complete();
+                                                        }
+                                                        catch (Exception)
+                                                        {
+                                                            return NotFound();
+                                                        }
+
+                                                        return Ok();
                                                     }
-
-                                                    Reservation reservation = new Reservation()
-                                                    {
-                                                        VehicleId = vehicle.Id,
-                                                        UserId = user.Id,
-                                                        ReservationStart = model.ReservationStart,
-                                                        ReservationEnd = model.ReservationEnd,
-                                                        RentBranchOfficeId = rentBranchOffice.Id,
-                                                        ReturnBranchOfficeId = returnBranchOffice.Id
-                                                    };
-
-                                                    try
-                                                    {
-                                                        _unitOfWork.Reservations.Add(reservation);
-                                                        _unitOfWork.Complete();
-                                                    }
-                                                    catch (Exception)
-                                                    {
-                                                        return NotFound();
-                                                    }
-
-                                                    return Ok();
                                                 }
                                             }
                                         }
@@ -170,6 +183,7 @@ namespace Booking.Controllers
                     errorMessage = "Reservation start date and time must be greater than reservation end date and time.";
                     BadRequest();
                 }
+                /*
                 if (reservation.ReservationStart < DateTime.Now)
                 {
                     errorMessage = "Reservation start date and time must be greater than current date and time.";
@@ -178,6 +192,7 @@ namespace Booking.Controllers
                 {
                     errorMessage = "Reservation end date and time must be greater than current date and time.";
                 }
+                */
             }
 
             return errorMessage;

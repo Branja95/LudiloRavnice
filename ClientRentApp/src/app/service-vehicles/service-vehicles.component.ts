@@ -35,6 +35,9 @@ export class ServiceVehiclesComponent implements OnInit {
     .subscribe(
       res => { 
           this.vehicles = res as Array<Vehicle>;
+          this.vehicles.forEach(vehicle => {
+            vehicle.YearMade = vehicle.YearMade.split('T', 1)[0]
+          });
       }, error => {
         console.log(error);
       }); 
@@ -49,6 +52,9 @@ export class ServiceVehiclesComponent implements OnInit {
     .subscribe(
       res => {
         this.vehicles = res as Array<Vehicle>;
+        this.vehicles.forEach(vehicle => {
+          vehicle.YearMade = vehicle.YearMade.split('T', 1)[0]
+        });
       },
       error => {
         console.log(error);
@@ -60,6 +66,9 @@ export class ServiceVehiclesComponent implements OnInit {
     .subscribe(
       res => {
         this.vehicles = res as Array<Vehicle>
+        this.vehicles.forEach(vehicle => {
+          vehicle.YearMade = vehicle.YearMade.split('T', 1)[0]
+        });
       },
       error => {
         console.log(error);

@@ -189,9 +189,13 @@ namespace Booking.Controllers
         {
             foreach (Vehicle vehicle in service.Vehicles)
             {
-                if (_unitOfWork.Reservations.Find(r => r.VehicleId == vehicle.Id && r.UserId == userId && r.ReservationEnd < DateTime.Now).Any())
+                Reservation reservation = _unitOfWork.Reservations.Find(r => r.VehicleId == vehicle.Id).FirstOrDefault();
+                if(reservation != null)
                 {
-                    return true;
+                    if (reservation.UserId == userId && reservation.ReservationEnd < DateTime.Now)
+                    {
+                        return true;
+                    }
                 }
             }
 

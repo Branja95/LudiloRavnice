@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RentVehicle.Persistance.Repository;
 using RentVehicle.Persistance.Repository.Implementation;
+using System;
 
 namespace RentVehicle.Persistance.UnitOfWork.Implementation
 {
@@ -81,7 +82,14 @@ namespace RentVehicle.Persistance.UnitOfWork.Implementation
 
         public int Complete()
         {
-            return _context.SaveChanges();
+            try
+            {
+                return _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                return 1;
+            }
         }
 
         public void Dispose()

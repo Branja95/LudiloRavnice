@@ -62,6 +62,6 @@ export const environment = {
 
   endpointBookingPostFeedback: 'https://localhost:44383/api/UserFeedback/PostUserFeedback',
   endpointBookingFeedbacksForService: 'https://localhost:44383/api/UserFeedback/GetUserFeedbacks?serviceId=',
-  endpointBookingHasUserPostedFeedback: 'https://localhost:44383/api/UserFeedback/CanUserPostFeedback?serviceId=',
+  endpointBookingCanUserPostFeedback: 'https://localhost:44383/api/UserFeedback/CanUserPostFeedback?serviceId=',
   endpointBookingCreateReservation: 'https://localhost:44383/api/Reservation/PostReservation',
 };

@@ -204,7 +204,7 @@ namespace RentVehicle.Controllers
                 Service service = _unitOfWork.Services.Get(serviceId);
 
                 ApplicationUser user = await FindUser();
-                _emailService.SendMail("Service rejected", "Your service " + serviceForApproval.Service.Name + " is rejected.", user.Email);
+                _emailService.SendMail("Service rejected", "Your service " + serviceForApproval.Service.Name + " is rejected.", service.EmailAddress);
                 try
                 {
                     lock (lockObjectForServices)

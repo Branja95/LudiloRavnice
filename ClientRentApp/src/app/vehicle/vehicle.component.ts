@@ -104,6 +104,9 @@ export class VehicleComponent implements OnInit {
       .subscribe(
         res => {
           this.pagedVehicles = res as Array<Vehicle>;
+          this.pagedVehicles.forEach(vehicle => {
+            vehicle.YearMade = vehicle.YearMade.split('T', 1)[0]
+          });
         },
         error=> {
           console.log(error);
@@ -113,6 +116,9 @@ export class VehicleComponent implements OnInit {
       .subscribe(
         res => {
           this.pagedVehicles = res as Array<Vehicle>;
+          this.pagedVehicles.forEach(vehicle => {
+            vehicle.YearMade = vehicle.YearMade.split('T', 1)[0]
+          });
         },
         error=> {
           console.log(error);

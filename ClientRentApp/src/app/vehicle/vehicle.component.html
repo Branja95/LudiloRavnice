@@ -62,7 +62,7 @@
                         </ng-template>
                     </div>
                 </div>
-                <button *ngIf="isLogged()" [routerLink]="['/ReserveAVehicle/', vehicle.Id]" class="btn btn-default">Reserve a vehicle</button>&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button *ngIf="isLogged() && vehicle.IsAvailable" [routerLink]="['/ReserveAVehicle/', vehicle.Id]" class="btn btn-success">Reserve</button>&nbsp;
                 </form>
             </div>
             <!-- pager -->
